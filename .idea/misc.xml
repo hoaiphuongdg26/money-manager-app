@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
@@ -8,12 +9,14 @@
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/drawable/frame1.xml" value="0.142" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/font/default_font.xml" value="0.22239583333333332" />
+        <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/home.xml" value="0.12552083333333333" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/login.xml" value="0.1" />
+        <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/signup.xml" value="0.11354166666666667" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
