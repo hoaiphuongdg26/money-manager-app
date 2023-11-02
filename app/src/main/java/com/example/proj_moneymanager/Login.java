@@ -53,7 +53,7 @@ public class Login extends AppCompatActivity {
                             String[] data = new String[2];
                             data[0] = UserName;
                             data[1] = Password;
-                            PutData putData = new PutData("http://localhost/money_management/login.php","POST",field,data);
+                            PutData putData = new PutData("http://10.0.126.0/money_management/login.php","POST",field,data);
                             if(putData.startPut()){
                                 if(putData.onComplete()){
                                     String result = putData.getResult();
