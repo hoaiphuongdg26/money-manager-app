@@ -27,28 +27,28 @@ public class SignUp extends AppCompatActivity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String yourName = editTextYourName.getText().toString();
-                String userName = editTextUserName.getText().toString();
-                String password = editTextPassword.getText().toString();
+                String fullname = editTextYourName.getText().toString();
+                String UserName = editTextUserName.getText().toString();
+                String Password = editTextPassword.getText().toString();
 
-                if (!yourName.equals("") && !userName.equals("") && !password.equals("")) {
+                if (!fullname.equals("") && !UserName.equals("") && !Password.equals("")) {
                     Handler handler = new Handler();
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
                             // Parameters to be sent
                             String[] field = new String[3];
-                            field[0] = "yourName";
-                            field[1] = "userName";
-                            field[2] = "password";
+                            field[0] = "fullname";
+                            field[1] = "UserName";
+                            field[2] = "Password";
 
                             // Data to be sent
                             String[] data = new String[3];
-                            data[0] = yourName;
-                            data[1] = userName;
-                            data[2] = password;
+                            data[0] = fullname;
+                            data[1] = UserName;
+                            data[2] = Password;
 
-                            PutData putData = new PutData("http://10.0.126.0/money_management/signup.php", "POST", field, data);
+                            PutData putData = new PutData("http://localhost/money_management/signup.php", "POST", field, data);
                             if (putData.startPut()) {
                                 if (putData.onComplete()) {
                                     String result = putData.getResult();

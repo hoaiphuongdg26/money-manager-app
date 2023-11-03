@@ -2,25 +2,22 @@
 require "DataBase.php";
 $db = new DataBase();
 
-if (isset($_POST['yourName']) && isset($_POST['UserName']) && isset($_POST['Password']) ) {
-    $yourName = $_POST['yourName'];
-    $username = $_POST['UserName'];
-    $password = $_POST['Password'];
+if (isset($_POST['fullname']) && isset($_POST['UserName']) && isset($_POST['Password'])) {
+    $fullname = $_POST['fullname'];
+    $UserName = $_POST['UserName'];
+    $Password = $_POST['Password'];
 
     if ($db->dbConnect()) {
-        if ($db->checkExistingUser("user_information", $username)) {
-            echo "Username already exists. Please choose a different username.";
-        } else {
-            if ($db->registerUser("user_information", $yourName, $username, $password)) {
-                echo "Registration Successful. You can now login.";
-            } else {
-                echo "Registration failed. Please try again.";
-            }
+        if ($db->signUp("user_information", $fullname, $UserName, $Password)) {
+            echo "Registration Successful. You can now login.";
+        } 
+        else {
+            echo "Registration failed. Please try again.";
         }
     } else {
         echo "Error: Database connection";
     }
-} else {
+else {
     echo "All fields are required ";
 }
 ?>
