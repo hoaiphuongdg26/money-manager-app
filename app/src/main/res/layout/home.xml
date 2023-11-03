@@ -262,7 +262,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textview_icon$"
+                    android:id="@+id/textview_iconUSD"
                     android:text="$"
                     android:textColor="@color/white"
                     android:textSize="30sp"
@@ -412,7 +412,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textview_icon$_quickIncome"
+                    android:id="@+id/textview_iconUSD_quickIncome"
                     android:text="$"
                     android:textColor="@color/white"
                     android:textSize="30sp"
