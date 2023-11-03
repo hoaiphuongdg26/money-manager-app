@@ -192,8 +192,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="5.5">
-            </LinearLayout>
+                android:layout_weight="5.5"></LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -232,7 +232,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="30">
+            android:layout_weight="33">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -246,23 +246,230 @@
                     android:text="Operation"
                     android:textColor="@color/blue"
                     android:textSize="16sp"
-
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_income"
+                    android:contentDescription="Income/Expense"
+                    android:background="@drawable/income"
+                    app:layout_constraintTop_toBottomOf="@id/textview_operation"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="30dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_icon$"
+                    android:text="$"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:fontFamily="@font/sf_pro_text_regular"
+                    app:layout_constraintTop_toTopOf="@id/button_income"
+                    app:layout_constraintBottom_toBottomOf="@id/button_income"
+                    app:layout_constraintStart_toStartOf="@id/button_income"
+                    app:layout_constraintEnd_toEndOf="@id/button_income"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintVertical_bias="0.5"
+                    android:gravity="center"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_income"
+                    android:fontFamily="@font/sf_pro_text_regular"
+                    android:text="Income/Expanse"
+                    android:textColor="@color/light_blue"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/button_income"
+                    app:layout_constraintLeft_toLeftOf="@id/button_income"
+                    app:layout_constraintRight_toRightOf="@id/button_income"
+                    >
+                </TextView>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_plan"
+                    android:contentDescription="Plan"
+                    android:background="@drawable/plan"
+                    app:layout_constraintStart_toEndOf="@id/button_income"
+                    app:layout_constraintTop_toTopOf="@id/button_income"
+                    app:layout_constraintBottom_toBottomOf="@id/button_income"
+                    android:layout_marginLeft="35dp"
+                    app:layout_constraintEnd_toStartOf="@id/button_statistic"
+                    android:layout_marginRight="35dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_plan"
+                    android:fontFamily="@font/sf_pro_text_regular"
+                    android:text="Plan"
+                    android:textColor="@color/light_blue"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toTopOf="@id/textview_income"
+                    app:layout_constraintLeft_toLeftOf="@id/button_plan"
+                    app:layout_constraintRight_toRightOf="@id/button_plan">
+                </TextView>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_statistic"
+                    android:contentDescription="Statistic"
+                    android:background="@drawable/statistic"
+                    app:layout_constraintStart_toEndOf="@id/button_plan"
+                    app:layout_constraintTop_toTopOf="@id/button_income"
+                    app:layout_constraintBottom_toBottomOf="@id/button_income"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_statistic"
+                    android:fontFamily="@font/sf_pro_text_regular"
+                    android:text="Statistic"
+                    android:textColor="@color/light_blue"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toTopOf="@id/textview_plan"
+                    app:layout_constraintLeft_toLeftOf="@id/button_statistic"
+                    app:layout_constraintRight_toRightOf="@id/button_statistic">
+                </TextView>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_more"
+                    android:contentDescription="More option"
+                    android:background="@drawable/more"
+                    app:layout_constraintTop_toBottomOf="@id/textview_income"
+                    app:layout_constraintLeft_toLeftOf="@id/button_income"
+                    app:layout_constraintEnd_toStartOf="@id/button_plan"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_setting"
+                    android:contentDescription="Setting"
+                    android:background="@drawable/setting"
+                    app:layout_constraintTop_toTopOf="@id/button_more"
+                    app:layout_constraintEnd_toStartOf="@id/button_statistic"
+                    app:layout_constraintLeft_toRightOf="@id/button_more"
+                    app:layout_constraintBottom_toBottomOf="@id/button_more"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_more"
+                    android:fontFamily="@font/sf_pro_text_regular"
+                    android:text="More"
+                    android:textColor="@color/light_blue"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/button_more"
+                    app:layout_constraintLeft_toLeftOf="@id/button_more"
+                    app:layout_constraintRight_toRightOf="@id/button_more">
+                </TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_setting"
+                    android:fontFamily="@font/sf_pro_text_regular"
+                    android:text="Setting"
+                    android:textColor="@color/light_blue"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toTopOf="@id/textview_more"
+                    app:layout_constraintLeft_toLeftOf="@id/button_setting"
+                    app:layout_constraintRight_toRightOf="@id/button_setting">
+                </TextView>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="15"
+            android:layout_height="12dp"
+            android:layout_weight="12"
             android:background="@drawable/subtract">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <!-- Định nghĩa giao diện cho phần 4 tại đây -->
+                <ImageButton
+                    android:id="@+id/button_quickIncome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Income/Expense Quickly"
+                    android:background="@drawable/income"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintVertical_bias="0.5"
+                    android:layout_marginBottom="25dp"
+                />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_icon$_quickIncome"
+                    android:text="$"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:fontFamily="@font/sf_pro_text_regular"
+                    app:layout_constraintTop_toTopOf="@id/button_quickIncome"
+                    app:layout_constraintBottom_toBottomOf="@id/button_quickIncome"
+                    app:layout_constraintStart_toStartOf="@id/button_quickIncome"
+                    app:layout_constraintEnd_toEndOf="@id/button_quickIncome"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintVertical_bias="0.5"
+                    android:gravity="center"
+                    />
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/button_iconHome"
+                    android:contentDescription="Go to home quickly"
+                    android:background="@drawable/icon_home"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    />
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/button_iconChart"
+                    android:contentDescription="Go to chart quickly"
+                    android:background="@drawable/icon_chart"
+                    app:layout_constraintTop_toTopOf="@id/button_iconHome"
+                    app:layout_constraintBottom_toBottomOf="@id/button_iconHome"
+                    app:layout_constraintStart_toEndOf="@id/button_iconHome"
+                    android:layout_marginLeft="25dp"
+                    />
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/button_iconPersonal"
+                    android:contentDescription="Go to personal quickly"
+                    android:background="@drawable/icon_personal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/button_iconHome"
+                    app:layout_constraintBottom_toBottomOf="@id/button_iconHome"
+                    android:layout_marginRight="20dp"
+                    />
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/button_iconOption"
+                    android:contentDescription="Go to option quickly"
+                    android:background="@drawable/icon_option"
+                    app:layout_constraintTop_toTopOf="@id/button_iconPersonal"
+                    app:layout_constraintBottom_toBottomOf="@id/button_iconPersonal"
+                    app:layout_constraintEnd_toStartOf="@id/button_iconPersonal"
+                    android:layout_marginRight="25dp"
+                    />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
