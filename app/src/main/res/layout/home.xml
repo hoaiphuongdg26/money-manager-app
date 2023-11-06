@@ -207,8 +207,10 @@
                         android:id="@+id/historicalDetail"
                         android:contentDescription="Historical documentation detail"
                         android:background="@drawable/right_forward"
-                        app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
+                        android:layout_marginRight="10dp"
+                        app:layout_constraintTop_toTopOf="@id/textview_historical"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_historical"
                         />
                     <TextView
                         android:id="@+id/textview_historical"
@@ -219,8 +221,8 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/light_blue"
                         android:clickable="true"
-                        app:layout_constraintTop_toTopOf="@id/historicalDetail"
-                        app:layout_constraintBottom_toBottomOf="@id/historicalDetail"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/historicalDetail"
                         android:layout_marginRight="5dp"
                         />
