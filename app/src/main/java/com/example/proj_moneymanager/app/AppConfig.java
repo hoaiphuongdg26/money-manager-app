@@ -20,6 +20,14 @@ public class AppConfig {
         editor.putBoolean(context.getString(R.string.pref_is_user_login),status);
         editor.commit();
     }
+    public boolean isLoginUsingGmail(){
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_is_login_using_gmail),false);
+    }
+    public void saveLoginUsingGmail(boolean isUsingGmail){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(context.getString(R.string.pref_is_login_using_gmail),isUsingGmail);
+        editor.commit();
+    }
     public void saveUserName(String name){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(context.getString(R.string.pref_name_of_user),name);

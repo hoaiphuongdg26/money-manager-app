@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,9 @@ import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,15 +33,30 @@ public class Login extends AppCompatActivity {
     private boolean isRememberLogin = false;
     private AppConfig appConfig;
     String UserName, Password;
+    //for google login
+    GoogleSignInOptions gso;
+    GoogleSignInClient gsc;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         appConfig = new AppConfig(this);
+
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gsc = GoogleSignIn.getClient(this,gso);
+
         if(appConfig.isUserLogin()){
-            UserName = appConfig.getUserName();
-            Password = appConfig.getUserPassword();
-            performLogin();
+            if(appConfig.isLoginUsingGmail())
+            {
+                //Google Login
+            }
+            else {
+                UserName = appConfig.getUserName();
+                Password = appConfig.getUserPassword();
+                performLogin();
+            }
         }
         else{
             setContentView(R.layout.login);
@@ -54,6 +73,9 @@ public class Login extends AppCompatActivity {
             btnLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //Google Button Click -> Login with Google
+                    //performGooglelogin()
+                    //Get Email -> connect to DB -> get FullName or other information
 
                     UserName = editTextUserName.getText().toString();
                     Password = editTextPassword.getText().toString();
@@ -84,6 +106,10 @@ public class Login extends AppCompatActivity {
             });
         }
     }
+    private void performGoogleLogin(){
+        Intent signInIntent = gsc.getSignInIntent();
+        startActivityForResult(signInIntent,10000);
+    }
     private void performLogin(){
         Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName, Password);
         call.enqueue(new Callback<ApiResponse>() {
@@ -101,7 +127,7 @@ public class Login extends AppCompatActivity {
                                 appConfig.saveUserPassword(Password);
                                 appConfig.saveIsRememberLoginClicked(true);
                             }
-                            Toast.makeText(getApplicationContext(), "Login successfully, Fullname = "+ name, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Wellcome, "+ name, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
                             finish();

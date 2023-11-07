@@ -7,4 +7,5 @@
     <string name="pref_name_of_user">nameofuser</string>
     <string name="pref_user_password">passwordofuser</string>
     <string name="pref_is_remember_login_clicked">isrememberloginclick</string>
+    <string name="pref_is_login_using_gmail">isusinggmail</string>
 </resources>

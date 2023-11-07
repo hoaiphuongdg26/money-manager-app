@@ -53,11 +53,17 @@ public class Profile extends AppCompatActivity {
         textViewLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                appConfig.updateUserLoginStatus(false);
-                //Move to login activity
-                Intent intent = new Intent(getApplicationContext(), Login.class);
-                startActivity(intent);
-                finish();
+                if(appConfig.isLoginUsingGmail()){
+                    //logout gmail
+                    appConfig.updateUserLoginStatus(false);
+                }
+                else {
+                    appConfig.updateUserLoginStatus(false);
+                    //Move to login activity
+                    Intent intent = new Intent(getApplicationContext(), Login.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
     }
