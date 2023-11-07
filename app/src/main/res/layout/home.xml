@@ -255,7 +255,7 @@
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:scaleType="fitcenter"
+                    android:scaleType="fitCenter"
                     android:id="@+id/button_income"
                     android:contentDescription="Income/Expense"
                     android:background="@drawable/income"
@@ -278,7 +278,7 @@
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:scaleType="fitcenter"
+                    android:scaleType="fitCenter"
                     android:id="@+id/button_plan"
                     android:contentDescription="Plan"
                     android:background="@drawable/plan"
@@ -387,7 +387,7 @@
                     android:id="@+id/button_quickIncome"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:scaleType="fitcenter"
+                    android:scaleType="fitCenter"
                     android:contentDescription="Income/Expense Quickly"
                     android:background="@drawable/income"
                     app:layout_constraintStart_toStartOf="parent"
@@ -400,7 +400,7 @@
                 <ImageButton
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:scaleType="fitcenter"
+                    android:scaleType="fitCenter"
                     android:id="@+id/button_iconHome"
                     android:contentDescription="Go to home quickly"
                     android:background="@drawable/icon_home"
@@ -413,7 +413,7 @@
                 <ImageButton
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:scaleType="fitcenter"
+                    android:scaleType="fitCenter"
                     android:id="@+id/button_iconChart"
                     android:contentDescription="Go to chart quickly"
                     android:background="@drawable/icon_chart"
@@ -425,7 +425,7 @@
                 <ImageButton
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:scaleType="fitcenter"
+                    android:scaleType="fitCenter"
                     android:id="@+id/button_iconPersonal"
                     android:contentDescription="Go to personal quickly"
                     android:background="@drawable/icon_personal"
@@ -438,7 +438,7 @@
                 <ImageButton
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:scaleType="fitcenter"
+                    android:scaleType="fitCenter"
                     android:id="@+id/button_iconOption"
                     android:contentDescription="Go to option quickly"
                     android:background="@drawable/icon_option"

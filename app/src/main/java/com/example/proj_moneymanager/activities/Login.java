@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proj_moneymanager.R;
@@ -18,8 +19,11 @@ import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,7 +40,7 @@ public class Login extends AppCompatActivity {
     //for google login
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
-
+    ImageButton bt_googleSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,14 @@ public class Login extends AppCompatActivity {
             if(appConfig.isLoginUsingGmail())
             {
                 //Google Login
+                String name = GoogleSignIn.getLastSignedInAccount(this).getDisplayName();
+                Toast.makeText(getApplicationContext(),"Wellcome, "+ name,Toast.LENGTH_SHORT).show();
+                //Start Home activity
+                appConfig.saveLoginUsingGmail(true);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+
             }
             else {
                 UserName = appConfig.getUserName();
@@ -69,14 +81,19 @@ public class Login extends AppCompatActivity {
             checkBoxIsRememberLogin.setChecked(appConfig.isRememberLoginChecked());
 
             btnLogin = (Button)findViewById(R.id.button_login);
-
+            bt_googleSignIn = (ImageButton) findViewById(R.id.button_google);
+            //Google Button Click -> Login with Google
+            //performGooglelogin()
+            //Get Email -> connect to DB -> get FullName or other information
+            bt_googleSignIn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    performGoogleLogin();
+                }
+            });
             btnLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Google Button Click -> Login with Google
-                    //performGooglelogin()
-                    //Get Email -> connect to DB -> get FullName or other information
-
                     UserName = editTextUserName.getText().toString();
                     Password = editTextPassword.getText().toString();
 
@@ -108,8 +125,30 @@ public class Login extends AppCompatActivity {
     }
     private void performGoogleLogin(){
         Intent signInIntent = gsc.getSignInIntent();
-        startActivityForResult(signInIntent,10000);
+        startActivityForResult(signInIntent,1000);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1000){
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                String name = account.getDisplayName();
+                Toast.makeText(getApplicationContext(),"Wellcome, "+ name,Toast.LENGTH_SHORT).show();
+                //Start Home activity
+                appConfig.saveLoginUsingGmail(true);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+            } catch (ApiException e) {
+                Toast.makeText(getApplicationContext(),"Can't login with Google account",Toast.LENGTH_SHORT).show();
+                //throw new RuntimeException(e);
+            }
+        }
+    }
+
     private void performLogin(){
         Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName, Password);
         call.enqueue(new Callback<ApiResponse>() {
