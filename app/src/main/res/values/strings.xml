@@ -2,4 +2,9 @@
     <string name="app_name">Proj_MoneyManager</string>
     <string name="login">LOGIN</string>
     <string name="signup">SIGNUP</string>
+    <string name="pref_file_key">pref_file_key</string>
+    <string name="pref_is_user_login">isuserlogin</string>
+    <string name="pref_name_of_user">nameofuser</string>
+    <string name="pref_user_password">passwordofuser</string>
+    <string name="pref_is_remember_login_clicked">isrememberloginclick</string>
 </resources>

@@ -18,7 +18,7 @@ public class ListAdapter extends ArrayAdapter<optProfile> {
         super(context, R.layout.lv_item_profile, optProfileArrayList);
     }
 
-    @NonNull
+    /*@NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
@@ -38,5 +38,5 @@ public class ListAdapter extends ArrayAdapter<optProfile> {
         Name.setText(opt.labelInfo);
 
         return super.getView(position, convertView, parent);
-    }
+    }*/
 }

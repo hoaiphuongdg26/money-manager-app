@@ -456,6 +456,7 @@
                     android:id="@+id/button_iconPersonal"
                     android:contentDescription="Go to personal quickly"
                     android:background="@drawable/icon_personal"
+                    android:onClick="onClick"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/button_iconHome"
                     app:layout_constraintBottom_toBottomOf="@id/button_iconHome"
