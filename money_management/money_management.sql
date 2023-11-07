@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th10 01, 2023 lúc 07:54 AM
--- Phiên bản máy phục vụ: 8.0.31
--- Phiên bản PHP: 8.0.26
+-- Host: 127.0.0.1:3306
+-- Generation Time: Nov 07, 2023 at 06:43 AM
+-- Server version: 5.7.40
+-- PHP Version: 8.1.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,34 +18,35 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `money_management`
+-- Database: `money_management`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_information`
+-- Table structure for table `user_information`
 --
 
 DROP TABLE IF EXISTS `user_information`;
 CREATE TABLE IF NOT EXISTS `user_information` (
-  `UserID` int NOT NULL AUTO_INCREMENT,
-  `UserName` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `Password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `Email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `UserID` int(11) NOT NULL AUTO_INCREMENT,
+  `FullName` varchar(50) NOT NULL,
+  `UserName` varchar(50) NOT NULL,
+  `Password` varchar(50) NOT NULL,
+  `Email` varchar(50) DEFAULT NULL,
   `PhoneNumber` varchar(15) DEFAULT NULL,
-  `Avatar` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Avatar` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`UserID`),
   UNIQUE KEY `UserName` (`UserName`,`Email`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `user_information`
+-- Dumping data for table `user_information`
 --
 
-INSERT INTO `user_information` (`UserID`, `UserName`, `Password`, `Email`, `PhoneNumber`, `Avatar`) VALUES
-(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', NULL, NULL, NULL),
-(3, 'Giang', '827ccb0eea8a706c4c34a16891f84e7b', 'truonggiangnsl123@gmail.com', '0382383930', NULL);
+INSERT INTO `user_information` (`UserID`, `FullName`, `UserName`, `Password`, `Email`, `PhoneNumber`, `Avatar`) VALUES
+(1, '', 'admin', '21232f297a57a5a743894a0e4a801fc3', NULL, NULL, NULL),
+(3, 'Đinh Văn Trường Giang', 'Giang', '827ccb0eea8a706c4c34a16891f84e7b', 'truonggiangnsl123@gmail.com', '0382383930', NULL);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
