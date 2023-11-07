@@ -150,7 +150,7 @@
     <ImageButton
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:scaleType="fitcenter"
+        android:scaleType="fitCenter"
         android:id="@+id/button_google"
         android:contentDescription="Google option"
         android:background="@drawable/icon_google"
