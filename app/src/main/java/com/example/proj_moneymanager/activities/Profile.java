@@ -41,7 +41,6 @@ public class Profile extends AppCompatActivity {
 
         ProfileAdapter profileAdapter = new ProfileAdapter(
                 Profile.this,
-                R.layout.profile,
                 arr_profileOption
         );
         lv_profileOption.setAdapter(profileAdapter);

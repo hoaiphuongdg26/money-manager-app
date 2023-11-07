@@ -9,4 +9,16 @@ public class Profile_Option {
         this.labelInfo = labelInfo;
         this.imageOption = imageOption;
     }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getLabelInfo() {
+        return labelInfo;
+    }
+
+    public int getImageOption() {
+        return imageOption;
+    }
 }
