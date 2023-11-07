@@ -252,31 +252,15 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitcenter"
                     android:id="@+id/button_income"
                     android:contentDescription="Income/Expense"
                     android:background="@drawable/income"
                     app:layout_constraintTop_toBottomOf="@id/textview_operation"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    android:layout_marginLeft="30dp"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textview_iconUSD"
-                    android:text="$"
-                    android:textColor="@color/white"
-                    android:textSize="30sp"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    app:layout_constraintTop_toTopOf="@id/button_income"
-                    app:layout_constraintBottom_toBottomOf="@id/button_income"
-                    app:layout_constraintStart_toStartOf="@id/button_income"
-                    app:layout_constraintEnd_toEndOf="@id/button_income"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintVertical_bias="0.5"
-                    android:gravity="center"
-                />
+                    android:layout_marginLeft="30dp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -290,100 +274,101 @@
                     app:layout_constraintRight_toRightOf="@id/button_income"
                     >
                 </TextView>
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/button_plan"
-                    android:contentDescription="Plan"
-                    android:background="@drawable/plan"
-                    app:layout_constraintStart_toEndOf="@id/button_income"
-                    app:layout_constraintTop_toTopOf="@id/button_income"
-                    app:layout_constraintBottom_toBottomOf="@id/button_income"
-                    android:layout_marginLeft="35dp"
-                    app:layout_constraintEnd_toStartOf="@id/button_statistic"
-                    android:layout_marginRight="35dp"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textview_plan"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    android:text="Plan"
-                    android:textColor="@color/light_blue"
-                    android:textSize="14sp"
-                    app:layout_constraintTop_toTopOf="@id/textview_income"
-                    app:layout_constraintLeft_toLeftOf="@id/button_plan"
-                    app:layout_constraintRight_toRightOf="@id/button_plan">
-                </TextView>
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/button_statistic"
-                    android:contentDescription="Statistic"
-                    android:background="@drawable/statistic"
-                    app:layout_constraintStart_toEndOf="@id/button_plan"
-                    app:layout_constraintTop_toTopOf="@id/button_income"
-                    app:layout_constraintBottom_toBottomOf="@id/button_income"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textview_statistic"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    android:text="Statistic"
-                    android:textColor="@color/light_blue"
-                    android:textSize="14sp"
-                    app:layout_constraintTop_toTopOf="@id/textview_plan"
-                    app:layout_constraintLeft_toLeftOf="@id/button_statistic"
-                    app:layout_constraintRight_toRightOf="@id/button_statistic">
-                </TextView>
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/button_more"
-                    android:contentDescription="More option"
-                    android:background="@drawable/more"
-                    app:layout_constraintTop_toBottomOf="@id/textview_income"
-                    app:layout_constraintLeft_toLeftOf="@id/button_income"
-                    app:layout_constraintEnd_toStartOf="@id/button_plan"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    />
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/button_setting"
-                    android:contentDescription="Setting"
-                    android:background="@drawable/setting"
-                    app:layout_constraintTop_toTopOf="@id/button_more"
-                    app:layout_constraintEnd_toStartOf="@id/button_statistic"
-                    app:layout_constraintLeft_toRightOf="@id/button_more"
-                    app:layout_constraintBottom_toBottomOf="@id/button_more"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textview_more"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    android:text="More"
-                    android:textColor="@color/light_blue"
-                    android:textSize="14sp"
-                    app:layout_constraintTop_toBottomOf="@id/button_more"
-                    app:layout_constraintLeft_toLeftOf="@id/button_more"
-                    app:layout_constraintRight_toRightOf="@id/button_more">
-                </TextView>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textview_setting"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    android:text="Setting"
-                    android:textColor="@color/light_blue"
-                    android:textSize="14sp"
-                    app:layout_constraintTop_toTopOf="@id/textview_more"
-                    app:layout_constraintLeft_toLeftOf="@id/button_setting"
-                    app:layout_constraintRight_toRightOf="@id/button_setting">
-                </TextView>
+<!--                <ImageButton-->
+<!--                    android:layout_width="60dp"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:scaleType="fitcenter"-->
+<!--                    android:id="@+id/button_plan"-->
+<!--                    android:contentDescription="Plan"-->
+<!--                    android:background="@drawable/plan"-->
+<!--                    app:layout_constraintStart_toEndOf="@id/button_income"-->
+<!--                    app:layout_constraintTop_toTopOf="@id/button_income"-->
+<!--                    app:layout_constraintBottom_toBottomOf="@id/button_income"-->
+<!--                    android:layout_marginLeft="35dp"-->
+<!--                    app:layout_constraintEnd_toStartOf="@id/button_statistic"-->
+<!--                    android:layout_marginRight="35dp"-->
+<!--                    />-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/textview_plan"-->
+<!--                    android:fontFamily="@font/sf_pro_text_regular"-->
+<!--                    android:text="Plan"-->
+<!--                    android:textColor="@color/light_blue"-->
+<!--                    android:textSize="14sp"-->
+<!--                    app:layout_constraintTop_toTopOf="@id/textview_income"-->
+<!--                    app:layout_constraintLeft_toLeftOf="@id/button_plan"-->
+<!--                    app:layout_constraintRight_toRightOf="@id/button_plan">-->
+<!--                </TextView>-->
+<!--                <ImageButton-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/button_statistic"-->
+<!--                    android:contentDescription="Statistic"-->
+<!--                    android:background="@drawable/statistic"-->
+<!--                    app:layout_constraintStart_toEndOf="@id/button_plan"-->
+<!--                    app:layout_constraintTop_toTopOf="@id/button_income"-->
+<!--                    app:layout_constraintBottom_toBottomOf="@id/button_income"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    />-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/textview_statistic"-->
+<!--                    android:fontFamily="@font/sf_pro_text_regular"-->
+<!--                    android:text="Statistic"-->
+<!--                    android:textColor="@color/light_blue"-->
+<!--                    android:textSize="14sp"-->
+<!--                    app:layout_constraintTop_toTopOf="@id/textview_plan"-->
+<!--                    app:layout_constraintLeft_toLeftOf="@id/button_statistic"-->
+<!--                    app:layout_constraintRight_toRightOf="@id/button_statistic">-->
+<!--                </TextView>-->
+<!--                <ImageButton-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/button_more"-->
+<!--                    android:contentDescription="More option"-->
+<!--                    android:background="@drawable/more"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/textview_income"-->
+<!--                    app:layout_constraintLeft_toLeftOf="@id/button_income"-->
+<!--                    app:layout_constraintEnd_toStartOf="@id/button_plan"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    />-->
+<!--                <ImageButton-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/button_setting"-->
+<!--                    android:contentDescription="Setting"-->
+<!--                    android:background="@drawable/setting"-->
+<!--                    app:layout_constraintTop_toTopOf="@id/button_more"-->
+<!--                    app:layout_constraintEnd_toStartOf="@id/button_statistic"-->
+<!--                    app:layout_constraintLeft_toRightOf="@id/button_more"-->
+<!--                    app:layout_constraintBottom_toBottomOf="@id/button_more"-->
+<!--                    />-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/textview_more"-->
+<!--                    android:fontFamily="@font/sf_pro_text_regular"-->
+<!--                    android:text="More"-->
+<!--                    android:textColor="@color/light_blue"-->
+<!--                    android:textSize="14sp"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/button_more"-->
+<!--                    app:layout_constraintLeft_toLeftOf="@id/button_more"-->
+<!--                    app:layout_constraintRight_toRightOf="@id/button_more">-->
+<!--                </TextView>-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/textview_setting"-->
+<!--                    android:fontFamily="@font/sf_pro_text_regular"-->
+<!--                    android:text="Setting"-->
+<!--                    android:textColor="@color/light_blue"-->
+<!--                    android:textSize="14sp"-->
+<!--                    app:layout_constraintTop_toTopOf="@id/textview_more"-->
+<!--                    app:layout_constraintLeft_toLeftOf="@id/button_setting"-->
+<!--                    app:layout_constraintRight_toRightOf="@id/button_setting">-->
+<!--                </TextView>-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -391,7 +376,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="12dp"
+            android:layout_height="wrap_parent"
             android:layout_weight="12"
             android:background="@drawable/subtract">
 
@@ -400,8 +385,9 @@
                 android:layout_height="match_parent">
                 <ImageButton
                     android:id="@+id/button_quickIncome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="fitcenter"
                     android:contentDescription="Income/Expense Quickly"
                     android:background="@drawable/income"
                     app:layout_constraintStart_toStartOf="parent"
@@ -428,8 +414,9 @@
                     android:gravity="center"
                     />
                 <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitcenter"
                     android:id="@+id/button_iconHome"
                     android:contentDescription="Go to home quickly"
                     android:background="@drawable/icon_home"
@@ -440,8 +427,9 @@
                     android:layout_marginTop="10dp"
                     />
                 <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitcenter"
                     android:id="@+id/button_iconChart"
                     android:contentDescription="Go to chart quickly"
                     android:background="@drawable/icon_chart"
@@ -451,8 +439,9 @@
                     android:layout_marginLeft="25dp"
                     />
                 <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitcenter"
                     android:id="@+id/button_iconPersonal"
                     android:contentDescription="Go to personal quickly"
                     android:background="@drawable/icon_personal"
@@ -463,8 +452,9 @@
                     android:layout_marginRight="20dp"
                     />
                 <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitcenter"
                     android:id="@+id/button_iconOption"
                     android:contentDescription="Go to option quickly"
                     android:background="@drawable/icon_option"
