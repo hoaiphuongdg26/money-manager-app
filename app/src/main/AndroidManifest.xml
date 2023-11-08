@@ -20,7 +20,7 @@
             android:name=".activities.Login"
             android:exported="true" />
         <activity
-            android:name=".activities.Profile"
+            android:name=".activities.Setting"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
