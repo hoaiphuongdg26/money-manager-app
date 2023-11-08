@@ -12,4 +12,5 @@
     <color name="light_blue">#123E6D</color>
     <color name="silver">#7D7D7D</color>
     <color name="light_silver">#DDDDDD</color>
+    <color name="color_footer_home">#B8FFFFFF</color>
 </resources>

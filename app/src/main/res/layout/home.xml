@@ -8,8 +8,7 @@
         android:weightSum="105"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/light_silver">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -255,13 +254,13 @@
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:scaleType="fitCenter"
                     android:id="@+id/button_income"
                     android:contentDescription="Income/Expense"
                     android:background="@drawable/income"
                     app:layout_constraintTop_toBottomOf="@id/textview_operation"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    android:layout_marginLeft="30dp"/>
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="10dp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -278,7 +277,6 @@
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:scaleType="fitCenter"
                     android:id="@+id/button_plan"
                     android:contentDescription="Plan"
                     android:background="@drawable/plan"
@@ -294,7 +292,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_plan"
                     android:fontFamily="@font/sf_pro_text_regular"
-                    android:text="Plan"
+                    android:text="Calander"
                     android:textColor="@color/light_blue"
                     android:textSize="14sp"
                     app:layout_constraintTop_toTopOf="@id/textview_income"
@@ -307,10 +305,10 @@
                     android:id="@+id/button_statistic"
                     android:contentDescription="Statistic"
                     android:background="@drawable/statistic"
-                    app:layout_constraintStart_toEndOf="@id/button_plan"
                     app:layout_constraintTop_toTopOf="@id/button_income"
                     app:layout_constraintBottom_toBottomOf="@id/button_income"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginRight="30dp"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -331,9 +329,9 @@
                     android:contentDescription="More option"
                     android:background="@drawable/more"
                     app:layout_constraintTop_toBottomOf="@id/textview_income"
-                    app:layout_constraintLeft_toLeftOf="@id/button_income"
-                    app:layout_constraintEnd_toStartOf="@id/button_plan"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/button_income"
+                    app:layout_constraintEnd_toStartOf="@id/button_plan"
                     />
                 <ImageButton
                     android:layout_width="60dp"
@@ -342,9 +340,9 @@
                     android:contentDescription="Setting"
                     android:background="@drawable/setting"
                     app:layout_constraintTop_toTopOf="@id/button_more"
-                    app:layout_constraintEnd_toStartOf="@id/button_statistic"
-                    app:layout_constraintLeft_toRightOf="@id/button_more"
                     app:layout_constraintBottom_toBottomOf="@id/button_more"
+                    app:layout_constraintStart_toEndOf="@id/button_plan"
+                    app:layout_constraintEnd_toStartOf="@id/button_statistic"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -376,78 +374,100 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="0dp"
             android:layout_weight="12"
-            android:background="@drawable/subtract">
+            android:background="@drawable/bg_footer"
+            >
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <ImageButton
-                    android:id="@+id/button_quickIncome"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:scaleType="fitCenter"
-                    android:contentDescription="Income/Expense Quickly"
-                    android:background="@drawable/income"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintVertical_bias="0.5"
-                    android:layout_marginBottom="25dp"
-                />
-                <ImageButton
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="fitCenter"
-                    android:id="@+id/button_iconHome"
-                    android:contentDescription="Go to home quickly"
-                    android:background="@drawable/icon_home"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp"
-                    />
-                <ImageButton
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="fitCenter"
-                    android:id="@+id/button_iconChart"
-                    android:contentDescription="Go to chart quickly"
-                    android:background="@drawable/icon_chart"
-                    app:layout_constraintTop_toTopOf="@id/button_iconHome"
-                    app:layout_constraintBottom_toBottomOf="@id/button_iconHome"
-                    app:layout_constraintStart_toEndOf="@id/button_iconHome"
-                    android:layout_marginLeft="25dp"
-                    />
-                <ImageButton
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="fitCenter"
-                    android:id="@+id/button_iconPersonal"
-                    android:contentDescription="Go to personal quickly"
-                    android:background="@drawable/icon_personal"
-                    android:onClick="onClick"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/button_iconHome"
-                    app:layout_constraintBottom_toBottomOf="@id/button_iconHome"
-                    android:layout_marginRight="20dp"
-                    />
-                <ImageButton
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:scaleType="fitCenter"
-                    android:id="@+id/button_iconOption"
-                    android:contentDescription="Go to option quickly"
-                    android:background="@drawable/icon_option"
-                    app:layout_constraintTop_toTopOf="@id/button_iconPersonal"
-                    app:layout_constraintBottom_toBottomOf="@id/button_iconPersonal"
-                    app:layout_constraintEnd_toStartOf="@id/button_iconPersonal"
-                    android:layout_marginRight="25dp"
-                    />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="5">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+                    <ImageButton
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/button_iconHome"
+                        android:contentDescription="Go to home quickly"
+                        android:background="@drawable/icon_home"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+                    <ImageButton
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/button_iconChart"
+                        android:contentDescription="Go to chart quickly"
+                        android:background="@drawable/icon_chart"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+                    <ImageButton
+                        android:id="@+id/button_quickIncome"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:contentDescription="Income/Expense Quickly"
+                        android:background="@drawable/income"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+                    <ImageButton
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/button_iconOption"
+                        android:contentDescription="Go to option quickly"
+                        android:background="@drawable/icon_option"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+                    <ImageButton
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/button_iconPersonal"
+                        android:contentDescription="Go to personal quickly"
+                        android:background="@drawable/icon_personal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>

@@ -63,10 +63,10 @@ public class Login extends AppCompatActivity {
                 startActivity(intent);
                 finish();
 
-            }
-            else {
+            } else {
                 UserName = appConfig.getUserName();
                 Password = appConfig.getUserPassword();
+                isRememberLogin = appConfig.isRememberLoginChecked();
                 performLogin();
             }
         }
@@ -139,6 +139,7 @@ public class Login extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Wellcome, "+ name,Toast.LENGTH_SHORT).show();
                 //Start Home activity
                 appConfig.saveLoginUsingGmail(true);
+                appConfig.updateUserLoginStatus(true);
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -161,6 +162,7 @@ public class Login extends AppCompatActivity {
 
                             //Lưu name password
                             if(isRememberLogin){
+                                appConfig.saveLoginUsingGmail(false);
                                 appConfig.updateUserLoginStatus(true);
                                 appConfig.saveUserName(UserName);
                                 appConfig.saveUserPassword(Password);
