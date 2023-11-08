@@ -21,14 +21,7 @@
             android:name=".activities.SignUp"
             android:exported="true" />
         <activity
-<<<<<<< HEAD
-            android:name=".activities.Profile"
-            android:exported="true" />
-        <activity
-            android:name=".activities.Login"
-=======
             android:name=".activities.Setting"
->>>>>>> 00b01dac1cdda0ab600031230602168292f3a0c5
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

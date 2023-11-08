@@ -379,7 +379,6 @@
             android:layout_weight="12"
             android:background="@drawable/bg_footer"
             >
-<<<<<<< HEAD
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -471,9 +470,7 @@
 
             </LinearLayout>
 
-=======
             <include layout="@layout/footer"/>
->>>>>>> 00b01dac1cdda0ab600031230602168292f3a0c5
         </LinearLayout>
     </LinearLayout>
 
