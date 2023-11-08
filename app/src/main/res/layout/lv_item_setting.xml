@@ -5,41 +5,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-        android:id="@+id/imgv_personal"
+        android:id="@+id/imgv_language"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/icon_person_profile"
+        android:src="@drawable/icon_language"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginLeft="15dp"
+        app:layout_constraintEnd_toStartOf="@+id/textview_Language_Setting"
         >
     </ImageView>
     <TextView
-        android:id="@+id/textview_labelName_Profile"
+        android:id="@+id/textview_Language_Setting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name"
+        android:text="Language"
         android:fontFamily="@font/sf_pro_text_bold"
         android:textColor="@color/blue"
         android:textSize="20sp"
         android:layout_marginLeft="25dp"
-        app:layout_constraintTop_toTopOf="@+id/imgv_personal"
-        app:layout_constraintStart_toEndOf="@+id/imgv_personal"
-        >
-    </TextView>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textview_Name_Profile"
-        android:text="Group 03"
-        android:fontFamily="@font/sf_pro_text_regular"
-        android:textColor="@color/silver"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@+id/textview_labelName_Profile"
-        app:layout_constraintLeft_toLeftOf="@id/textview_labelName_Profile"
-        app:layout_constraintBottom_toBottomOf="@id/imgv_personal"
+        app:layout_constraintStart_toEndOf="@+id/imgv_language"
+        app:layout_constraintTop_toTopOf="@+id/imgv_language"
+        app:layout_constraintBottom_toBottomOf="@id/imgv_language"
         >
     </TextView>
     <ImageView
@@ -49,9 +38,10 @@
         android:scaleType="fitCenter"
         android:src="@drawable/icon_right_forward"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/imgv_personal"
-        app:layout_constraintBottom_toBottomOf="@id/imgv_personal"
+        app:layout_constraintTop_toTopOf="@id/imgv_language"
+        app:layout_constraintBottom_toBottomOf="@id/imgv_language"
         android:layout_marginRight="15dp"
+
         >
     </ImageView>
 </androidx.constraintlayout.widget.ConstraintLayout>

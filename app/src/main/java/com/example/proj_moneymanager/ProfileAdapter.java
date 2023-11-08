@@ -1,5 +1,6 @@
 package com.example.proj_moneymanager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +12,10 @@ import android.widget.TextView;
 import java.util.List;
 
 public class ProfileAdapter  extends BaseAdapter {
-    Context myContext;
-    int myLayout;
+    private Activity myContext;
     List<Profile_Option> arrProfileOption;
-    public ProfileAdapter(Context context, int layout, List<Profile_Option > profile_optionList){
-            myContext = context;
-            myLayout = layout;
+    public ProfileAdapter(Activity context, List<Profile_Option> profile_optionList){
+            this.myContext = context;
             arrProfileOption = profile_optionList;
     }
     @Override
@@ -26,19 +25,19 @@ public class ProfileAdapter  extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return arrProfileOption.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) myContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        convertView = inflater.inflate(myLayout, null);
+        //Đổ từng item trong list vào từng dòng
+        convertView = inflater.inflate(R.layout.lv_item_profile, null);
         if (convertView == null) {
             convertView = LayoutInflater.from(myContext).inflate(R.layout.lv_item_profile, parent, false);
         }
@@ -46,13 +45,13 @@ public class ProfileAdapter  extends BaseAdapter {
         Profile_Option profileOption = (Profile_Option) getItem(position);
         //get view
         TextView txt_Label = (TextView) convertView.findViewById(R.id.textview_labelName_Profile);
-        txt_Label.setText(arrProfileOption.get(position).label);
+        txt_Label.setText(arrProfileOption.get(position).getLabel());
 
         TextView txt_labelInfo = (TextView) convertView.findViewById(R.id.textview_Name_Profile);
-        txt_labelInfo.setText(arrProfileOption.get(position).labelInfo);
+        txt_labelInfo.setText(arrProfileOption.get(position).getLabelInfo());
 
         ImageView img_iconOption = (ImageView) convertView.findViewById(R.id.imgv_personal);
-        img_iconOption.setImageResource(arrProfileOption.get(position).imageOption);
+        img_iconOption.setImageResource(arrProfileOption.get(position).getImageOption());
 
         return convertView;
     }
