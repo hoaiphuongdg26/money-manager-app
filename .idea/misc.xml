@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
+        <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/drawable-v24/main_background.xml" value="0.2305" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/drawable/button_background.xml" value="0.1" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/drawable/edittext_background.xml" value="0.1" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/drawable/frame1.xml" value="0.142" />
@@ -11,7 +12,7 @@
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/font/default_font.xml" value="0.22239583333333332" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/footer.xml" value="0.264" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/home.xml" value="0.264" />
-        <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/income.xml" value="0.35185185185185186" />
+        <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/income.xml" value="0.1" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/login.xml" value="0.1" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/lv_item_profile.xml" value="0.1" />
         <entry key="..\:/ProjAndroid/MoneyManager/app/src/main/res/layout/profile.xml" value="0.176" />
