@@ -80,8 +80,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1.8"
-        android:background="@color/light_silver">
+        android:layout_weight="1.8">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -162,7 +161,18 @@
                 android:layout_marginRight="25dp"
                 >
             </ImageButton>
-
+            <ImageButton
+                android:id="@+id/pencil"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/icon_pencil"
+                android:scaleType="fitCenter"
+                app:layout_constraintRight_toRightOf="@id/right_forward"
+                app:layout_constraintTop_toTopOf="@id/textview_category"
+                app:layout_constraintBottom_toBottomOf="@id/textview_category"
+                app:layout_constraintLeft_toLeftOf="@id/right_forward"
+                >
+            </ImageButton>
             <EditText
                 android:id="@+id/edittext_note"
                 android:layout_width="0dp"
@@ -209,7 +219,84 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5.2">
+        android:layout_weight="5.2"
+        android:orientation="horizontal"
+        android:weightSum="4">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/button_water"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/blue_frame_category"
+                >
+            </ImageButton>
+            <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/button_food"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/pink_frame_category"
+                app:layout_constraintTop_toBottomOf="@+id/button_water"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                >
+            </ImageButton>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/button_power"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/orange_frame_category"
+                >
+            </ImageButton>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/button_wifi"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/lightblue_frame_category"
+                >
+            </ImageButton>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <ImageButton
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/button_grocery"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/green_frame_category"
+                >
+            </ImageButton>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
     <LinearLayout
