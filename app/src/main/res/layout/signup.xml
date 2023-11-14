@@ -138,6 +138,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/btn_signup"
         android:elevation="4dp"
+        android:contentDescription="Button to signup"
         />
     <TextView
         android:id="@+id/textview_moveToSignup"
@@ -150,4 +151,16 @@
         app:layout_constraintTop_toBottomOf="@+id/button_signup"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="fitCenter"
+        android:id="@+id/button_google"
+        android:contentDescription="Google option"
+        android:background="@drawable/icon_google"
+        app:layout_constraintTop_toBottomOf="@id/textview_moveToSignup"
+        app:layout_constraintLeft_toLeftOf="@id/textview_moveToSignup"
+        app:layout_constraintRight_toRightOf="@id/textview_moveToSignup"
+        android:layout_marginTop="10dp"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
