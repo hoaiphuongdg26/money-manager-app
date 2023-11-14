@@ -30,7 +30,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Login extends AppCompatActivity {
-    Button btnLogin;
+    ImageButton btnLogin;
     EditText editTextUserName, editTextPassword;
     TextView textViewSignUp;
     CheckBox checkBoxIsRememberLogin;
@@ -80,7 +80,7 @@ public class Login extends AppCompatActivity {
             checkBoxIsRememberLogin = (CheckBox)findViewById(R.id.checkbox_rememberLogin);
             checkBoxIsRememberLogin.setChecked(appConfig.isRememberLoginChecked());
 
-            btnLogin = (Button)findViewById(R.id.button_login);
+            btnLogin = (ImageButton) findViewById(R.id.button_login);
             bt_googleSignIn = (ImageButton) findViewById(R.id.button_google);
             //Google Button Click -> Login with Google
             //performGooglelogin()
