@@ -6,10 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proj_moneymanager.R;
 
-public class Income extends AppCompatActivity {
+public class Expense extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.income);
+        setContentView(R.layout.expense);
     }
 }

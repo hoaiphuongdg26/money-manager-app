@@ -34,7 +34,7 @@
             android:name=".activities.MainActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.Income"
+            android:name=".activities.Expense"
             android:exported="true" />
         <activity
             android:name=".activities.Profile"
