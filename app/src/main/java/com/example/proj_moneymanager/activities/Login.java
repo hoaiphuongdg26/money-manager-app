@@ -1,16 +1,18 @@
 package com.example.proj_moneymanager.activities;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proj_moneymanager.R;
@@ -18,19 +20,18 @@ import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Login extends AppCompatActivity {
-    Button btnLogin;
+    ImageButton btnLogin;
     EditText editTextUserName, editTextPassword;
     TextView textViewSignUp;
     CheckBox checkBoxIsRememberLogin;
@@ -38,8 +39,7 @@ public class Login extends AppCompatActivity {
     private AppConfig appConfig;
     String UserName, Password;
     //for google login
-    GoogleSignInOptions gso;
-    GoogleSignInClient gsc;
+    private FirebaseAuth mAuth;
     ImageButton bt_googleSignIn;
 
     @Override
@@ -47,26 +47,18 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         appConfig = new AppConfig(this);
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
 
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-        gsc = GoogleSignIn.getClient(this,gso);
-
-        if(appConfig.isUserLogin()){
+        isRememberLogin = appConfig.isRememberLoginChecked();
+        if(appConfig.isUserLogin() && isRememberLogin){
+            UserName = appConfig.getUserName();
+            Password = appConfig.getUserPassword();
             if(appConfig.isLoginUsingGmail())
             {
                 //Google Login
-                String name = GoogleSignIn.getLastSignedInAccount(this).getDisplayName();
-                Toast.makeText(getApplicationContext(),"Wellcome, "+ name,Toast.LENGTH_SHORT).show();
-                //Start Home activity
-                appConfig.saveLoginUsingGmail(true);
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
-
+                performGoogleLogin();
             } else {
-                UserName = appConfig.getUserName();
-                Password = appConfig.getUserPassword();
-                isRememberLogin = appConfig.isRememberLoginChecked();
                 performLogin();
             }
         }
@@ -75,20 +67,27 @@ public class Login extends AppCompatActivity {
 
             editTextUserName = (EditText) findViewById(R.id.edittext_username);
             editTextPassword = (EditText) findViewById(R.id.edittext_password);
+
             textViewSignUp = (TextView)findViewById(R.id.textview_moveToSignup);
             //Set check box remeberlogin
             checkBoxIsRememberLogin = (CheckBox)findViewById(R.id.checkbox_rememberLogin);
             checkBoxIsRememberLogin.setChecked(appConfig.isRememberLoginChecked());
 
-            btnLogin = (Button)findViewById(R.id.button_login);
+            btnLogin = (ImageButton) findViewById(R.id.button_login);
             bt_googleSignIn = (ImageButton) findViewById(R.id.button_google);
             //Google Button Click -> Login with Google
-            //performGooglelogin()
-            //Get Email -> connect to DB -> get FullName or other information
             bt_googleSignIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    performGoogleLogin();
+                    UserName = editTextUserName.getText().toString();
+                    Password = editTextPassword.getText().toString();
+                    if(!UserName.equals("")&&!Password.equals("")){
+                        //Start ProgressBar first (set visibility VISIBLE)
+                        performGoogleLogin();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Please enter Login information", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
             btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +95,6 @@ public class Login extends AppCompatActivity {
                 public void onClick(View v) {
                     UserName = editTextUserName.getText().toString();
                     Password = editTextPassword.getText().toString();
-
                     if(!UserName.equals("")&&!Password.equals("")){
                         //Start ProgressBar first (set visibility VISIBLE)
                         performLogin();
@@ -124,31 +122,31 @@ public class Login extends AppCompatActivity {
         }
     }
     private void performGoogleLogin(){
-        Intent signInIntent = gsc.getSignInIntent();
-        startActivityForResult(signInIntent,1000);
+        mAuth.signInWithEmailAndPassword(UserName, Password)
+                .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            String name = user.getDisplayName();
+                            Toast.makeText(getApplicationContext(),"Welcome, "+ name,Toast.LENGTH_SHORT).show();
+                            appConfig.saveLoginUsingGmail(true);
+
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode,Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1000){
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                String name = account.getDisplayName();
-                Toast.makeText(getApplicationContext(),"Wellcome, "+ name,Toast.LENGTH_SHORT).show();
-                //Start Home activity
-                appConfig.saveLoginUsingGmail(true);
-                appConfig.updateUserLoginStatus(true);
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
-            } catch (ApiException e) {
-                Toast.makeText(getApplicationContext(),"Can't login with Google account",Toast.LENGTH_SHORT).show();
-                //throw new RuntimeException(e);
-            }
-        }
-    }
 
     private void performLogin(){
         Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName, Password);
@@ -168,7 +166,7 @@ public class Login extends AppCompatActivity {
                                 appConfig.saveUserPassword(Password);
                                 appConfig.saveIsRememberLoginClicked(true);
                             }
-                            Toast.makeText(getApplicationContext(), "Wellcome, "+ name, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Welcome, "+ name, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -185,6 +183,9 @@ public class Login extends AppCompatActivity {
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), Login.class);
+                startActivity(intent);
+                finish();
             }
         });
     }

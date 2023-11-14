@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +22,7 @@ import retrofit2.Response;
 
 public class SignUp extends AppCompatActivity {
     EditText editTextYourName, editTextUserName, editTextPassword;
-    Button btnSignUp;
+    ImageButton btnSignUp;
     TextView textViewMoveToLogin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
