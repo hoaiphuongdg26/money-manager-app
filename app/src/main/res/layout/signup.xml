@@ -126,9 +126,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/edittext_background"
         />
-    <Button
+    <ImageButton
         android:id="@+id/button_signup"
-        android:layout_width="190dp"
+        android:layout_width="150dp"
         android:layout_height="50dp"
         android:text="@string/signup"
         android:fontFamily="@font/sf_pro_text_regular"
@@ -136,7 +136,7 @@
         app:layout_constraintTop_toBottomOf="@+id/edittext_password"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/button_background"
+        android:background="@drawable/btn_signup"
         android:elevation="4dp"
         />
     <TextView
