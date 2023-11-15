@@ -12,6 +12,8 @@ import com.example.proj_moneymanager.ProfileAdapter;
 import com.example.proj_moneymanager.Profile_Option;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.app.AppConfig;
+import com.google.android.gms.auth.api.identity.Identity;
+import com.google.android.gms.auth.api.identity.SignInClient;
 
 import java.util.ArrayList;
 
@@ -21,12 +23,14 @@ public class Profile extends AppCompatActivity {
 
     ListView lv_profileOption;
     ArrayList<Profile_Option> arr_profileOption;
-
+    SignInClient oneTapClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         appConfig = new AppConfig(this);
+        oneTapClient = Identity.getSignInClient(this);
+
 
         setContentView(R.layout.profile);
 
@@ -51,6 +55,10 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 appConfig.updateUserLoginStatus(false);
+                if(appConfig.isLoginUsingGmail()){
+                    oneTapClient.signOut();
+                    appConfig.saveLoginUsingGmail(false);
+                }
                 //Move to login activity
                 Intent intent = new Intent(getApplicationContext(), Login.class);
                 startActivity(intent);

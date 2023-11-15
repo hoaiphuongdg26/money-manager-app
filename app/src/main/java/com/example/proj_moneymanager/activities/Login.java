@@ -2,6 +2,7 @@ package com.example.proj_moneymanager.activities;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,11 +26,14 @@ import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.identity.BeginSignInResult;
+import com.google.android.gms.auth.api.identity.Identity;
+import com.google.android.gms.auth.api.identity.SignInClient;
+import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,7 +48,8 @@ public class Login extends AppCompatActivity {
     private AppConfig appConfig;
     String UserName, Password;
     //for google login
-    private FirebaseAuth mAuth;
+    SignInClient oneTapClient;
+    BeginSignInRequest signInRequest;
     ImageButton bt_googleSignIn;
 
     @Override
@@ -47,18 +57,32 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         appConfig = new AppConfig(this);
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
+        // Initialize
+        oneTapClient = Identity.getSignInClient(this);
+        signInRequest = BeginSignInRequest.builder()
+                .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
+                        .setSupported(true)
+                        .build())
+                .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                        .setSupported(true)
+                        // Your server's client ID, not your Android client ID.
+                        .setServerClientId(getString(R.string.web_client_id))
+                        // Not only show accounts previously used to sign in.
+                        .setFilterByAuthorizedAccounts(false)
+                        .build())
+                // Automatically sign in when exactly one credential is retrieved.
+                .setAutoSelectEnabled(true)
+                .build();
 
         isRememberLogin = appConfig.isRememberLoginChecked();
-        if(appConfig.isUserLogin() && isRememberLogin){
-            UserName = appConfig.getUserName();
-            Password = appConfig.getUserPassword();
+        if(appConfig.isUserLogin()){
             if(appConfig.isLoginUsingGmail())
             {
                 //Google Login
                 performGoogleLogin();
             } else {
+                UserName = appConfig.getUserName();
+                Password = appConfig.getUserPassword();
                 performLogin();
             }
         }
@@ -69,7 +93,7 @@ public class Login extends AppCompatActivity {
             editTextPassword = (EditText) findViewById(R.id.edittext_password);
 
             textViewSignUp = (TextView)findViewById(R.id.textview_moveToSignup);
-            //Set check box remeberlogin
+            //Set check box remember login
             checkBoxIsRememberLogin = (CheckBox)findViewById(R.id.checkbox_rememberLogin);
             checkBoxIsRememberLogin.setChecked(appConfig.isRememberLoginChecked());
 
@@ -79,15 +103,8 @@ public class Login extends AppCompatActivity {
             bt_googleSignIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    UserName = editTextUserName.getText().toString();
-                    Password = editTextPassword.getText().toString();
-                    if(!UserName.equals("")&&!Password.equals("")){
                         //Start ProgressBar first (set visibility VISIBLE)
                         performGoogleLogin();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(), "Please enter Login information", Toast.LENGTH_SHORT).show();
-                    }
                 }
             });
             btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -121,28 +138,48 @@ public class Login extends AppCompatActivity {
             });
         }
     }
+    ActivityResultLauncher<IntentSenderRequest> activityResultLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartIntentSenderForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if(result.getResultCode()== Activity.RESULT_OK){
+                try{
+                    SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
+                    String idToken = credential.getGoogleIdToken();
+                    if(idToken!=null){
+                        String email = credential.getId();
+                        Toast.makeText(getApplicationContext(),"Welcome, "+ email,Toast.LENGTH_SHORT).show();
+
+                        appConfig.saveLoginUsingGmail(true);
+                        appConfig.updateUserLoginStatus(true);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+                catch (ApiException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    });
     private void performGoogleLogin(){
-        mAuth.signInWithEmailAndPassword(UserName, Password)
-                .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+        oneTapClient.beginSignIn(signInRequest)
+                .addOnSuccessListener(this, new OnSuccessListener<BeginSignInResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-
-                            String name = user.getDisplayName();
-                            Toast.makeText(getApplicationContext(),"Welcome, "+ name,Toast.LENGTH_SHORT).show();
-                            appConfig.saveLoginUsingGmail(true);
-
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
-                        }
+                    public void onSuccess(BeginSignInResult result) {
+                        IntentSenderRequest intentSenderRequest =
+                        new IntentSenderRequest.Builder(result.getPendingIntent().getIntentSender()).build();
+                        activityResultLauncher.launch(intentSenderRequest);
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // No saved credentials found. Launch the One Tap sign-up flow, or
+                        // do nothing and continue presenting the signed-out UI.
+                        Log.d(TAG, e.getLocalizedMessage());
                     }
                 });
     }
