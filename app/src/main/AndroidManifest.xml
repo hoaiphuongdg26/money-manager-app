@@ -17,7 +17,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
         <activity
-            android:name=".activities.Login"
+            android:name=".activities.Plan"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,6 +39,9 @@
         <activity
             android:name=".activities.Profile"
             android:exported="true" />
+<!--        <activity-->
+<!--            android:name=".activities.Plan"-->
+<!--            android:exported="true" />-->
     </application>
 
 </manifest>
