@@ -13,8 +13,8 @@ import java.util.List;
 
 public class HistoryAdapter  extends BaseAdapter {
     private Activity myContext;
-    List<History_Option> arrHistoryOption;
-    public HistoryAdapter(Activity context, List<History_Option> history_optionList){
+    List<ProfileOption> arrHistoryOption;
+    public HistoryAdapter(Activity context, List<ProfileOption> history_optionList){
         this.myContext = context;
         arrHistoryOption = history_optionList;
     }
@@ -42,7 +42,7 @@ public class HistoryAdapter  extends BaseAdapter {
             convertView = LayoutInflater.from(myContext).inflate(R.layout.lv_item_profile, parent, false);
         }
         //get item
-        History_Option historyOption = (History_Option) getItem(position);
+        ProfileOption historyOption = (ProfileOption) getItem(position);
         //get view
         TextView txt_Label = (TextView) convertView.findViewById(R.id.textview_labelName_Profile);
         txt_Label.setText(arrHistoryOption.get(position).getLabel());

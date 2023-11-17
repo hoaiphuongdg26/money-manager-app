@@ -15,8 +15,8 @@ public class ProfileAdapter  extends BaseAdapter {
     private Activity myContext;
     List<Profile_Option> arrProfileOption;
     public ProfileAdapter(Activity context, List<Profile_Option> profile_optionList){
-            this.myContext = context;
-            arrProfileOption = profile_optionList;
+        this.myContext = context;
+        arrProfileOption = profile_optionList;
     }
     @Override
     public int getCount() {
