@@ -24,8 +24,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="10"
-                app:layout_constraintStart_toStartof="parent"
-                app:layout_constraintEnd_toEndof="parent"
                 android:gravity="center_horizontal"
                 >
                 <ImageButton
@@ -284,7 +282,7 @@
                 </LinearLayout>
 
                 <ListView
-                    android:id="@+id/lv_history"
+                    android:id="@+id/lv_optHistory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:listitem="@layout/lv_item_history"></ListView>

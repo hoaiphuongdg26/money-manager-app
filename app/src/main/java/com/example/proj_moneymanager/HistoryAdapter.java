@@ -13,8 +13,8 @@ import java.util.List;
 
 public class HistoryAdapter  extends BaseAdapter {
     private Activity myContext;
-    List<ProfileOption> arrHistoryOption;
-    public HistoryAdapter(Activity context, List<ProfileOption> history_optionList){
+    List<History_Option> arrHistoryOption;
+    public HistoryAdapter(Activity context, List<History_Option> history_optionList){
         this.myContext = context;
         arrHistoryOption = history_optionList;
     }
@@ -39,20 +39,22 @@ public class HistoryAdapter  extends BaseAdapter {
         //Đổ từng item trong list vào từng dòng
         convertView = inflater.inflate(R.layout.lv_item_history, null);
         if (convertView == null) {
-            convertView = LayoutInflater.from(myContext).inflate(R.layout.lv_item_profile, parent, false);
+            convertView = LayoutInflater.from(myContext).inflate(R.layout.lv_item_history, parent, false);
         }
         //get item
-        ProfileOption historyOption = (ProfileOption) getItem(position);
+        History_Option historyOption = (History_Option) getItem(position);
         //get view
-        TextView txt_Label = (TextView) convertView.findViewById(R.id.textview_labelName_Profile);
+        TextView txt_Label = (TextView) convertView.findViewById(R.id.textview_eachCategory);
         txt_Label.setText(arrHistoryOption.get(position).getLabel());
 
-        TextView txt_labelInfo = (TextView) convertView.findViewById(R.id.textview_Name_Profile);
+        TextView txt_labelInfo = (TextView) convertView.findViewById(R.id.textview_noteForEachCategory);
         txt_labelInfo.setText(arrHistoryOption.get(position).getLabelInfo());
 
-        ImageView img_iconOption = (ImageView) convertView.findViewById(R.id.imgv_personal);
+        ImageView img_iconOption = (ImageView) convertView.findViewById(R.id.imgv_iconEachCategory);
         img_iconOption.setImageResource(arrHistoryOption.get(position).getImageOption());
 
+        TextView txt_Price = (TextView) convertView.findViewById(R.id.textview_priceForEachCategory);
+        txt_Price.setText(arrHistoryOption.get(position).getPrice());
         return convertView;
     }
 }

@@ -2,6 +2,7 @@ package com.example.proj_moneymanager.activities;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proj_moneymanager.CalendarAdapter;
+import com.example.proj_moneymanager.HistoryAdapter;
+import com.example.proj_moneymanager.History_Option;
 import com.example.proj_moneymanager.R;
 
 import java.time.LocalDate;
@@ -22,15 +25,30 @@ public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemLis
     private TextView monthYearText;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate;
+    ListView lv_historyOption;
+    ArrayList<History_Option> arr_historyOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.plan);
+
+        //Xử lý Calendar
         initWidgets();
         selectedDate = LocalDate.now();
         setMonthView();
+
+        //Xử lý History Adapter cho listview
+        lv_historyOption = (ListView) findViewById(R.id.lv_optHistory);
+        arr_historyOption = new ArrayList<History_Option>();
+        //Chỗ này sau này sẽ lấy từ db ra đổ vào array
+        arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
+        HistoryAdapter historyAdapter = new HistoryAdapter(
+                Plan.this,
+                arr_historyOption
+        );
+        lv_historyOption.setAdapter(historyAdapter);
     }
 
     private void initWidgets()
