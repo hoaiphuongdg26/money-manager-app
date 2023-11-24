@@ -1,13 +1,14 @@
 package com.example.proj_moneymanager;
 
-public class Profile_Option {
-    public String label, labelInfo;
+public class History_Option {
+    public String label, labelInfo, price;
     public int imageOption;
 
-    public Profile_Option(String label, String labelInfo, int imageOption) {
+    public History_Option(String label, String labelInfo, int imageOption, String price) {
         this.label = label;
         this.labelInfo = labelInfo;
         this.imageOption = imageOption;
+        this.price = price;
     }
 
     public String getLabel() {
@@ -20,5 +21,8 @@ public class Profile_Option {
 
     public int getImageOption() {
         return imageOption;
+    }
+    public String getPrice(){
+        return price;
     }
 }
