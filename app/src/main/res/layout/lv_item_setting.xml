@@ -15,6 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginLeft="15dp"
         app:layout_constraintEnd_toStartOf="@+id/textview_Language_Setting"
+        android:padding="5dp"
         >
     </ImageView>
     <TextView
