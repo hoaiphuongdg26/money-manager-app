@@ -141,7 +141,6 @@
                     android:textColor="@color/black_blue"
                     >
                 </TextView>
-
                 <ImageButton
                     android:id="@+id/left_forward"
                     android:layout_width="30dp"

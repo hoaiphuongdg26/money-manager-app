@@ -148,14 +148,17 @@ public class Login extends AppCompatActivity {
                     SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
                     String idToken = credential.getGoogleIdToken();
                     if(idToken!=null){
-                        String email = credential.getId();
-                        Toast.makeText(getApplicationContext(),"Welcome, "+ email,Toast.LENGTH_SHORT).show();
-
-                        appConfig.saveLoginUsingGmail(true);
-                        appConfig.updateUserLoginStatus(true);
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        editTextUserName.setText(credential.getId());
+                        editTextPassword.setText(credential.getPassword());
+                        performLogin();
+//                        String email = credential.getId();
+//                        Toast.makeText(getApplicationContext(),"Welcome, "+ email,Toast.LENGTH_SHORT).show();
+//
+//                        appConfig.saveLoginUsingGmail(true);
+//                        appConfig.updateUserLoginStatus(true);
+//                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                        startActivity(intent);
+//                        finish();
                     }
                 }
                 catch (ApiException e){
