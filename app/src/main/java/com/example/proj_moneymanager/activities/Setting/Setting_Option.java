@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager;
+package com.example.proj_moneymanager.activities.Setting;
 
 public class Setting_Option {
     public String label;

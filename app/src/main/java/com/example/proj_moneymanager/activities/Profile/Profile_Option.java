@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager;
+package com.example.proj_moneymanager.activities.Profile;
 
 public class Profile_Option {
     public String label, labelInfo;

@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager;
+package com.example.proj_moneymanager.activities.Profile;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.proj_moneymanager.R;
 
 import java.util.List;
 

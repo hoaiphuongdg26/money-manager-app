@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager;
+package com.example.proj_moneymanager.activities.Plan;
 
 import android.app.DatePickerDialog;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.proj_moneymanager.R;
 
 public class CalendarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 

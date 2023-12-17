@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager.activities;
+package com.example.proj_moneymanager.activities.Profile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,8 +8,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.proj_moneymanager.ProfileAdapter;
-import com.example.proj_moneymanager.Profile_Option;
+import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.app.AppConfig;
 import com.google.android.gms.auth.api.identity.Identity;

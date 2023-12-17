@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager.activities;
+package com.example.proj_moneymanager.activities.Setting;
 
 import android.os.Bundle;
 import android.widget.ListView;
@@ -6,8 +6,6 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proj_moneymanager.R;
-import com.example.proj_moneymanager.SettingAdapter;
-import com.example.proj_moneymanager.Setting_Option;
 import com.example.proj_moneymanager.app.AppConfig;
 
 import java.util.ArrayList;

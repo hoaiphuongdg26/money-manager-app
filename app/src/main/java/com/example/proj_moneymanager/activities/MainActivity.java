@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.activities.Profile.Profile;
 
 public class MainActivity extends AppCompatActivity {
     ImageButton imageButtonPersonal;

@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager.activities;
+package com.example.proj_moneymanager.activities.Plan;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -13,9 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.proj_moneymanager.CalendarAdapter;
-import com.example.proj_moneymanager.HistoryAdapter;
-import com.example.proj_moneymanager.History_Option;
 import com.example.proj_moneymanager.R;
 
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager;
+package com.example.proj_moneymanager.activities.Plan;
 
 public class History_Option {
     public String label, labelInfo, price;
