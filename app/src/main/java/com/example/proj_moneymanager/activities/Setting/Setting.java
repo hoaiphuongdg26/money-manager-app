@@ -20,7 +20,7 @@ public class Setting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         appConfig = new AppConfig(this);
-
+        getSupportActionBar().hide(); //ẩn action bar
         setContentView(R.layout.setting);
 
         //Xử lý Setting Adapter cho listview

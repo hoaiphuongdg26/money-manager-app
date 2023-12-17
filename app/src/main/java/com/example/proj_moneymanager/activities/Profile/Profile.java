@@ -30,7 +30,7 @@ public class Profile extends AppCompatActivity {
         appConfig = new AppConfig(this);
         oneTapClient = Identity.getSignInClient(this);
 
-
+        getSupportActionBar().hide(); //ẩn action bar
         setContentView(R.layout.profile);
 
         //Xử lý Profile Adapter cho listview

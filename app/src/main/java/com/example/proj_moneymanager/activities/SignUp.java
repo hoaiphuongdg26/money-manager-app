@@ -48,6 +48,7 @@ public class SignUp extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide(); //ẩn action bar
         setContentView(R.layout.signup);
 
         oneTapClient = Identity.getSignInClient(this);
