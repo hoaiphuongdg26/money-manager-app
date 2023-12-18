@@ -4,7 +4,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL ="http://192.168.1.20/money_management/";
+    private static final String BASE_URL ="http://172.16.1.218/money_management/";
     private static Retrofit retrofit =null;
 
     public static Retrofit getApiClient() {

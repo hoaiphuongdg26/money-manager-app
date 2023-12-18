@@ -183,6 +183,7 @@ public class Login extends AppCompatActivity {
                         // No saved credentials found. Launch the One Tap sign-up flow, or
                         // do nothing and continue presenting the signed-out UI.
                         Log.d(TAG, e.getLocalizedMessage());
+                        Toast.makeText(getApplicationContext(), "Fail to login with Google", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

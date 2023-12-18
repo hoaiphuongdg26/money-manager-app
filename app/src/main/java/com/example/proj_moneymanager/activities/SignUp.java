@@ -71,8 +71,8 @@ public class SignUp extends AppCompatActivity {
         editTextUserName = findViewById(R.id.edittext_username);
         editTextPassword = findViewById(R.id.edittext_password);
         btnSignUp = findViewById(R.id.button_signup);
-        btnGoogleSignUp = findViewById(R.id.button_google);
-        textViewMoveToLogin = findViewById(R.id.textview_moveToSignup);
+        //btnGoogleSignUp = findViewById(R.id.button_google);
+        textViewMoveToLogin = findViewById(R.id.textview_moveToLogin);
 
         btnGoogleSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
