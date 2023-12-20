@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,10 @@ public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemLis
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.plan);
+
+        // Find the TextView in the included layout
+        TextView headerTextView = findViewById(R.id.textview_Header);
+        headerTextView.setText("CALENDAR");
 
         //Xử lý Calendar
         initWidgets();
