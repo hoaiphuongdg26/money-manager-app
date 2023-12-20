@@ -12,11 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Plan.Plan;
 import com.example.proj_moneymanager.activities.Profile.Profile;
+import com.example.proj_moneymanager.activities.Setting.Setting;
 
 public class MainActivity extends AppCompatActivity {
     ImageButton imageButtonPersonal;
     ImageButton imageButton_Plan;
     ImageButton imageButton_Home;
+    ImageButton imageButton_Setting;
     @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -59,5 +61,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        }
+        imageButton_Setting = (ImageButton) findViewById(R.id.button_setting);
+        imageButton_Setting.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //Chuyển sang activity setting
+                Intent intent = new Intent(getApplicationContext(), Setting.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+    }
+
 }
