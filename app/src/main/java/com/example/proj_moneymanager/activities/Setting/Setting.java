@@ -1,11 +1,16 @@
 package com.example.proj_moneymanager.activities.Setting;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.activities.MainActivity;
+import com.example.proj_moneymanager.activities.SwipeDetector;
 import com.example.proj_moneymanager.app.AppConfig;
 
 import java.util.ArrayList;
@@ -14,7 +19,7 @@ public class Setting extends AppCompatActivity {
     private AppConfig appConfig;
     ListView lv_settingOption;
     ArrayList<Setting_Option> arr_settingOption;
-
+    SwipeDetector swipeDetector;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +41,21 @@ public class Setting extends AppCompatActivity {
                 arr_settingOption
         );
         lv_settingOption.setAdapter(SettingAdapter);
+        //Xử lý vuốt màn hình
+        // Khởi tạo SwipeDetector với Setting làm currentActivity và MainActivity.class làm targetActivity
+        swipeDetector = new SwipeDetector(this, MainActivity.class);
 
+        lv_settingOption.setOnTouchListener(new View.OnTouchListener(){
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                swipeDetector.onTouchEvent(motionEvent);
+                return true;
+            }
+        });
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // Gửi sự kiện chạm (touch event) tới SwipeDetector để xử lý vuốt
+        swipeDetector.gestureDetector.onTouchEvent(event);
+        return false;
     }
 }
