@@ -55,7 +55,6 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide(); //ẩn action bar
         appConfig = new AppConfig(this);
         // Initialize
         oneTapClient = Identity.getSignInClient(this);
