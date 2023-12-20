@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
             //Bỏ title
             requestWindowFeature(Window.FEATURE_NO_TITLE);
             this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getSupportActionBar().hide(); //ẩn action bar
             setContentView(R.layout.home);
 
             //Xử lí khi click button Personal

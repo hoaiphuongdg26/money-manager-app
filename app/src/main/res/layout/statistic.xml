@@ -1,6 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/main_background"
+    >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="100"
+            android:orientation="vertical"
+            >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="7"
+                    >
+                        <include layout="@layout/header"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="15"
+                    android:weightSum="100"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_background">
+                        <Button
+                            android:id="@+id/btn_datetime_detail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="35"
+                            app:layout_constraintWidth_percent="0.8"
+                            android:gravity="center"
+                            android:text="September 2023"
+                            android:fontFamily="@font/sf_pro_text_medium"
+                            android:textColor="@color/black_blue"
+                            style="?android:spinnerStyle"
+                            android:onClick="openDatePicker"
+                            android:background="@drawable/no_arrow"
+                            android:layout_marginTop="10dp"
+                            />
+                        <TableLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="60"
+                            android:gravity="center"
+                            android:layout_marginBottom="10dp"
+                            >
+                                <!--                    Dòng 1-->
+                                <TableRow
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/blue"
+                                            android:textSize="15sp"
+                                            android:fontFamily="@font/sf_pro_text_medium"
+                                            android:text="Income" />
 
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/blue"
+                                            android:textSize="15sp"
+                                            android:text="Expense"
+                                            android:fontFamily="@font/sf_pro_text_medium"
+                                            />
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/blue"
+                                            android:textSize="15sp"
+                                            android:text="Total"
+                                            android:fontFamily="@font/sf_pro_text_medium"
+                                            />
+
+                                </TableRow>
+                                <!-- Dòng 2 -->
+                                <TableRow
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                        <TextView
+                                            android:id="@+id/textview_income"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/teal_700"
+                                            android:textSize="20sp"
+                                            android:text="+300,000"
+                                            android:fontFamily="@font/sf_pro_text_medium"
+                                            />
+
+                                        <TextView
+                                            android:id="@+id/textview_expense"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/orange"
+                                            android:textSize="20sp"
+                                            android:text="-500,000"
+                                            android:fontFamily="@font/sf_pro_text_medium"
+                                            />
+
+                                        <TextView
+                                            android:id="@+id/textview_total"
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:gravity="center"
+                                            android:textColor="@color/red"
+                                            android:textSize="20sp"
+                                            android:text="-200,000"
+                                            android:fontFamily="@font/sf_pro_text_medium"
+                                            />
+
+                                </TableRow>
+                        </TableLayout>
+                </LinearLayout>    
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="43"
+                    android:weightSum="100"
+                    android:orientation="vertical">
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="20"
+                            android:layout_marginHorizontal="10dp">
+                                <Button
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    style="@style/ButtonStyle"
+                                    android:text="This Week"
+                                    android:layout_margin="15dp"
+                                        />
+                                <Button
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    style="@style/ButtonStyle"
+                                    android:text="This Month"
+                                    android:layout_margin="15dp"
+                                    />
+                                <Button
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    style="@style/ButtonStyle"
+                                    android:text="This Year"
+                                    android:layout_margin="15dp"
+                                    />
+                        </TableRow>
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/barChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="80"
+                            android:layout_marginHorizontal="25dp"
+                            android:background="@drawable/rounded_background2"
+                            />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="25"
+                    android:orientation="vertical">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sf_pro_text_medium"
+                            android:text="Transaction"
+                            android:textSize="20sp"
+                            android:layout_marginHorizontal="25dp"
+                            android:layout_marginVertical="10dp"/>
+                        <ListView
+                            android:id="@+id/lv_History"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="25dp"
+                            android:layout_marginBottom="10dp"
+                            tools:listitem="@layout/lv_item_history"
+                            android:background="@drawable/rounded_background2"
+                            />
+                </LinearLayout>
+        <!--        Layout Footer-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="10"
+                    android:background="@drawable/bg_footer"
+                    app:layout_constraintBottom_toBottomOf="parent">
+                        <include layout="@layout/footer"/>
+                </LinearLayout>
+        </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
