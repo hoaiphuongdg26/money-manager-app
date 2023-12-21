@@ -30,7 +30,7 @@ public class Profile extends AppCompatActivity {
         appConfig = new AppConfig(this);
         oneTapClient = Identity.getSignInClient(this);
 
-        setContentView(R.layout.profile);
+        setContentView(R.layout.fragment_profile);
 
         //Xử lý Profile Adapter cho listview
         lv_profileOption = (ListView) findViewById(R.id.lv_optProfile);

@@ -17,7 +17,7 @@
         android:windowNoTitle="true"
         tools:targetApi="31" >
         <activity
-            android:name=".activities.Plan.Plan"
+            android:name=".MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,23 +34,21 @@
             android:name=".activities.Login"
             android:exported="true" />
         <activity
-            android:name=".activities.Setting.Setting"
+            android:name=".activities.HomeFragment"
             android:exported="true" />
-<!--        <activity-->
-<!--            android:name=".activities.MainActivity"-->
-<!--            android:exported="true" />-->
         <activity
-            android:name=".activities.Expense"
+            android:name=".activities.Statistic.StatisticFragment"
             android:exported="true" />
-<!--        <activity-->
-<!--            android:name=".activities.MainActivity"-->
-<!--            android:exported="true" />-->
-<!--        <activity-->
-<!--            android:name=".activities.Plan.Plan"-->
-<!--            android:exported="true" />-->
-<!--        <activity-->
-<!--            android:name=".activities.Statistic.Statistic"-->
-<!--            android:exported="true" />-->
+        <activity
+            android:name=".activities.ExpenseFragment"
+            android:exported="true" />
+        <activity
+            android:name=".activities.Plan.CalendarFragment"
+            android:exported="true" />
+        <activity
+            android:name=".activities.Profile.ProfileFragment"
+            android:exported="true" />
+
     </application>
 
 </manifest>

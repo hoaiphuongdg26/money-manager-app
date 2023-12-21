@@ -207,7 +207,7 @@ public class Login extends AppCompatActivity {
                                 appConfig.saveIsRememberLoginClicked(true);
                             }
                             Toast.makeText(getApplicationContext(), "Welcome, "+ name, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), HomeFragment.class);
                             startActivity(intent);
                             finish();
                         } else {
