@@ -1,16 +1,9 @@
 package com.example.proj_moneymanager.activities;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.widget.Toast;
-
-import androidx.constraintlayout.widget.ConstraintSet;
-
-import com.example.proj_moneymanager.activities.MainActivity;
 
 public class SwipeDetector extends GestureDetector.SimpleOnGestureListener {
     int SWIPE_THRESHOLD = 100;

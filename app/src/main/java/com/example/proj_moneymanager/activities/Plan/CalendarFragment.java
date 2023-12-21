@@ -3,18 +3,21 @@ package com.example.proj_moneymanager.activities.Plan;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -22,55 +25,121 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemListener
-{
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link CalendarFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener {
+
     private Button monthYearText;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate;
     ListView lv_historyOption;
     ArrayList<History_Option> arr_historyOption;
     private DatePickerDialog datePickerDialog;
+    ImageButton btnPreviousMonth;
+    ImageButton btnNextMonth;
+    FragmentCalendarBinding binding;
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    public CalendarFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment CalendarFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static CalendarFragment newInstance(String param1, String param2) {
+        CalendarFragment fragment = new CalendarFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.plan);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
 
-        // Find the TextView in the included layout
-        TextView headerTextView = findViewById(R.id.textview_Header);
-        headerTextView.setText("CALENDAR");
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+//        View view = inflater.inflate(R.layout.fragment_calendar, container, false);
+        binding = FragmentCalendarBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
 
         //Xử lý Calendar
-        initWidgets();
+        initWidgets(view);
         selectedDate = LocalDate.now();
         setMonthView();
 
+        btnPreviousMonth = binding.btnPreviousMonth;
+        btnPreviousMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call the method to handle the previous month action
+                previousMonthAction(v);
+            }
+        });
+
+        btnNextMonth = binding.btnNextMonth;
+        btnNextMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call the method to handle the previous month action
+                nextMonthAction(v);
+            }
+        });
+
         //Xử lý chọn tháng nhanh
-        initDatePicker();
-        monthYearText = findViewById(R.id.btn_datetime_detail);
+        initDatePicker(view);
+//        monthYearText = view.findViewById(R.id.btn_datetime_detail);
+        monthYearText = binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
 
         //Xử lý History Adapter cho listview
-        lv_historyOption = (ListView) findViewById(R.id.lv_optHistory);
-        arr_historyOption = new ArrayList<History_Option>();
+        lv_historyOption = view.findViewById(R.id.lv_optHistory);
+        arr_historyOption = new ArrayList<>();
         //Chỗ này sau này sẽ lấy từ db ra đổ vào array
         arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
         arr_historyOption.add(new History_Option("Food", "Snack", R.drawable.btn_food,"-5,000"));
         HistoryAdapter historyAdapter = new HistoryAdapter(
-                Plan.this,
+                requireActivity(),
                 arr_historyOption
         );
         lv_historyOption.setAdapter(historyAdapter);
+
+        return view;
     }
+
     private void updateCalendar(LocalDate newDate) {
         selectedDate = newDate;
         setMonthView();
     }
-    private void initWidgets()
+    private void initWidgets(View view)
     {
-        calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
-        monthYearText = findViewById(R.id.btn_datetime_detail);
+        calendarRecyclerView = binding.calendarRecyclerView;
+        monthYearText = binding.btnDatetimeDetail;
     }
 
     private void setMonthView()
@@ -79,7 +148,7 @@ public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemLis
         ArrayList<String> daysInMonth = daysInMonthArray(selectedDate);
 
         CalendarAdapter calendarAdapter = new CalendarAdapter(daysInMonth, this);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
     }
@@ -114,14 +183,12 @@ public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemLis
         return date.format(formatter);
     }
 
-    public void previousMonthAction(View view)
-    {
+    public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
         updateCalendar(selectedDate);
     }
 
-    public void nextMonthAction(View view)
-    {
+    public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
         updateCalendar(selectedDate);
     }
@@ -133,7 +200,7 @@ public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemLis
         if(!dayText.equals(""))
         {
             String message = "Selected Date " + dayText + " " + monthYearFromDate(selectedDate);
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
         }
     }
     private String getTodaysDate()
@@ -146,7 +213,7 @@ public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemLis
         return makeDateString(day, month, year);
     }
 
-    private void initDatePicker()
+    private void initDatePicker(View view)
     {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
         {
@@ -168,8 +235,14 @@ public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemLis
 
         int style = AlertDialog.THEME_HOLO_LIGHT;
 
-        datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
+        datePickerDialog = new DatePickerDialog(requireContext(), style, dateSetListener, year, month, day);
         //datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        monthYearText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.show();
+            }
+        });
     }
 
     private String makeDateString(int day, int month, int year)
@@ -213,10 +286,3 @@ public class Plan extends AppCompatActivity implements CalendarAdapter.OnItemLis
         datePickerDialog.show();
     }
 }
-
-
-
-
-
-
-

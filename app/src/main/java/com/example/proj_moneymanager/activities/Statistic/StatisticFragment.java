@@ -3,16 +3,19 @@ package com.example.proj_moneymanager.activities.Statistic;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Plan.HistoryAdapter;
 import com.example.proj_moneymanager.activities.Plan.History_Option;
+import com.example.proj_moneymanager.databinding.FragmentStatisticBinding;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -26,44 +29,90 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-public class Statistic extends AppCompatActivity{
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link StatisticFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class StatisticFragment extends Fragment {
+    FragmentStatisticBinding binding;
     private Button monthYearText;
     private DatePickerDialog datePickerDialog;
 
     ListView lv_historyOption;
     ArrayList<History_Option> arr_historyOption;
     private List<String> xValues = Arrays.asList("Maths", "Science","English","IT");
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    public StatisticFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment StatisticFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static StatisticFragment newInstance(String param1, String param2) {
+        StatisticFragment fragment = new StatisticFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.statistic);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
 
-        // Find the TextView in the included layout
-        TextView headerTextView = findViewById(R.id.textview_Header);
-        headerTextView.setText("STATISTIC");
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        //Xử lý chọn tháng nhanh
-//        initDatePicker();
-//        monthYearText = findViewById(R.id.btn_datetime_detail);
-//        monthYearText.setText(getTodaysDate());
+        binding = FragmentStatisticBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+
+        // Xử lý chọn tháng nhanh
+        initDatePicker(view);
+        monthYearText = binding.btnDatetimeDetail;
+        monthYearText.setText(getTodaysDate());
 
         // Xử lý BarChart: https://www.youtube.com/watch?v=WdsmQ3Zyn84
         UtilsBarChart();
 
         //Xử lý History Adapter cho listview
-        lv_historyOption = (ListView) findViewById(R.id.lv_History);
+        lv_historyOption = binding.lvHistory;
         arr_historyOption = new ArrayList<History_Option>();
         //Chỗ này sau này sẽ lấy từ db ra đổ vào array
         arr_historyOption.add(new History_Option("Procery Shoppping", "15 November, 2023", R.drawable.btn_food,"-230.000"));
         arr_historyOption.add(new History_Option("Rental Income", "15 November, 2023", R.drawable.btn_food,"+866.00"));
         HistoryAdapter historyAdapter = new HistoryAdapter(
-                Statistic.this,
+                requireActivity(),
                 arr_historyOption
         );
         lv_historyOption.setAdapter(historyAdapter);
+        return view;
     }
     private void UtilsBarChart(){
-        BarChart barChart = findViewById(R.id.barChart);
+        BarChart barChart = binding.barChart;
         barChart.getAxisRight().setDrawLabels(false);
 
         customizeBarChart(barChart);
@@ -105,7 +154,7 @@ public class Statistic extends AppCompatActivity{
         barChart.invalidate();
     }
 
-    private void initDatePicker()
+    private void initDatePicker(View view)
     {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
         {
@@ -125,8 +174,16 @@ public class Statistic extends AppCompatActivity{
 
         int style = AlertDialog.THEME_HOLO_LIGHT;
 
-        datePickerDialog = new DatePickerDialog(this, style, dateSetListener, year, month, day);
-        //datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        monthYearText = binding.btnDatetimeDetail;
+        monthYearText.setText(getTodaysDate());
+
+        datePickerDialog = new DatePickerDialog(requireContext(), style, dateSetListener, year, month, day);
+        monthYearText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.show();
+            }
+        });
     }
     private String getTodaysDate()
     {

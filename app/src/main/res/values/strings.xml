@@ -9,4 +9,6 @@
     <string name="pref_is_remember_login_clicked">isrememberloginclick</string>
     <string name="pref_is_login_using_gmail">isusinggmail</string>
     <string name="web_client_id">716045523596-papk7s8o78d6icq3caks6amem7q3fmnl.apps.googleusercontent.com</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
