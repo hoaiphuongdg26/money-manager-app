@@ -1,5 +1,13 @@
 package com.example.proj_moneymanager;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +24,7 @@ import com.example.proj_moneymanager.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
+    BroadcastReceiver broadcastReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +57,49 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                readFromLocalStorage();
+            }
+        };
     }
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,fragment);
         fragmentTransaction.commit();
+    }
+    public boolean checkNetworkConnection(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
+    private readFromLocalStorage(){
+        arrayList.clear();
+        DbHelper dbHelper = new DbHelper(this);
+        SQLiteDatabase database = dbHelper.readFromLocalDatabase(database);
+
+        Cursor cursor= dbHelper.readFromLocalDatabase(database);
+
+        while (cursor.moveText()){
+            String name = cursor.getString(cursor.getColumnIndex(DbContract.NAME));
+            int sync_status= cursor.getInt(cursor.getColumnIndex(DbContract.SYNC_STATUS));
+            arrayList.add(new Contact(name, sync_status));
+        }
+        adapter.notifyDataSetChanged();
+        cursor.clone();
+        dbHelper.close();
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(broadcastReceiver, new IntentFilter(DbContract.UI_UPDATE_BROADCAST));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
     }
 }

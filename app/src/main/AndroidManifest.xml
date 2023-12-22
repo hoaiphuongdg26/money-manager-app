@@ -48,7 +48,12 @@
         <activity
             android:name=".activities.Profile.ProfileFragment"
             android:exported="true" />
-
+        <receiver android:name=".NetworkMonitor"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
