@@ -8,23 +8,30 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.activities.ExpenseFragment;
 import com.example.proj_moneymanager.activities.HomeFragment;
+import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
 import com.example.proj_moneymanager.activities.Profile.ProfileFragment;
 import com.example.proj_moneymanager.activities.Statistic.StatisticFragment;
+import com.example.proj_moneymanager.database.Database;
 import com.example.proj_moneymanager.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     BroadcastReceiver broadcastReceiver;
+    Database database = Login.database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
                 readFromLocalStorage();
             }
         };
+        Intent intent = getIntent();
+        //Database database = (Database) intent.getSerializableExtra("db");
+        UserInformation userInformation = (UserInformation) intent.getSerializableExtra("user");
+        Toast.makeText(getApplicationContext(),String.valueOf(userInformation.getUserID()),Toast.LENGTH_LONG).show();
     }
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();

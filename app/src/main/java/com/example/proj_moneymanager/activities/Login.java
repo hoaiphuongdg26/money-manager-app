@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +22,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.app.AppConfig;
+import com.example.proj_moneymanager.database.Database;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
@@ -51,6 +54,8 @@ public class Login extends AppCompatActivity {
     SignInClient oneTapClient;
     BeginSignInRequest signInRequest;
     ImageButton bt_googleSignIn;
+    public static Database database;
+    UserInformation userInformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,8 +211,12 @@ public class Login extends AppCompatActivity {
                                 appConfig.saveUserPassword(Password);
                                 appConfig.saveIsRememberLoginClicked(true);
                             }
+                            CreateSqliteDb();
+                            //Switch to Home
                             Toast.makeText(getApplicationContext(), "Welcome, "+ name, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), HomeFragment.class);
+                            //intent.putExtra("db",(Serializable) database);
+                            intent.putExtra("user",(Serializable)userInformation);
                             startActivity(intent);
                             finish();
                         } else {
