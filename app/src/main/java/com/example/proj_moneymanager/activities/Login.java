@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +22,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.proj_moneymanager.MainActivity;
+import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.app.AppConfig;
+import com.example.proj_moneymanager.database.Database;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
@@ -34,6 +38,8 @@ import com.google.android.gms.auth.api.identity.SignInCredential;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.io.Serializable;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +57,8 @@ public class Login extends AppCompatActivity {
     SignInClient oneTapClient;
     BeginSignInRequest signInRequest;
     ImageButton bt_googleSignIn;
+    public static Database database;
+    UserInformation userInformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,8 +214,12 @@ public class Login extends AppCompatActivity {
                                 appConfig.saveUserPassword(Password);
                                 appConfig.saveIsRememberLoginClicked(true);
                             }
-                            Toast.makeText(getApplicationContext(), "Welcome, "+ name, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), HomeFragment.class);
+                            CreateSqliteDb();
+                            //Switch to Home
+                            //Toast.makeText(getApplicationContext(), "Welcome, "+ name, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            //intent.putExtra("db",(Serializable) database);
+                            intent.putExtra("user",(Serializable)userInformation);
                             startActivity(intent);
                             finish();
                         } else {
@@ -228,5 +240,22 @@ public class Login extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    private void CreateSqliteDb(){
+        //Create DBase
+        database = new Database(this, "MoneyManager.sqlite",null,1);
+        //FETCH DATA FROM SQL MYPHPADMIN HERE
+        //THEN USE database.create() to create table bill, category, plan
+        database.QueryData("CREATE TABLE IF NOT EXISTS Users(UserID INTEGER PRIMARY KEY, FullName VARCHAR(50), UserName VARCHAR(50), PassWord VARCHAR(50), Email VARCHAR(50), PhoneNumber VARCHAR(15))");
+        //database.QueryData("INSERT INTO Users VALUES(1, 'Đinh Văn Trường Giang', 'Giang','827ccb0eea8a706c4c34a16891f84e7b','truonggiangnsl123@gmail.com','0382383930')");
+        Cursor cursor = database.GetData("SELECT * FROM Users");
+        while (cursor.moveToNext()){
+            userInformation = new UserInformation(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
+                cursor.getString(4),cursor.getString(5));
+        }
+        //database.QueryData("CREATE TABLE IF NOT EXIST bill(//thuoc tinh)");
+
+        //Fetch data and insert data to sqlite
+        //database.QueryData("INSERT INTO bill VALUES(//....)");
     }
 }
