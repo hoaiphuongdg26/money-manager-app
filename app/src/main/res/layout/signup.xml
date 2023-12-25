@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/signup"
                     android:textAppearance="@style/signup"
-                    android:fontFamily="@font/sf_pro_text_bold"
+                    android:fontFamily="@font/sf_pro_text_medium"
                     app:layout_constraintTop_toBottomOf="@+id/logo"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="@+id/logo"

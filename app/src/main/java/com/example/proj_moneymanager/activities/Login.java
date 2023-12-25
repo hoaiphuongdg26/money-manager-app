@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,10 +23,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.app.AppConfig;
-import com.example.proj_moneymanager.database.Database;
+import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
@@ -37,8 +39,6 @@ import com.google.android.gms.auth.api.identity.SignInCredential;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-
-import java.io.Serializable;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,7 +56,7 @@ public class Login extends AppCompatActivity {
     SignInClient oneTapClient;
     BeginSignInRequest signInRequest;
     ImageButton bt_googleSignIn;
-    public static Database database;
+    public static DbHelper database;
     UserInformation userInformation;
 
     @Override
@@ -198,42 +198,58 @@ public class Login extends AppCompatActivity {
     private void performLogin(){
         Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName, Password);
         call.enqueue(new Callback<ApiResponse>() {
+
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.code() == 200) {
-                    if (response.body().getStatus().equals("ok")) {
-                        if (response.body().getResultCode() == 1) {
-                            String name = response.body().getName();
-
-                            //Lưu name password
-                            if(isRememberLogin){
-                                appConfig.saveLoginUsingGmail(false);
-                                appConfig.updateUserLoginStatus(true);
-                                appConfig.saveUserName(UserName);
-                                appConfig.saveUserPassword(Password);
-                                appConfig.saveIsRememberLoginClicked(true);
+                    ApiResponse apiResponse = response.body();
+                        if (response.body().getStatus().equals("ok")) {
+                            if (response.body().getResultCode() == 1) {
+                                ApiResponse.UserData userData = apiResponse.getUserData();
+                                int UserID = userData.getUserID();
+                                String FullName = userData.getFullName();
+                                String UserName = userData.getUserName();
+                                String Password = userData.getPassword();
+                                String Email = userData.getEmail();
+                                String PhoneNumber = userData.getPhoneNumber();
+                                //Lưu name password
+                                if(isRememberLogin){
+                                    appConfig.saveLoginUsingGmail(false);
+                                    appConfig.updateUserLoginStatus(true);
+                                    appConfig.saveUserName(UserName);
+                                    appConfig.saveUserPassword(Password);
+                                    appConfig.saveIsRememberLoginClicked(true);
+                                }
+//                                userInformation = new UserInformation(userID, FullName,UserName, Password,Email, PhoneNumber);
+                                //Lưu info user vào database local
+                                DbHelper dbHelper = new DbHelper(getApplicationContext());
+                                SQLiteDatabase database = dbHelper.getWritableDatabase();
+                                dbHelper.onCreate(database);
+                                dbHelper.saveUserToLocalDatabase(String.valueOf(UserID), FullName,UserName, Password,Email, PhoneNumber,1, database);
+                                dbHelper.close();
+                                //CreateSqliteDb();
+                                //Switch to Home
+                                Toast.makeText(getApplicationContext(), "Welcome, "+ FullName, Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                //intent.putExtra("db",(Serializable) database);
+                                intent.putExtra("UserID", UserID);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
                             }
-                            CreateSqliteDb();
-                            //Switch to Home
-                            Toast.makeText(getApplicationContext(), "Welcome, "+ name, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), HomeFragment.class);
-                            //intent.putExtra("db",(Serializable) database);
-                            intent.putExtra("user",(Serializable)userInformation);
-                            startActivity(intent);
-                            finish();
                         } else {
                             Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
-                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "Can't connect to database", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+                Log.e("API Call Failure", "Error: " + t.getMessage()); // Log lỗi
+                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), Login.class);
                 startActivity(intent);
                 finish();
@@ -242,7 +258,7 @@ public class Login extends AppCompatActivity {
     }
     private void CreateSqliteDb(){
         //Create DBase
-        database = new Database(this, "MoneyManager.sqlite",null,1);
+        database = new DbHelper(this, "MoneyManager.sqlite",null,1);
         //FETCH DATA FROM SQL MYPHPADMIN HERE
         //THEN USE database.create() to create table bill, category, plan
         database.QueryData("CREATE TABLE IF NOT EXISTS Users(UserID INTEGER PRIMARY KEY, FullName VARCHAR(50), UserName VARCHAR(50), PassWord VARCHAR(50), Email VARCHAR(50), PhoneNumber VARCHAR(15))");

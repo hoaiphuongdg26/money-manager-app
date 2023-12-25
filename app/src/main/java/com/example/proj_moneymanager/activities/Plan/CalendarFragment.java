@@ -2,6 +2,8 @@ package com.example.proj_moneymanager.activities.Plan;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.database.DbContract;
+import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
 
 import java.time.LocalDate;
@@ -121,14 +125,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         lv_historyOption = view.findViewById(R.id.lv_optHistory);
         arr_historyOption = new ArrayList<>();
         //Chỗ này sau này sẽ lấy từ db ra đổ vào array
-        arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
-        arr_historyOption.add(new History_Option("Food", "Snack", R.drawable.btn_food,"-5,000"));
-        HistoryAdapter historyAdapter = new HistoryAdapter(
-                requireActivity(),
-                arr_historyOption
-        );
-        lv_historyOption.setAdapter(historyAdapter);
-
+//        arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
+//        arr_historyOption.add(new History_Option("Food", "Snack", R.drawable.btn_food,"-5,000"));
+        readFromLocalStorage();
         return view;
     }
 
@@ -141,7 +140,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         calendarRecyclerView = binding.calendarRecyclerView;
         monthYearText = binding.btnDatetimeDetail;
     }
-
     private void setMonthView()
     {
         monthYearText.setText(monthYearFromDate(selectedDate));
@@ -152,7 +150,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
     }
-
     private ArrayList<String> daysInMonthArray(LocalDate date)
     {
         ArrayList<String> daysInMonthArray = new ArrayList<>();
@@ -176,23 +173,19 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         }
         return  daysInMonthArray;
     }
-
     private String monthYearFromDate(LocalDate date)
     {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
         return date.format(formatter);
     }
-
     public void previousMonthAction(View view) {
         selectedDate = selectedDate.minusMonths(1);
         updateCalendar(selectedDate);
     }
-
     public void nextMonthAction(View view) {
         selectedDate = selectedDate.plusMonths(1);
         updateCalendar(selectedDate);
     }
-
     //Xử lý sự kiện khi ấn vào 1 ngày bất kỳ trên lịch
     @Override
     public void onItemClick(int position, String dayText)
@@ -212,7 +205,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         int day = cal.get(Calendar.DAY_OF_MONTH);
         return makeDateString(day, month, year);
     }
-
     private void initDatePicker(View view)
     {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
@@ -244,12 +236,10 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             }
         });
     }
-
     private String makeDateString(int day, int month, int year)
     {
         return getMonthFormat(month) + " " + year;
     }
-
     private String getMonthFormat(int month)
     {
         if(month == 1)
@@ -280,9 +270,50 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         //default should never happen
         return "JAN";
     }
-
     public void openDatePicker(View view)
     {
         datePickerDialog.show();
     }
+    public void readFromLocalStorage() {
+        arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
+
+        DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
+
+//        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.TABLE_BILL_CATEGORYID);
+        int columnIndexNote = cursor.getColumnIndex(DbContract.TABLE_BILL_NOTE);
+        int columnIndexDatetime = cursor.getColumnIndex(DbContract.TABLE_BILL_DATETIME);
+        int columnIndexMoney = cursor.getColumnIndex(DbContract.TABLE_BILL_MONEY);
+
+        while (cursor.moveToNext()) {
+            // Check if the column indices are valid before accessing the values
+            if (columnIndexNote != -1 && columnIndexMoney != -1) {
+//                int categoryID = cursor.getInt(columnIndexCategoryID);
+                double money = cursor.getDouble(columnIndexMoney);
+                String note = cursor.getString(columnIndexNote);
+
+                // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
+                // Bạn cần điều chỉnh dòng dưới tùy thuộc vào cấu trúc của lớp History_Option
+                History_Option historyOption = new History_Option("Test", note, R.drawable.btn_food, String.valueOf(money));
+                //Sau này dùng Bill khi đã xử lý được image của category
+//                Bill bill = new Bill()
+                // Thêm vào danh sách
+                arr_historyOption.add(historyOption);
+            } else {
+                // Handle the case where the column indices are not found
+                // Bạn có thể log lỗi, ném một exception, hoặc xử lý nó một cách nào đó
+            }
+        }
+        cursor.close();
+        dbHelper.close();
+
+        // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
+        HistoryAdapter historyAdapter = new HistoryAdapter(
+                requireActivity(),
+                arr_historyOption
+        );
+        lv_historyOption.setAdapter(historyAdapter);
+    }
+
 }

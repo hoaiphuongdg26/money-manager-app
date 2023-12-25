@@ -93,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_datetime"
                     android:text="Datetime"
-                    android:fontFamily="@font/sf_pro_text_bold"
+                    android:fontFamily="@font/sf_pro_text_medium"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="10dp"
@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_note"
                     android:text="Note"
-                    android:fontFamily="@font/sf_pro_text_bold"
+                    android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="16sp"
                     app:layout_constraintTop_toBottomOf="@+id/textview_datetime"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
@@ -121,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_expense"
                     android:text="Expense"
-                    android:fontFamily="@font/sf_pro_text_bold"
+                    android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="16sp"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
                     app:layout_constraintTop_toBottomOf="@+id/textview_note"
@@ -134,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_category"
                     android:text="Category"
-                    android:fontFamily="@font/sf_pro_text_bold"
+                    android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="16sp"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
                     app:layout_constraintTop_toBottomOf="@id/textview_expense"
@@ -156,20 +156,22 @@
                     android:contentDescription="Button left forward"
                     >
                 </ImageButton>
-                <TextView
+                <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/btn_datetime_detail"
                     android:text="Monday, 26/08/2023"
-                    android:fontFamily="@font/sf_pro_text_bold"
+                    android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="16sp"
                     android:textColor="@color/black_blue"
                     app:layout_constraintLeft_toRightOf="@id/left_forward"
                     app:layout_constraintRight_toLeftOf="@id/right_forward"
                     app:layout_constraintTop_toTopOf="@id/left_forward"
                     app:layout_constraintBottom_toBottomOf="@id/left_forward"
+                    android:textAllCaps="false"
+                    android:background="@drawable/bg_transparent"
                     >
-                </TextView>
+                </Button>
                 <ImageButton
                     android:id="@+id/right_forward"
                     android:layout_width="30dp"
@@ -345,18 +347,18 @@
                 android:layout_height="match_parent">
 
                 <ImageButton
+                    android:id="@+id/btn_import"
                     android:layout_width="140dp"
                     android:layout_height="40dp"
                     android:background="@drawable/btn_import"
+                    android:contentDescription="Button to import"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.498"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.454"
-                    android:contentDescription="Button to import"
-                    >
-                </ImageButton>
+                    tools:ignore="TouchTargetSizeCheck"></ImageButton>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </LinearLayout>

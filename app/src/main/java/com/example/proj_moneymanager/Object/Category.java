@@ -3,6 +3,8 @@ package com.example.proj_moneymanager.Object;
 public class Category {
     int CategoryID;
     String Name;
+    int Icon;
+    String Color;
 
     public Category(int categoryID, String name) {
         CategoryID = categoryID;

@@ -31,7 +31,7 @@
             android:name=".activities.Profile.Profile"
             android:exported="true" />
         <activity
-            android:name=".activities.Login"
+            android:name=".MainActivity"
             android:exported="true" />
         <activity
             android:name=".activities.HomeFragment"
