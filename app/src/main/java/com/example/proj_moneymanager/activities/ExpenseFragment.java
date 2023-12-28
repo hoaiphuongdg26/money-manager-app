@@ -2,11 +2,8 @@ package com.example.proj_moneymanager.activities;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +20,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.proj_moneymanager.database.MySingleton;
 import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
+import com.example.proj_moneymanager.database.MySingleton;
+import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.FragmentExpenseBinding;
 
 import org.json.JSONException;
@@ -213,9 +211,10 @@ public class ExpenseFragment extends Fragment {
         }
     }
     private boolean checkNetworkConnection() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
+//        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+//        return (networkInfo != null && networkInfo.isConnected());
+        return NetworkMonitor.checkNetworkConnection(getContext());
     }
     public void readFromLocalStorage() {
         arrayListBill.clear();

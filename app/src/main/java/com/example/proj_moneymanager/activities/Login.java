@@ -206,11 +206,11 @@ public class Login extends AppCompatActivity {
                             if (response.body().getResultCode() == 1) {
                                 ApiResponse.UserData userData = apiResponse.getUserData();
                                 int UserID = userData.getUserID();
-                                String FullName = userData.getFullName();
-                                String UserName = userData.getUserName();
-                                String Password = userData.getPassword();
-                                String Email = userData.getEmail();
-                                String PhoneNumber = userData.getPhoneNumber();
+                                String uFullName = userData.getFullName();
+                                String uUserName = userData.getUserName();
+                                String uPassword = userData.getPassword();
+                                String uEmail = userData.getEmail();
+                                String uPhoneNumber = userData.getPhoneNumber();
                                 //Lưu name password
                                 if(isRememberLogin){
                                     appConfig.saveLoginUsingGmail(false);
@@ -224,7 +224,7 @@ public class Login extends AppCompatActivity {
                                 DbHelper dbHelper = new DbHelper(getApplicationContext());
                                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                                 dbHelper.onCreate(database);
-                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), FullName,UserName, Password,Email, PhoneNumber,1, database);
+                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), uFullName,uUserName, uPassword,uEmail, uPhoneNumber,1, database);
 
                                 //Load thêm tất cả dữ liệu trên server xuống
                                 //Chưa làm
@@ -232,7 +232,7 @@ public class Login extends AppCompatActivity {
                                 dbHelper.close();
                                 //CreateSqliteDb();
                                 //Switch to Home
-                                Toast.makeText(getApplicationContext(), "Welcome, "+ FullName, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Welcome, "+ uFullName, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                 //intent.putExtra("db",(Serializable) database);
                                 intent.putExtra("UserID", UserID);

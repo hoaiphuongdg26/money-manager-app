@@ -50,45 +50,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     ImageButton btnNextMonth;
     FragmentCalendarBinding binding;
     private BroadcastReceiver broadcastReceiver;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public CalendarFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CalendarFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CalendarFragment newInstance(String param1, String param2) {
-        CalendarFragment fragment = new CalendarFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -325,7 +286,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 int sync = cursor.getInt(columnIndexSyncStatus);
 
                 // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
-                // Bạn cần điều chỉnh dòng dưới tùy thuộc vào cấu trúc của lớp History_Option
                 History_Option historyOption = new History_Option("Test", note, R.drawable.btn_food, String.valueOf(money), sync);
                 // Thêm vào danh sách
                 arr_historyOption.add(historyOption);
@@ -333,9 +293,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 // Handle the case where the column indices are not found
             }
         }
-//        adapter.notifyDataSetChanged();
-        cursor.close();
-        dbHelper.close();
+
+        //adapter.notifyDataSetChanged();
+
 
         // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
         HistoryAdapter historyAdapter = new HistoryAdapter(
@@ -343,6 +303,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 arr_historyOption
         );
         lv_historyOption.setAdapter(historyAdapter);
+        historyAdapter.notifyDataSetChanged();
+        cursor.close();
+        dbHelper.close();
     }
 
 }
