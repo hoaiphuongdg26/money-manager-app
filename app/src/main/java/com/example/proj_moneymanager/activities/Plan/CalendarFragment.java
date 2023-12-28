@@ -2,6 +2,10 @@ package com.example.proj_moneymanager.activities.Plan;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -45,6 +49,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     ImageButton btnPreviousMonth;
     ImageButton btnNextMonth;
     FragmentCalendarBinding binding;
+    private BroadcastReceiver broadcastReceiver;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -128,7 +133,29 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //        arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
 //        arr_historyOption.add(new History_Option("Food", "Snack", R.drawable.btn_food,"-5,000"));
         readFromLocalStorage();
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //loading the again
+                readFromLocalStorage();
+            }
+        };
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getActivity() != null) {
+            getActivity().registerReceiver(broadcastReceiver, new IntentFilter(DbContract.UI_UPDATE_BROADCAST));}
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(broadcastReceiver);
+        }
     }
 
     private void updateCalendar(LocalDate newDate) {
@@ -281,10 +308,13 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
 
-//        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.TABLE_BILL_CATEGORYID);
-        int columnIndexNote = cursor.getColumnIndex(DbContract.TABLE_BILL_NOTE);
-        int columnIndexDatetime = cursor.getColumnIndex(DbContract.TABLE_BILL_DATETIME);
-        int columnIndexMoney = cursor.getColumnIndex(DbContract.TABLE_BILL_MONEY);
+        int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+        int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+        int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
+        int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+        int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
 
         while (cursor.moveToNext()) {
             // Check if the column indices are valid before accessing the values
@@ -292,19 +322,18 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //                int categoryID = cursor.getInt(columnIndexCategoryID);
                 double money = cursor.getDouble(columnIndexMoney);
                 String note = cursor.getString(columnIndexNote);
+                int sync = cursor.getInt(columnIndexSyncStatus);
 
                 // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
                 // Bạn cần điều chỉnh dòng dưới tùy thuộc vào cấu trúc của lớp History_Option
-                History_Option historyOption = new History_Option("Test", note, R.drawable.btn_food, String.valueOf(money));
-                //Sau này dùng Bill khi đã xử lý được image của category
-//                Bill bill = new Bill()
+                History_Option historyOption = new History_Option("Test", note, R.drawable.btn_food, String.valueOf(money), sync);
                 // Thêm vào danh sách
                 arr_historyOption.add(historyOption);
             } else {
                 // Handle the case where the column indices are not found
-                // Bạn có thể log lỗi, ném một exception, hoặc xử lý nó một cách nào đó
             }
         }
+//        adapter.notifyDataSetChanged();
         cursor.close();
         dbHelper.close();
 

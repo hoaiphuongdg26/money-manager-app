@@ -48,12 +48,13 @@
         <activity
             android:name=".activities.Profile.ProfileFragment"
             android:exported="true" />
-        <receiver android:name=".NetworkMonitor"
+        <receiver android:name=".database.NetworkMonitor"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action>
             </intent-filter>
         </receiver>
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 </manifest>

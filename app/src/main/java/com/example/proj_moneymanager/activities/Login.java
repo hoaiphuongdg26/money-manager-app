@@ -4,7 +4,6 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -225,7 +224,11 @@ public class Login extends AppCompatActivity {
                                 DbHelper dbHelper = new DbHelper(getApplicationContext());
                                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                                 dbHelper.onCreate(database);
-                                dbHelper.saveUserToLocalDatabase(String.valueOf(UserID), FullName,UserName, Password,Email, PhoneNumber,1, database);
+                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), FullName,UserName, Password,Email, PhoneNumber,1, database);
+
+                                //Load thêm tất cả dữ liệu trên server xuống
+                                //Chưa làm
+
                                 dbHelper.close();
                                 //CreateSqliteDb();
                                 //Switch to Home
@@ -256,21 +259,21 @@ public class Login extends AppCompatActivity {
             }
         });
     }
-    private void CreateSqliteDb(){
-        //Create DBase
-        database = new DbHelper(this, "MoneyManager.sqlite",null,1);
-        //FETCH DATA FROM SQL MYPHPADMIN HERE
-        //THEN USE database.create() to create table bill, category, plan
-        database.QueryData("CREATE TABLE IF NOT EXISTS Users(UserID INTEGER PRIMARY KEY, FullName VARCHAR(50), UserName VARCHAR(50), PassWord VARCHAR(50), Email VARCHAR(50), PhoneNumber VARCHAR(15))");
-        //database.QueryData("INSERT INTO Users VALUES(1, 'Đinh Văn Trường Giang', 'Giang','827ccb0eea8a706c4c34a16891f84e7b','truonggiangnsl123@gmail.com','0382383930')");
-        Cursor cursor = database.GetData("SELECT * FROM Users");
-        while (cursor.moveToNext()){
-            userInformation = new UserInformation(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
-                cursor.getString(4),cursor.getString(5));
-        }
-        //database.QueryData("CREATE TABLE IF NOT EXIST bill(//thuoc tinh)");
-
-        //Fetch data and insert data to sqlite
-        //database.QueryData("INSERT INTO bill VALUES(//....)");
-    }
+//    private void CreateSqliteDb(){
+//        //Create DBase
+//        database = new DbHelper(this, "MoneyManager.sqlite",null,1);
+//        //FETCH DATA FROM SQL MYPHPADMIN HERE
+//        //THEN USE database.create() to create table bill, category, plan
+//        database.QueryData("CREATE TABLE IF NOT EXISTS Users(UserID INTEGER PRIMARY KEY, FullName VARCHAR(50), UserName VARCHAR(50), PassWord VARCHAR(50), Email VARCHAR(50), PhoneNumber VARCHAR(15))");
+//        //database.QueryData("INSERT INTO Users VALUES(1, 'Đinh Văn Trường Giang', 'Giang','827ccb0eea8a706c4c34a16891f84e7b','truonggiangnsl123@gmail.com','0382383930')");
+//        Cursor cursor = database.GetData("SELECT * FROM Users");
+//        while (cursor.moveToNext()){
+//            userInformation = new UserInformation(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
+//                cursor.getString(4),cursor.getString(5));
+//        }
+//        //database.QueryData("CREATE TABLE IF NOT EXIST bill(//thuoc tinh)");
+//
+//        //Fetch data and insert data to sqlite
+//        //database.QueryData("INSERT INTO bill VALUES(//....)");
+//    }
 }

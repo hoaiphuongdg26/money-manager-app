@@ -1,6 +1,4 @@
-package com.example.proj_moneymanager;
-
-import static com.example.proj_moneymanager.database.DbContract.TABLE_BILL_ID;
+package com.example.proj_moneymanager.database;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,13 +13,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.proj_moneymanager.database.DbContract;
-import com.example.proj_moneymanager.database.DbHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class NetworkMonitor extends BroadcastReceiver {
@@ -33,10 +32,28 @@ public class NetworkMonitor extends BroadcastReceiver {
             SQLiteDatabase database = dbHelper.getWritableDatabase();
             Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
 
+            int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+            int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+            int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+            int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
+            int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+            int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+            int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
             while (cursor.moveToNext()) {
-                int syncStatus = cursor.getInt(cursor.getColumnIndex(DbContract.SYNC_STATUS));
+                int syncStatus = cursor.getInt(columnIndexSyncStatus);
                 if (syncStatus == DbContract.SYNC_STATUS_FAILED) {
-                    int billID = cursor.getInt(cursor.getColumnIndex(TABLE_BILL_ID));
+                    int billID = cursor.getInt(columnIndexBillID);
+                    int userID = cursor.getInt(columnIndexUserID);
+                    int categoryID = cursor.getInt(columnIndexCategoryID);
+                    String note = cursor.getString(columnIndexNote);
+                    Date timeCreate = new Date();
+                    if (columnIndexDatetime != -1) {
+                        long datetimeInMillis = cursor.getLong(columnIndexDatetime);
+                        timeCreate = new Date(datetimeInMillis);
+                    }
+                    Date finalTimeCreate = timeCreate;
+
+                    double expense = cursor.getDouble(columnIndexMoney);
 
                     StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL,
                             new Response.Listener<String>() {
@@ -45,8 +62,9 @@ public class NetworkMonitor extends BroadcastReceiver {
                                     try {
                                         JSONObject jsonObject = new JSONObject(response);
                                         String serverResponse = jsonObject.getString("response");
+                                        long billid;
                                         if (serverResponse.equals("OK")) {
-                                            dbHelper.updateBillLocalDatabase(billID, DbContract.SYNC_STATUS_OK, database);
+                                            billid = dbHelper.insertBillToLocalDatabaseFromApp(userID, categoryID, note, finalTimeCreate, expense, DbContract.SYNC_STATUS_OK, database);
                                             context.sendBroadcast(new Intent(DbContract.UI_UPDATE_BROADCAST));
                                         }
                                     } catch (JSONException e) {
@@ -62,7 +80,12 @@ public class NetworkMonitor extends BroadcastReceiver {
                         @Override
                         protected Map<String, String> getParams() throws AuthFailureError {
                             Map<String, String> params = new HashMap<>();
-                            params.put("billID", String.valueOf(billID));
+                            params.put("note", note);
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                            params.put("timecreate", dateFormat.format(finalTimeCreate));
+                            params.put("expense", String.valueOf(expense));
+                            params.put("categoryID", String.valueOf(categoryID));
+                            params.put("userID", String.valueOf(userID));
                             return params;
                         }
                     };

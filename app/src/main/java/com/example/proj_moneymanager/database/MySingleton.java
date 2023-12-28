@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager;
+package com.example.proj_moneymanager.database;
 
 import android.content.Context;
 
@@ -25,6 +25,7 @@ public class MySingleton {
 
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
+            // Use the application context to prevent memory leaks
             mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
         }
         return mRequestQueue;
