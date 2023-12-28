@@ -17,7 +17,7 @@
         android:windowNoTitle="true"
         tools:targetApi="31" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.Login"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +31,7 @@
             android:name=".activities.Profile.Profile"
             android:exported="true" />
         <activity
-            android:name=".activities.Login"
+            android:name=".MainActivity"
             android:exported="true" />
         <activity
             android:name=".activities.HomeFragment"
@@ -51,7 +51,13 @@
         <activity
             android:name=".activities.Setting.Setting"
             android:exported="true" />
-
+        <receiver android:name=".database.NetworkMonitor"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action>
+            </intent-filter>
+        </receiver>
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 </manifest>

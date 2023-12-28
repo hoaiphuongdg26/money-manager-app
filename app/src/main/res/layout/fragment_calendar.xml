@@ -44,7 +44,7 @@
                 android:gravity="center"
                 android:id="@+id/btn_datetime_detail"
                 android:text="September 2023"
-                android:fontFamily="@font/sf_pro_text_bold"
+                android:fontFamily="@font/sf_pro_text_medium"
                 android:textSize="16sp"
                 android:textColor="@color/black_blue"
                 app:layout_constraintStart_toStartOf="parent"

@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +22,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.proj_moneymanager.MainActivity;
+import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.app.AppConfig;
+import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
@@ -51,6 +55,8 @@ public class Login extends AppCompatActivity {
     SignInClient oneTapClient;
     BeginSignInRequest signInRequest;
     ImageButton bt_googleSignIn;
+    public static DbHelper database;
+    UserInformation userInformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,42 +197,83 @@ public class Login extends AppCompatActivity {
     private void performLogin(){
         Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName, Password);
         call.enqueue(new Callback<ApiResponse>() {
+
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                 if (response.code() == 200) {
-                    if (response.body().getStatus().equals("ok")) {
-                        if (response.body().getResultCode() == 1) {
-                            String name = response.body().getName();
+                    ApiResponse apiResponse = response.body();
+                        if (response.body().getStatus().equals("ok")) {
+                            if (response.body().getResultCode() == 1) {
+                                ApiResponse.UserData userData = apiResponse.getUserData();
+                                int UserID = userData.getUserID();
+                                String FullName = userData.getFullName();
+                                String UserName = userData.getUserName();
+                                String Password = userData.getPassword();
+                                String Email = userData.getEmail();
+                                String PhoneNumber = userData.getPhoneNumber();
+                                //Lưu name password
+                                if(isRememberLogin){
+                                    appConfig.saveLoginUsingGmail(false);
+                                    appConfig.updateUserLoginStatus(true);
+                                    appConfig.saveUserName(UserName);
+                                    appConfig.saveUserPassword(Password);
+                                    appConfig.saveIsRememberLoginClicked(true);
+                                }
+//                                userInformation = new UserInformation(userID, FullName,UserName, Password,Email, PhoneNumber);
+                                //Lưu info user vào database local
+                                DbHelper dbHelper = new DbHelper(getApplicationContext());
+                                SQLiteDatabase database = dbHelper.getWritableDatabase();
+                                dbHelper.onCreate(database);
+                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), FullName,UserName, Password,Email, PhoneNumber,1, database);
 
-                            //Lưu name password
-                            if(isRememberLogin){
-                                appConfig.saveLoginUsingGmail(false);
-                                appConfig.updateUserLoginStatus(true);
-                                appConfig.saveUserName(UserName);
-                                appConfig.saveUserPassword(Password);
-                                appConfig.saveIsRememberLoginClicked(true);
+                                //Load thêm tất cả dữ liệu trên server xuống
+                                //Chưa làm
+
+                                dbHelper.close();
+                                //CreateSqliteDb();
+                                //Switch to Home
+                                Toast.makeText(getApplicationContext(), "Welcome, "+ FullName, Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                //intent.putExtra("db",(Serializable) database);
+                                intent.putExtra("UserID", UserID);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
                             }
-                            Toast.makeText(getApplicationContext(), "Welcome, "+ name, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), HomeFragment.class);
-                            startActivity(intent);
-                            finish();
                         } else {
                             Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
-                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "Can't connect to database", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+                Log.e("API Call Failure", "Error: " + t.getMessage()); // Log lỗi
+                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), Login.class);
                 startActivity(intent);
                 finish();
             }
         });
     }
+//    private void CreateSqliteDb(){
+//        //Create DBase
+//        database = new DbHelper(this, "MoneyManager.sqlite",null,1);
+//        //FETCH DATA FROM SQL MYPHPADMIN HERE
+//        //THEN USE database.create() to create table bill, category, plan
+//        database.QueryData("CREATE TABLE IF NOT EXISTS Users(UserID INTEGER PRIMARY KEY, FullName VARCHAR(50), UserName VARCHAR(50), PassWord VARCHAR(50), Email VARCHAR(50), PhoneNumber VARCHAR(15))");
+//        //database.QueryData("INSERT INTO Users VALUES(1, 'Đinh Văn Trường Giang', 'Giang','827ccb0eea8a706c4c34a16891f84e7b','truonggiangnsl123@gmail.com','0382383930')");
+//        Cursor cursor = database.GetData("SELECT * FROM Users");
+//        while (cursor.moveToNext()){
+//            userInformation = new UserInformation(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
+//                cursor.getString(4),cursor.getString(5));
+//        }
+//        //database.QueryData("CREATE TABLE IF NOT EXIST bill(//thuoc tinh)");
+//
+//        //Fetch data and insert data to sqlite
+//        //database.QueryData("INSERT INTO bill VALUES(//....)");
+//    }
 }

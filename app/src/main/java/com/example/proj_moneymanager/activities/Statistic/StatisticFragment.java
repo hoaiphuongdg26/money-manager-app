@@ -102,8 +102,8 @@ public class StatisticFragment extends Fragment {
         lv_historyOption = binding.lvHistory;
         arr_historyOption = new ArrayList<History_Option>();
         //Chỗ này sau này sẽ lấy từ db ra đổ vào array
-        arr_historyOption.add(new History_Option("Procery Shoppping", "15 November, 2023", R.drawable.btn_food,"-230.000"));
-        arr_historyOption.add(new History_Option("Rental Income", "15 November, 2023", R.drawable.btn_food,"+866.00"));
+        arr_historyOption.add(new History_Option("Procery Shoppping", "15 November, 2023", R.drawable.btn_food,"-230.000",1));
+        arr_historyOption.add(new History_Option("Rental Income", "15 November, 2023", R.drawable.btn_food,"+866.00",1));
         HistoryAdapter historyAdapter = new HistoryAdapter(
                 requireActivity(),
                 arr_historyOption

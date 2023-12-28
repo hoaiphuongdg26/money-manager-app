@@ -57,6 +57,9 @@ public class HistoryAdapter  extends BaseAdapter {
 
         TextView txt_Price = (TextView) convertView.findViewById(R.id.textview_priceForEachCategory);
         txt_Price.setText(arrHistoryOption.get(position).getPrice());
+
+        ImageView img_dotOffline = convertView.findViewById(R.id.imageview_dotOffline);
+        if (arrHistoryOption.get(position).getSync() == 1 ) img_dotOffline.setVisibility(View.VISIBLE);
         return convertView;
     }
 }
