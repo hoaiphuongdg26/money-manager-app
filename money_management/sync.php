@@ -35,18 +35,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 VALUES ('$note', '$formattedDatetime', '$expense', '$categoryID', '$userID')";
 
         if (mysqli_query($con, $sql)) {
-            $status = 'OK';
-        } else {
+            	$status = 'OK';
+		$query = "SELECT * FROM bill";
+   		$result = mysqli_query($con, $query);
+
+    		if ($result) {
+        		$data = array();
+        		while ($row = mysqli_fetch_assoc($result)) {
+            		$data[] = $row;
+        	}
+		 // Return JSON response with the retrieved data
+        	echo json_encode(array("response" => "OK", "data" => $data));
+		} 
+	else {
+        	$status = 'FAILED: ' . mysqli_error($con);
+		// Return JSON response
+		echo json_encode(array("response" => $status));
+        } 
+	else {
             $status = 'FAILED: ' . mysqli_error($con);
+		// Return JSON response
+		echo json_encode(array("response" => $status));
         }
     }
 } else {
     // No data sent, return an error
     $status = 'FAILED: No data received';
+	// Return JSON response
+	echo json_encode(array("response" => $status));
 }
-
-// Return JSON response
-echo json_encode(array("response" => $status));
 
 // Close connection
 mysqli_close($con);

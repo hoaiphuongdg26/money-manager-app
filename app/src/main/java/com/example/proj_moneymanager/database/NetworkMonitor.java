@@ -73,6 +73,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                                                 dbHelper.updateBillInLocalDatabase(billID, userID, categoryID, note, finalTimeCreate, expense, DbContract.SYNC_STATUS_OK, database);
                                                 context.sendBroadcast(new Intent(DbContract.UI_UPDATE_BROADCAST));
                                             }
+
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
