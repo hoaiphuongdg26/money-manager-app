@@ -19,6 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $categoryID = isset($_POST['categoryID']) ? $_POST['categoryID'] : '';
     $userID = isset($_POST['userID']) ? $_POST['userID'] : '';
 
+        //1: co du lieu -> Insert vo db
+        //2: k co du lieu -> Fail
+        
     // Convert the datetime string to a DateTime object
     $timecreate = DateTime::createFromFormat('Y-m-d H:i:s', $timecreateString);
 
@@ -35,36 +38,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 VALUES ('$note', '$formattedDatetime', '$expense', '$categoryID', '$userID')";
 
         if (mysqli_query($con, $sql)) {
-            	$status = 'OK';
-		$query = "SELECT * FROM bill";
-   		$result = mysqli_query($con, $query);
+            $status = 'OK';
+		    $query = "SELECT * FROM bill";
+   		    $result = mysqli_query($con, $query);
 
     		if ($result) {
         		$data = array();
         		while ($row = mysqli_fetch_assoc($result)) {
             		$data[] = $row;
-        	}
-		 // Return JSON response with the retrieved data
-        	echo json_encode(array("response" => "OK", "data" => $data));
-		} 
-	else {
-        	$status = 'FAILED: ' . mysqli_error($con);
-		// Return JSON response
-		echo json_encode(array("response" => $status));
-        } 
-	else {
+                }
+		        // Return JSON response with the retrieved data
+        	    echo json_encode(array("response" => "OK", "data" => $data));
+		    }else {
+        	    $status = 'FAILED: ' . mysqli_error($con);
+		        // Return JSON response
+		        echo json_encode(array("response" => $status));
+            }
+        }else {
             $status = 'FAILED: ' . mysqli_error($con);
-		// Return JSON response
-		echo json_encode(array("response" => $status));
+		    // Return JSON response
+		    echo json_encode(array("response" => $status));
         }
     }
-} else {
-    // No data sent, return an error
-    $status = 'FAILED: No data received';
-	// Return JSON response
-	echo json_encode(array("response" => $status));
-}
+} 
+else {
+    //If the method is GET
+    if($_SERVER['REQUEST_METHOD'] == 'GET'){
+        // Retrieve all data from the "bill" table
+        $query = "SELECT * FROM bill";
+        $result = mysqli_query($con, $query);
 
+        if ($result) {
+            $data = array();
+
+            // Fetch data and store in an array
+            while ($row = mysqli_fetch_assoc($result)) {
+                $data[] = $row;
+            }
+            // Return JSON response with the retrieved data
+            echo json_encode(array("response" => "OK", "billdata" => $data));
+        } else {
+            $status = 'FAILED: ' . mysqli_error($con);
+            // Return JSON response
+            echo json_encode(array("response" => $status));
+        }
+    }
+}
 // Close connection
 mysqli_close($con);
 ?>

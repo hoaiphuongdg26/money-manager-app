@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.proj_moneymanager.GetServerData;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
@@ -226,10 +227,11 @@ public class Login extends AppCompatActivity {
                                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                                 dbHelper.onCreate(database);
                                 dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), uFullName,uUserName, uPassword,uEmail, uPhoneNumber,1, database);
+                                //Đưa dữ liệu mà remote không có lên POST
 
-                                //Load thêm tất cả dữ liệu trên server xuống
-
-                                //asynctask
+                                //asynctask kéo dữ liệu từ remote về GET
+                                GetServerData getServerData = new GetServerData(Login.this);
+                                getServerData.execute();
                                 //add class vo day
 
 

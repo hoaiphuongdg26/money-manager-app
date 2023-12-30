@@ -63,23 +63,25 @@ public class NetworkMonitor extends BroadcastReceiver {
 
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL,
                                 new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        try {
-                                            JSONObject jsonObject = new JSONObject(response);
-                                            String serverResponse = jsonObject.getString("response");
-                                            long billid;
-                                            if (serverResponse.equals("OK")) {
-                                                dbHelper.updateBillInLocalDatabase(billID, userID, categoryID, note, finalTimeCreate, expense, DbContract.SYNC_STATUS_OK, database);
-                                                context.sendBroadcast(new Intent(DbContract.UI_UPDATE_BROADCAST));
-                                            }
-
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
+                                @Override
+                                public void onResponse(String response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response);
+                                        String serverResponse = jsonObject.getString("response");
+                                        if (serverResponse.equals("OK")) {
+                                            dbHelper.updateBillInLocalDatabase(billID, userID, categoryID, note, finalTimeCreate, expense, DbContract.SYNC_STATUS_OK, database);
+                                            context.sendBroadcast(new Intent(DbContract.UI_UPDATE_BROADCAST));
                                         }
+                                        else{
+                                            //neu server tra về "fail"
+                                            //khong lam gì cả
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
-                                }, new Response.ErrorListener() {
-                            @Override
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
                             public void onErrorResponse(VolleyError error) {
                                 // Handle error appropriately (e.g., log or notify the user)
                                 Toast.makeText(context.getApplicationContext(), "Fail to sync data", Toast.LENGTH_LONG);
