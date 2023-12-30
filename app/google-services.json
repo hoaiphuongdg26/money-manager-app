@@ -12,7 +12,12 @@
           "package_name": "com.example.proj_moneymanager"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "694191174860-mvf1gmnflp03aub1gv7dj1rllnfpqlpf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB9cPWJHww3hHob3Qo2P6F79QqDSr40G9M"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "694191174860-mvf1gmnflp03aub1gv7dj1rllnfpqlpf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

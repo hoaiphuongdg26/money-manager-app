@@ -76,7 +76,7 @@ public class Login extends AppCompatActivity {
                         .setFilterByAuthorizedAccounts(false)
                         .build())
                 // Automatically sign in when exactly one credential is retrieved.
-                .setAutoSelectEnabled(true)
+                .setAutoSelectEnabled(false)
                 .build();
 
         isRememberLogin = appConfig.isRememberLoginChecked();
@@ -148,19 +148,20 @@ public class Login extends AppCompatActivity {
                     new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
-            if(result.getResultCode()== Activity.RESULT_OK){
+            if(result.getResultCode() == Activity.RESULT_OK){
                 try{
                     SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
                     String idToken = credential.getGoogleIdToken();
                     if(idToken!=null){
-                        editTextUserName.setText(credential.getId());
-                        editTextPassword.setText(credential.getPassword());
+                        UserName = credential.getId();
+                        //khong cho lay password gmail
+                        Password =idToken;//credential.getPassword();
                         performLogin();
 //                        String email = credential.getId();
 //                        Toast.makeText(getApplicationContext(),"Welcome, "+ email,Toast.LENGTH_SHORT).show();
 //
-//                        appConfig.saveLoginUsingGmail(true);
-//                        appConfig.updateUserLoginStatus(true);
+                        appConfig.saveLoginUsingGmail(true);
+                        //appConfig.updateUserLoginStatus(true);
 //                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 //                        startActivity(intent);
 //                        finish();
@@ -206,11 +207,11 @@ public class Login extends AppCompatActivity {
                             if (response.body().getResultCode() == 1) {
                                 ApiResponse.UserData userData = apiResponse.getUserData();
                                 int UserID = userData.getUserID();
-                                String FullName = userData.getFullName();
-                                String UserName = userData.getUserName();
-                                String Password = userData.getPassword();
-                                String Email = userData.getEmail();
-                                String PhoneNumber = userData.getPhoneNumber();
+                                String uFullName = userData.getFullName();
+                                String uUserName = userData.getUserName();
+                                String uPassword = userData.getPassword();
+                                String uEmail = userData.getEmail();
+                                String uPhoneNumber = userData.getPhoneNumber();
                                 //Lưu name password
                                 if(isRememberLogin){
                                     appConfig.saveLoginUsingGmail(false);
@@ -224,7 +225,7 @@ public class Login extends AppCompatActivity {
                                 DbHelper dbHelper = new DbHelper(getApplicationContext());
                                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                                 dbHelper.onCreate(database);
-                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), FullName,UserName, Password,Email, PhoneNumber,1, database);
+                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), uFullName,uUserName, uPassword,uEmail, uPhoneNumber,1, database);
 
                                 //Load thêm tất cả dữ liệu trên server xuống
                                 //Chưa làm
@@ -232,7 +233,7 @@ public class Login extends AppCompatActivity {
                                 dbHelper.close();
                                 //CreateSqliteDb();
                                 //Switch to Home
-                                Toast.makeText(getApplicationContext(), "Welcome, "+ FullName, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplicationContext(), "Welcome, "+ FullName, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                 //intent.putExtra("db",(Serializable) database);
                                 intent.putExtra("UserID", UserID);

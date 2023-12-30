@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         CalendarFragment calendarFragment = new CalendarFragment();
         calendarFragment.setArguments(bundle);
 
-        ProfileFragment profileFragment = new ProfileFragment();
+        ProfileFragment profileFragment = new ProfileFragment(this);
         profileFragment.setArguments(bundle);
 
         binding.navBar.setOnItemSelectedListener(item->{
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        Toast.makeText(getApplicationContext(), UserInformation.getFullName(getBaseContext(), UserID), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Welcome, "+ UserInformation.getFullName(getBaseContext(), UserID), Toast.LENGTH_LONG).show();
     }
 
     private void replaceFragment(Fragment fragment){
