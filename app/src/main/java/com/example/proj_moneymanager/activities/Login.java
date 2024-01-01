@@ -27,6 +27,7 @@ import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.database.DbHelper;
+import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
@@ -155,7 +156,7 @@ public class Login extends AppCompatActivity {
                     if(idToken!=null){
                         UserName = credential.getId();
                         //khong cho lay password gmail
-                        Password =idToken;//credential.getPassword();
+                        Password = idToken;//credential.getPassword();
                         performLogin();
 //                        String email = credential.getId();
 //                        Toast.makeText(getApplicationContext(),"Welcome, "+ email,Toast.LENGTH_SHORT).show();
@@ -235,7 +236,6 @@ public class Login extends AppCompatActivity {
                                 //Switch to Home
                                 //Toast.makeText(getApplicationContext(), "Welcome, "+ FullName, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                //intent.putExtra("db",(Serializable) database);
                                 intent.putExtra("UserID", UserID);
                                 startActivity(intent);
                                 finish();
@@ -260,21 +260,7 @@ public class Login extends AppCompatActivity {
             }
         });
     }
-//    private void CreateSqliteDb(){
-//        //Create DBase
-//        database = new DbHelper(this, "MoneyManager.sqlite",null,1);
-//        //FETCH DATA FROM SQL MYPHPADMIN HERE
-//        //THEN USE database.create() to create table bill, category, plan
-//        database.QueryData("CREATE TABLE IF NOT EXISTS Users(UserID INTEGER PRIMARY KEY, FullName VARCHAR(50), UserName VARCHAR(50), PassWord VARCHAR(50), Email VARCHAR(50), PhoneNumber VARCHAR(15))");
-//        //database.QueryData("INSERT INTO Users VALUES(1, 'Đinh Văn Trường Giang', 'Giang','827ccb0eea8a706c4c34a16891f84e7b','truonggiangnsl123@gmail.com','0382383930')");
-//        Cursor cursor = database.GetData("SELECT * FROM Users");
-//        while (cursor.moveToNext()){
-//            userInformation = new UserInformation(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
-//                cursor.getString(4),cursor.getString(5));
-//        }
-//        //database.QueryData("CREATE TABLE IF NOT EXIST bill(//thuoc tinh)");
-//
-//        //Fetch data and insert data to sqlite
-//        //database.QueryData("INSERT INTO bill VALUES(//....)");
-//    }
+    private boolean checkNetworkConnection() {
+        return NetworkMonitor.checkNetworkConnection(getApplicationContext());
+    }
 }

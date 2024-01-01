@@ -98,7 +98,7 @@ public class NetworkMonitor extends BroadcastReceiver {
         }
     }
 
-    public boolean checkNetworkConnection(Context context) {
+    public static boolean checkNetworkConnection(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
