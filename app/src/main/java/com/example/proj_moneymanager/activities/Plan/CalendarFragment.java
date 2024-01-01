@@ -3,6 +3,7 @@ package com.example.proj_moneymanager.activities.Plan;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -16,8 +17,10 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,18 +29,18 @@ import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CalendarFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener {
 
     private Button monthYearText;
@@ -45,50 +48,14 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     private LocalDate selectedDate;
     ListView lv_historyOption;
     ArrayList<History_Option> arr_historyOption;
+    HistoryAdapter historyAdapter;
     private DatePickerDialog datePickerDialog;
     ImageButton btnPreviousMonth;
     ImageButton btnNextMonth;
     FragmentCalendarBinding binding;
+    TextView tv_income,tv_expense,tv_total;
     private BroadcastReceiver broadcastReceiver;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public CalendarFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CalendarFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CalendarFragment newInstance(String param1, String param2) {
-        CalendarFragment fragment = new CalendarFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    long UserID;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,7 +63,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //        View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         binding = FragmentCalendarBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
-
+        UserID = getArguments().getLong("UserID", 0);
         //Xử lý Calendar
         initWidgets(view);
         selectedDate = LocalDate.now();
@@ -125,6 +92,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //        monthYearText = view.findViewById(R.id.btn_datetime_detail);
         monthYearText = binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
+        tv_income = binding.textviewIncome;
+        tv_expense = binding.textviewExpense;
+        tv_total = binding.textviewTotal;
 
         //Xử lý History Adapter cho listview
         lv_historyOption = view.findViewById(R.id.lv_optHistory);
@@ -133,6 +103,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //        arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
 //        arr_historyOption.add(new History_Option("Food", "Snack", R.drawable.btn_food,"-5,000"));
         readFromLocalStorage();
+
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -219,8 +190,38 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     {
         if(!dayText.equals(""))
         {
-            String message = "Selected Date " + dayText + " " + monthYearFromDate(selectedDate);
-            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+            //Lấy được ngày đã chọn
+            //String message = "Selected Date " + dayText + " " + monthYearFromDate(selectedDate);
+            //Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+            //Hiển thị ngày đã chọn ra textview each day
+            binding.textviewEachDay.setText(dayText + " " + monthYearFromDate(selectedDate));
+            //chuyển ngày chọn thành kieeur Date
+            // Lấy data ngày
+            String datetimeString = binding.textviewEachDay.getText().toString();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
+            try {
+                Date DateTime = dateFormat.parse(datetimeString);
+                ContentValues contentValues = MoneyCalculate(UserID,DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),getContext());
+                tv_income.setText("+"+String.valueOf(contentValues.get("Income")));
+                tv_expense.setText("-"+String.valueOf(contentValues.get("Expense")));
+                tv_total.setText(String.valueOf(contentValues.get("Total")));
+                ArrayList<History_Option> temp = new ArrayList<>();
+                //query arraylist history option userid + datetime
+                for (History_Option historyOption : arr_historyOption) {
+                    Date date = historyOption.getDateTime();
+                    assert DateTime != null;
+                    if(DateTime.getDate() == date.getDate() && DateTime.getMonth() == date.getMonth() && DateTime.getYear() == date.getYear())
+                        //gans vao arraylist
+                        temp.add(historyOption);
+                }
+                //do vao adapter
+                historyAdapter = new HistoryAdapter(requireActivity(),temp);
+                lv_historyOption.setAdapter(historyAdapter);
+            } catch (ParseException e) {
+                Toast.makeText(getContext(),"Error parsing Datetime",Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                // Xử lý khi có lỗi chuyển đổi
+            }
         }
     }
     private String getTodaysDate()
@@ -308,9 +309,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
 
-        int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+        //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
         int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
-        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+        //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
         int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
         int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
         int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
@@ -319,30 +320,81 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         while (cursor.moveToNext()) {
             // Check if the column indices are valid before accessing the values
             if (columnIndexNote != -1 && columnIndexMoney != -1) {
+                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+                int userID = cursor.getInt(columnIndexUserID);
 //                int categoryID = cursor.getInt(columnIndexCategoryID);
                 double money = cursor.getDouble(columnIndexMoney);
                 String note = cursor.getString(columnIndexNote);
                 int sync = cursor.getInt(columnIndexSyncStatus);
 
                 // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
-                // Bạn cần điều chỉnh dòng dưới tùy thuộc vào cấu trúc của lớp History_Option
-                History_Option historyOption = new History_Option("Test", note, R.drawable.btn_food, String.valueOf(money), sync);
+                History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, String.valueOf(money), sync);
                 // Thêm vào danh sách
                 arr_historyOption.add(historyOption);
             } else {
                 // Handle the case where the column indices are not found
             }
         }
-//        adapter.notifyDataSetChanged();
-        cursor.close();
-        dbHelper.close();
+
+        //adapter.notifyDataSetChanged();
+
 
         // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
-        HistoryAdapter historyAdapter = new HistoryAdapter(
+        historyAdapter = new HistoryAdapter(
                 requireActivity(),
                 arr_historyOption
         );
         lv_historyOption.setAdapter(historyAdapter);
+        historyAdapter.notifyDataSetChanged();
+        cursor.close();
+        dbHelper.close();
     }
+    //Hàm thống kê income, expense total
+    //Nếu ngày = 0 -> thống kê theo tháng
+    //Nếu tháng = 0 -> thống kê theo năm
+    //Thống kê theo tuần thì chưa biết
+    //public static -> các activity khác có thẻ dùng lại. vd biểu đồ
+    public static ContentValues MoneyCalculate(long userid, int day, int month, int year, Context context){
+        ContentValues contentValues = new ContentValues();
+        long Income = 0, Expense = 0, Total;
+        DbHelper dbHelper = new DbHelper(context); // Sửa lỗi: sử dụng requireContext() thay vì this
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
 
+        int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+        int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+        int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+
+        while (cursor.moveToNext()){
+            //if (columnIndexMoney != -1) {
+                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+                int userID = cursor.getInt(columnIndexUserID);
+                double money = cursor.getDouble(columnIndexMoney);
+                if(userID == userid && year == DateTime.getYear()){
+                    if(month!=-1){
+                        if(month == DateTime.getMonth()){
+                            if(day!=-1){
+                                if(day==DateTime.getDate()){
+                                    if(money > 0) Expense += money;
+                                    else Income += money;
+                                }
+                            }else {
+                                if(money > 0) Expense += money;
+                                else Income += money;
+                            }
+                        }
+                    }
+                    else {
+                        if(money > 0) Expense += money;
+                        else Income += money;
+                    }
+                }
+            //}
+        }
+        Total = Income - Expense;
+        contentValues.put("Income",Income);
+        contentValues.put("Expense",Expense);
+        contentValues.put("Total",Total);
+        return contentValues;
+    }
 }

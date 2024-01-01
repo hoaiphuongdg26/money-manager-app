@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.proj_moneymanager.GetServerData;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
@@ -58,6 +59,7 @@ public class Login extends AppCompatActivity {
     ImageButton bt_googleSignIn;
     public static DbHelper database;
     UserInformation userInformation;
+    DbHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,13 +199,13 @@ public class Login extends AppCompatActivity {
 
 
     private void performLogin(){
-        Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName, Password);
-        call.enqueue(new Callback<ApiResponse>() {
+            Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName,Password);
+            call.enqueue(new Callback<ApiResponse>() {
 
-            @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                if (response.code() == 200) {
-                    ApiResponse apiResponse = response.body();
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    if (response.code() == 200) {
+                        ApiResponse apiResponse = response.body();
                         if (response.body().getStatus().equals("ok")) {
                             if (response.body().getResultCode() == 1) {
                                 ApiResponse.UserData userData = apiResponse.getUserData();
@@ -227,14 +229,18 @@ public class Login extends AppCompatActivity {
                                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                                 dbHelper.onCreate(database);
                                 dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), uFullName,uUserName, uPassword,uEmail, uPhoneNumber,1, database);
+                                //Đưa dữ liệu mà remote không có lên POST
 
-                                //Load thêm tất cả dữ liệu trên server xuống
-                                //Chưa làm
+                                //asynctask kéo dữ liệu từ remote về GET
+                                GetServerData getServerData = new GetServerData(Login.this);
+                                getServerData.execute();
+                                //add class vo day
+
+
 
                                 dbHelper.close();
                                 //CreateSqliteDb();
                                 //Switch to Home
-                                //Toast.makeText(getApplicationContext(), "Welcome, "+ FullName, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                 intent.putExtra("UserID", UserID);
                                 startActivity(intent);
@@ -245,20 +251,20 @@ public class Login extends AppCompatActivity {
                         } else {
                             Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
                         }
-                } else {
-                    Toast.makeText(getApplicationContext(), "Can't connect to database", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Can't connect to database", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-            @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                t.printStackTrace();
-                Log.e("API Call Failure", "Error: " + t.getMessage()); // Log lỗi
-                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(), Login.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    t.printStackTrace();
+                    Log.e("API Call Failure", "Error: " + t.getMessage()); // Log lỗi
+                    Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), Login.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
     }
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getApplicationContext());
