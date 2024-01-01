@@ -197,13 +197,13 @@ public class Login extends AppCompatActivity {
 
 
     private void performLogin(){
-        Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName, Password);
-        call.enqueue(new Callback<ApiResponse>() {
+            Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class).performUserLogIn(UserName,Password);
+            call.enqueue(new Callback<ApiResponse>() {
 
-            @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                if (response.code() == 200) {
-                    ApiResponse apiResponse = response.body();
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    if (response.code() == 200) {
+                        ApiResponse apiResponse = response.body();
                         if (response.body().getStatus().equals("ok")) {
                             if (response.body().getResultCode() == 1) {
                                 ApiResponse.UserData userData = apiResponse.getUserData();
@@ -251,20 +251,20 @@ public class Login extends AppCompatActivity {
                         } else {
                             Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
                         }
-                } else {
-                    Toast.makeText(getApplicationContext(), "Can't connect to database", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Can't connect to database", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-            @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                t.printStackTrace();
-                Log.e("API Call Failure", "Error: " + t.getMessage()); // Log lỗi
-                Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(), Login.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    t.printStackTrace();
+                    Log.e("API Call Failure", "Error: " + t.getMessage()); // Log lỗi
+                    Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), Login.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
     }
 //    private void CreateSqliteDb(){
 //        //Create DBase
