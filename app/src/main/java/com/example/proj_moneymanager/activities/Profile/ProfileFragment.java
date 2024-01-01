@@ -1,17 +1,23 @@
 package com.example.proj_moneymanager.activities.Profile;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.databinding.FragmentProfileBinding;
+import com.google.android.gms.auth.api.identity.Identity;
+import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
 import java.util.ArrayList;
@@ -23,11 +29,13 @@ import java.util.ArrayList;
  */
 public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
+    private static Context context;
     private AppConfig appConfig;
 //    private Identity.SignInClient oneTapClient;
     private ListView lv_profileOption;
     private ArrayList<Profile_Option> arr_profileOption;
-    private TextView textViewLogout;
+    private Button buttonLogout;
+    private SignInClient oneTapClient;
     private GoogleSignInClient googleSignInClient;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,8 +46,9 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public ProfileFragment() {
+    public ProfileFragment(Context context) {
         // Required empty public constructor
+        this.context = context;
     }
 
     /**
@@ -52,7 +61,7 @@ public class ProfileFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters
     public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
+        ProfileFragment fragment = new ProfileFragment(context);
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -91,7 +100,22 @@ public class ProfileFragment extends Fragment {
         );
         lv_profileOption.setAdapter(profileAdapter);
 
-        textViewLogout = view.findViewById(R.id.textview_logout);
+        oneTapClient = Identity.getSignInClient(context);
+        buttonLogout = view.findViewById(R.id.button_logout);
+        buttonLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                appConfig.updateUserLoginStatus(false);
+                appConfig.saveIsRememberLoginClicked(false);
+                if(appConfig.isLoginUsingGmail()){
+                    oneTapClient.signOut();
+                    appConfig.saveLoginUsingGmail(false);
+                }
+                //Move to login activity
+                Intent intent = new Intent(context, Login.class);
+                startActivity(intent);
+            }
+        });
 //        textViewLogout.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

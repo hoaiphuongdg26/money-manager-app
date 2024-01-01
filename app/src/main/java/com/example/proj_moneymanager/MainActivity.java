@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         CalendarFragment calendarFragment = new CalendarFragment();
         calendarFragment.setArguments(bundle);
 
-        ProfileFragment profileFragment = new ProfileFragment();
+        ProfileFragment profileFragment = new ProfileFragment(this);
         profileFragment.setArguments(bundle);
 
         binding.navBar.setOnItemSelectedListener(item->{
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             registerReceiver(networkMonitor, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }
+
     }
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
