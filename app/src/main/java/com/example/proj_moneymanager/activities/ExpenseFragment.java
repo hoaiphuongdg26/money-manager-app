@@ -2,11 +2,8 @@ package com.example.proj_moneymanager.activities;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +20,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.proj_moneymanager.database.MySingleton;
 import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
+import com.example.proj_moneymanager.database.MySingleton;
+import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.FragmentExpenseBinding;
 
 import org.json.JSONException;
@@ -40,12 +38,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ExpenseFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ExpenseFragment extends Fragment {
     FragmentExpenseBinding binding;
     private Button monthYearText;
@@ -57,46 +49,10 @@ public class ExpenseFragment extends Fragment {
     ImageButton Import;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public ExpenseFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ExpenseFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ExpenseFragment newInstance(String param1, String param2) {
-        ExpenseFragment fragment = new ExpenseFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -150,7 +106,7 @@ public class ExpenseFragment extends Fragment {
             }
         });
     }
-    private String getTodaysDate()
+    public static String getTodaysDate()
     {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
@@ -159,11 +115,11 @@ public class ExpenseFragment extends Fragment {
         int day = cal.get(Calendar.DAY_OF_MONTH);
         return makeDateString(day, month, year);
     }
-    private String makeDateString(int day, int month, int year)
+    public static String makeDateString(int day, int month, int year)
     {
         return day +" "+ getMonthFormat(month) + " " + year;
     }
-    private String getMonthFormat(int month)
+    public static String getMonthFormat(int month)
     {
         if(month == 1)
             return "January";
@@ -213,9 +169,7 @@ public class ExpenseFragment extends Fragment {
         }
     }
     private boolean checkNetworkConnection() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
+        return NetworkMonitor.checkNetworkConnection(getContext());
     }
     public void readFromLocalStorage() {
         arrayListBill.clear();
@@ -312,7 +266,5 @@ public class ExpenseFragment extends Fragment {
         else {
             insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
         }
-
     }
-
 }

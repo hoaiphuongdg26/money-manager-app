@@ -1,8 +1,10 @@
 package com.example.proj_moneymanager;
 
 
-import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -19,11 +21,12 @@ import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
 import com.example.proj_moneymanager.activities.Profile.ProfileFragment;
 import com.example.proj_moneymanager.activities.Statistic.StatisticFragment;
 import com.example.proj_moneymanager.database.DbHelper;
+import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
-    BroadcastReceiver broadcastReceiver;
+    NetworkMonitor networkMonitor;
     DbHelper database = Login.database;
     long UserID;
 
@@ -83,14 +86,37 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
-
-        Toast.makeText(getApplicationContext(), "Welcome, "+ UserInformation.getFullName(getBaseContext(), UserID), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), UserInformation.getFullName(getBaseContext(), UserID), Toast.LENGTH_LONG).show();
+        networkMonitor = new NetworkMonitor();
+        registerNetworkBroadcastForNougat();
     }
+    private void registerNetworkBroadcastForNougat() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            registerReceiver(networkMonitor, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+        else {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            registerReceiver(networkMonitor, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
 
+    }
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,fragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(networkMonitor == null) networkMonitor = new NetworkMonitor();
+        //registerNetworkBroadcastForNougat();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(networkMonitor);
     }
 }

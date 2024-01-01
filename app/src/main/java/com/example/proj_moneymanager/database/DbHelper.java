@@ -131,17 +131,22 @@ public class DbHelper extends SQLiteOpenHelper {
         return database.insert(BillEntry.TABLE_NAME, null, values);
     }
 
-    public void insertBillToLocalDatabaseFromServer(int id, int userID, int categoryId, String note, Date datetime, double money, int synstatus, SQLiteDatabase database) {
+    public void updateBillInLocalDatabase(int id, int userID, int categoryId, String note, Date datetime, double money, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(BillEntry._ID, id);
-        values.put(BillEntry.COLUMN_USER_ID, userID);
-        values.put(BillEntry.COLUMN_CATEGORY_ID, categoryId);
-        values.put(BillEntry.COLUMN_NOTE, note);
-        values.put(BillEntry.COLUMN_TIMECREATE, datetime.getTime());
-        values.put(BillEntry.COLUMN_EXPENSE, money);
-
+//        values.put(BillEntry.COLUMN_USER_ID, userID);
+//        values.put(BillEntry.COLUMN_CATEGORY_ID, categoryId);
+//        values.put(BillEntry.COLUMN_NOTE, note);
+//        values.put(BillEntry.COLUMN_TIMECREATE, datetime.getTime());
+//        values.put(BillEntry.COLUMN_EXPENSE, money);
+//
         values.put(BillEntry.COLUMN_SYNC_STATUS, synstatus);
-        database.insert(BillEntry.TABLE_NAME, null, values);
+
+        //mới sửa
+        String selection = BillEntry._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+
+        database.update(BillEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
     public Cursor getBillById(long billID, SQLiteDatabase database) {
