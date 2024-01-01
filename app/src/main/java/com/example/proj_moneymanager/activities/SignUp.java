@@ -45,6 +45,9 @@ public class SignUp extends AppCompatActivity {
     SignInClient oneTapClient;
     BeginSignInRequest signInRequest;
     ImageButton btnGoogleSignUp;
+    String yourName;
+    String userName;
+    String password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +75,7 @@ public class SignUp extends AppCompatActivity {
         btnSignUp = findViewById(R.id.button_signup);
         //btnGoogleSignUp = findViewById(R.id.button_google);
         textViewMoveToLogin = findViewById(R.id.textview_moveToLogin);
-
+        btnGoogleSignUp = findViewById(R.id.button_google);
         btnGoogleSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +85,9 @@ public class SignUp extends AppCompatActivity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                yourName = editTextYourName.getText().toString();
+                userName = editTextUserName.getText().toString();
+                password = editTextPassword.getText().toString();
                 performSignUp();
                 //SET PROCESS BAR
             }
@@ -105,9 +111,9 @@ public class SignUp extends AppCompatActivity {
                                     SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
                                     String idToken = credential.getGoogleIdToken();
                                     if(idToken!=null){
-                                        editTextYourName.setText(credential.getDisplayName());
-                                        editTextUserName.setText(credential.getId());
-                                        editTextPassword.setText(credential.getPassword());
+                                        yourName = credential.getDisplayName();
+                                        userName = credential.getId();
+                                        password = idToken;
                                         performSignUp();
 //                                        Toast.makeText(getApplicationContext(),"Welcome, "+ email,Toast.LENGTH_SHORT).show();
 //
@@ -144,10 +150,6 @@ public class SignUp extends AppCompatActivity {
                 });
     }
     private void performSignUp() {
-        String yourName = editTextYourName.getText().toString();
-        String userName = editTextUserName.getText().toString();
-        String password = editTextPassword.getText().toString();
-
         Call<ApiResponse> call = ApiClient.getApiClient().create(ApiInterface.class)
                 .performUserSignUp(userName, password, yourName);
         call.enqueue(new Callback<ApiResponse>() {

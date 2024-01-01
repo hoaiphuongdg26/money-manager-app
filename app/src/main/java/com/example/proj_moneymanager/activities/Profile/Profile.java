@@ -3,6 +3,7 @@ package com.example.proj_moneymanager.activities.Profile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,7 +18,7 @@ import com.google.android.gms.auth.api.identity.SignInClient;
 import java.util.ArrayList;
 
 public class Profile extends AppCompatActivity {
-    TextView textViewLogout;
+    Button buttonLogout;
     private AppConfig appConfig;
 
     ListView lv_profileOption;
@@ -48,20 +49,21 @@ public class Profile extends AppCompatActivity {
         lv_profileOption.setAdapter(profileAdapter);
 
         //Xử lí Logout
-        textViewLogout = (TextView) findViewById(R.id.textview_logout);
-        textViewLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                appConfig.updateUserLoginStatus(false);
-                if(appConfig.isLoginUsingGmail()){
-                    oneTapClient.signOut();
-                    appConfig.saveLoginUsingGmail(false);
-                }
-                //Move to login activity
-                Intent intent = new Intent(getApplicationContext(), Login.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+//        buttonLogout = (Button) findViewById(R.id.button_logout);
+//        buttonLogout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                appConfig.updateUserLoginStatus(false);
+//                appConfig.saveIsRememberLoginClicked(false);
+//                if(appConfig.isLoginUsingGmail()){
+//                    oneTapClient.signOut();
+//                    appConfig.saveLoginUsingGmail(false);
+//                }
+//                //Move to login activity
+//                Intent intent = new Intent(getApplicationContext(), Login.class);
+//                startActivity(intent);
+//                finish();
+//            }
+//        });
     }
 }
