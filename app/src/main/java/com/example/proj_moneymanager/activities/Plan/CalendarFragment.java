@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,15 +94,77 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         //Chỗ này sau này sẽ lấy từ db ra đổ vào array
 //        arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
 //        arr_historyOption.add(new History_Option("Food", "Snack", R.drawable.btn_food,"-5,000"));
-        readFromLocalStorage();
+
+        //readFromLocalStorage();
+        readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(this);
+        readFromLocalStorageTask.execute();
+
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //loading the again
-                readFromLocalStorage();
+                //readFromLocalStorage();
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readFromLocalStorageTask.execute();
             }
         };
         return view;
+    }
+    class readFromLocalStorageTask extends AsyncTask<Void, Void, String> {
+        public readFromLocalStorageTask(CalendarFragment calendarFragment) {}
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            //Toast.makeText(getContext(), "read data completely", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
+
+            DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
+            SQLiteDatabase database = dbHelper.getReadableDatabase();
+            Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
+
+            //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+            int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+            //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+            int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
+            int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+            int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+            int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
+
+            while (cursor.moveToNext()) {
+                // Check if the column indices are valid before accessing the values
+                if (columnIndexNote != -1 && columnIndexMoney != -1) {
+                    Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+                    int userID = cursor.getInt(columnIndexUserID);
+//                int categoryID = cursor.getInt(columnIndexCategoryID);
+                    double money = cursor.getDouble(columnIndexMoney);
+                    String note = cursor.getString(columnIndexNote);
+                    int sync = cursor.getInt(columnIndexSyncStatus);
+
+                    // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
+                    History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, String.valueOf(money), sync);
+                    // Thêm vào danh sách
+                    arr_historyOption.add(historyOption);
+                } else {
+                    // Handle the case where the column indices are not found
+                }
+            }
+            //adapter.notifyDataSetChanged();
+            // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
+            historyAdapter = new HistoryAdapter(
+                    requireActivity(),
+                    arr_historyOption
+            );
+            lv_historyOption.setAdapter(historyAdapter);
+            historyAdapter.notifyDataSetChanged();
+            cursor.close();
+            dbHelper.close();
+            return null;
+        }
     }
 
     @Override
@@ -288,52 +351,52 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     {
         datePickerDialog.show();
     }
-    public void readFromLocalStorage() {
-        arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
-
-        DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
-
-        //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
-        int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
-        //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
-        int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
-        int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
-        int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
-        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
-
-        while (cursor.moveToNext()) {
-            // Check if the column indices are valid before accessing the values
-            if (columnIndexNote != -1 && columnIndexMoney != -1) {
-                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-                int userID = cursor.getInt(columnIndexUserID);
-//                int categoryID = cursor.getInt(columnIndexCategoryID);
-                double money = cursor.getDouble(columnIndexMoney);
-                String note = cursor.getString(columnIndexNote);
-                int sync = cursor.getInt(columnIndexSyncStatus);
-
-                // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
-                History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, String.valueOf(money), sync);
-                // Thêm vào danh sách
-                arr_historyOption.add(historyOption);
-            } else {
-                // Handle the case where the column indices are not found
-            }
-        }
-
-        //adapter.notifyDataSetChanged();
-
-
-        // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
-        historyAdapter = new HistoryAdapter(
-                requireActivity(),
-                arr_historyOption
-        );
-        lv_historyOption.setAdapter(historyAdapter);
-        historyAdapter.notifyDataSetChanged();
-        cursor.close();
-        dbHelper.close();
-    }
+//    public void readFromLocalStorage() {
+//        arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
+//
+//        DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
+//        SQLiteDatabase database = dbHelper.getReadableDatabase();
+//        Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
+//
+//        //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+//        int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+//        //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+//        int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
+//        int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+//        int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+//        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
+//
+//        while (cursor.moveToNext()) {
+//            // Check if the column indices are valid before accessing the values
+//            if (columnIndexNote != -1 && columnIndexMoney != -1) {
+//                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+//                int userID = cursor.getInt(columnIndexUserID);
+////                int categoryID = cursor.getInt(columnIndexCategoryID);
+//                double money = cursor.getDouble(columnIndexMoney);
+//                String note = cursor.getString(columnIndexNote);
+//                int sync = cursor.getInt(columnIndexSyncStatus);
+//
+//                // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
+//                History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, String.valueOf(money), sync);
+//                // Thêm vào danh sách
+//                arr_historyOption.add(historyOption);
+//            } else {
+//                // Handle the case where the column indices are not found
+//            }
+//        }
+//
+//        //adapter.notifyDataSetChanged();
+//
+//
+//        // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
+//        historyAdapter = new HistoryAdapter(
+//                requireActivity(),
+//                arr_historyOption
+//        );
+//        lv_historyOption.setAdapter(historyAdapter);
+//        historyAdapter.notifyDataSetChanged();
+//        cursor.close();
+//        dbHelper.close();
+//    }
 
 }
