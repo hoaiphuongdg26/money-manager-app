@@ -9,6 +9,47 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="10dp"
+        android:background="#EFF7FE"
+        android:weightSum="100">
+        <ImageButton
+            android:id="@+id/imagebutton_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/icon_left_forward"
+            android:visibility="invisible"
+            android:onClick="onBackButtonClick"/>
+        <TextView
+            android:id="@+id/textview_Header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="95"
+            android:text="STATISTIC"
+            android:gravity="start"
+            android:fontFamily="@font/sf_pro_text_medium"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            />
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="32dp"
+            android:layout_gravity="end"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/logo"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:weightSum="100"
         android:orientation="vertical"
         >
@@ -134,6 +175,7 @@
                 android:layout_weight="20"
                 android:layout_marginHorizontal="10dp">
                 <Button
+                    android:id="@+id/btn_cal_week"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -142,6 +184,7 @@
                     android:layout_margin="15dp"
                     />
                 <Button
+                    android:id="@+id/btn_cal_month"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -150,6 +193,7 @@
                     android:layout_margin="15dp"
                     />
                 <Button
+                    android:id="@+id/btn_cal_year"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -190,5 +234,6 @@
                 android:background="@drawable/rounded_background2"
                 />
         </LinearLayout>
+    </LinearLayout>
     </LinearLayout>
 </FrameLayout>
