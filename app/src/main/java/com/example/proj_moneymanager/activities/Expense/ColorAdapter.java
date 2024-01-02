@@ -53,7 +53,7 @@ public class ColorAdapter extends BaseAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             gridViewItem = inflater.inflate(R.layout.gv_item_color, null);
         }
-        ImageButton btnColor = gridViewItem.findViewById(R.id.imagebutton_item);
+        ImageButton btnColor = gridViewItem.findViewById(R.id.imagebutton_itemcolor);
         btnColor.setImageResource(colorDrawables[position]);
         btnColor.setOnClickListener(new View.OnClickListener() {
             @Override

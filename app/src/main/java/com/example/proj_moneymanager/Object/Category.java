@@ -3,14 +3,14 @@ package com.example.proj_moneymanager.Object;
 public class Category {
     int CategoryID;
     String Name;
-    int Icon;
+    String Icon;
     String Color;
     int SyncStatus;
 
-    public Category(int categoryID, String name, String color, int syncStatus) {
+    public Category(int categoryID, String name, String icon, String color, int syncStatus) {
         this.CategoryID = categoryID;
         this.Name = name;
-//        this.Icon = icon;
+        this.Icon = icon;
         this.Color = color;
         this.SyncStatus = syncStatus;
     }

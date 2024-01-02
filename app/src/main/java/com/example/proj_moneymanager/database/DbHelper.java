@@ -151,10 +151,10 @@ public class DbHelper extends SQLiteOpenHelper {
                 null
         );
     }
-    public long insertCategoryToLocalDatabaseFromApp(String name, String color, int syncstatus, SQLiteDatabase database) {
+    public long insertCategoryToLocalDatabaseFromApp(String name, String icon, String color, int syncstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(DbContract.CategoryEntry.COLUMN_NAME, name);
-//        values.put(DbContract.CategoryEntry.COLUMN_ICON, icon);
+        values.put(DbContract.CategoryEntry.COLUMN_ICON, icon);
         values.put(DbContract.CategoryEntry.COLUMN_COLOR, color);
         values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, syncstatus);
 
@@ -165,14 +165,14 @@ public class DbHelper extends SQLiteOpenHelper {
         String query = "SELECT " +
                 DbContract.CategoryEntry._ID + ", " +
                 DbContract.CategoryEntry.COLUMN_NAME + ", " +
-//                DbContract.CategoryEntry.COLUMN_ICON + ", " +
+                DbContract.CategoryEntry.COLUMN_ICON + ", " +
                 DbContract.CategoryEntry.COLUMN_COLOR + ", " +
                 DbContract.CategoryEntry.COLUMN_SYNC_STATUS +
                 " FROM " + DbContract.CategoryEntry.TABLE_NAME;
 
         return database.rawQuery(query, null);
     }
-    public void updateCategoryInLocalDatabase(int id, String name, String color, int synstatus, SQLiteDatabase database) {
+    public void updateCategoryInLocalDatabase(int id, String name, String icon, String color, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(DbContract.CategoryEntry._ID, id);
         values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, synstatus);

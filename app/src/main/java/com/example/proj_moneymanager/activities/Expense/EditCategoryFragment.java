@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditCategoryFragment extends Fragment implements ColorAdapter.OnColorClickListener{
+public class EditCategoryFragment extends Fragment implements ColorAdapter.OnColorClickListener, IconAdapter.OnIconClickListener{
     FragmentEditCategoryBinding binding;
     ArrayList<Category> arrayListCategory = new ArrayList<Category>();
     TextView nameCategory;
@@ -42,7 +42,8 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     private int selectedColorDrawable;
     Button Import;
     ColorAdapter colorAdapter;
-    String color;
+    IconAdapter iconAdapter;
+    String color, icon;
     public EditCategoryFragment(){}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,10 +52,14 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
         View view = binding.getRoot();
 
         nameCategory = binding.edittextNameCategory;
-        GridView gridView = binding.gridviewColor;
 
+        GridView gridviewColor = binding.gridviewColor;
         colorAdapter = new ColorAdapter(this, this);
-        gridView.setAdapter(colorAdapter);
+        gridviewColor.setAdapter(colorAdapter);
+
+        GridView gridviewIcon = binding.gridviewIcon;
+        iconAdapter =new IconAdapter(this, this);
+        gridviewIcon.setAdapter(iconAdapter);
 
         Import = (Button) binding.btnImport;
         Import.setOnClickListener(new View.OnClickListener() {
@@ -69,14 +74,13 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     private void ImportCategory(){
         // Lấy data
         String name = nameCategory.getText().toString();
-        if (selectedColorDrawable != -1) {
-            // Có sẵn ID của màu đã chọn, sử dụng nó trong quá trình chèn vào cơ sở dữ liệu
-             insertCategoryToServer(name, selectedColorDrawable);
+        if (name != null && icon != null && color != null) {
+             insertCategoryToServer(name);
         } else {
-            // Xử lý trường hợp khi không có màu nào được chọn
+            // Xử lý trường hợp khi thiếu input
         }
     }
-    private void insertCategoryToServer(String name, int selectedColorDrawable) {
+    private void insertCategoryToServer(String name) {
         if (checkNetworkConnection()){
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCCATEGORY,
                     new Response.Listener<String>() {
@@ -86,10 +90,10 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                                 JSONObject jsonObject = new JSONObject(response);
                                 String Response= jsonObject.getString("response");
                                 if (Response.equals("OK")){
-                                    insertCategoryToLocalDatabaseFromApp(name, color, DbContract.SYNC_STATUS_OK);
+                                    insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_OK);
                                     Toast.makeText(getContext(), "Import successful", Toast.LENGTH_LONG).show();
                                 }else {
-                                    insertCategoryToLocalDatabaseFromApp(name, color, DbContract.SYNC_STATUS_FAILED);
+                                    insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
                                     Toast.makeText(getContext(), "Import failed", Toast.LENGTH_LONG).show();
                                 }
                             }catch (JSONException e){
@@ -100,7 +104,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    insertCategoryToLocalDatabaseFromApp(name, color, DbContract.SYNC_STATUS_FAILED);
+                    insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
                     Toast.makeText(getContext(), "Error occurred during import", Toast.LENGTH_LONG).show();
                 }
             }){
@@ -109,6 +113,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
                     params.put("name", name);
+                    params.put("icon", icon);
                     params.put("color", color);
                     return params;
                 }
@@ -116,7 +121,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
             MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
         }
         else {
-            insertCategoryToLocalDatabaseFromApp(name, color, DbContract.SYNC_STATUS_FAILED);
+            insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
             Toast.makeText(getContext(), "No network connection. Import failed.", Toast.LENGTH_LONG).show();
         }
 
@@ -124,10 +129,10 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
     }
-    private long insertCategoryToLocalDatabaseFromApp(String name, String selectedColorDrawable, int syncstatus){
+    private long insertCategoryToLocalDatabaseFromApp(String name, String icon, String color, int syncstatus){
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
-        long categoryID = dbHelper.insertCategoryToLocalDatabaseFromApp(name, selectedColorDrawable, syncstatus, database);
+        long categoryID = dbHelper.insertCategoryToLocalDatabaseFromApp(name, icon, color, syncstatus, database);
         readFromLocalStorage();
         dbHelper.close();
         return categoryID;
@@ -140,7 +145,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
 
         int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
         int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
-//        int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
+        int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
         int columnIndexColor = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
         int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_SYNC_STATUS);
 
@@ -151,12 +156,12 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
 
                 int categoryID = cursor.getInt(columnIndexCategoryID);
                 String name = cursor.getString(columnIndexName);
-//                String icon = cursor.getString(columnIndexIcon);
+                String icon = cursor.getString(columnIndexIcon);
                 String color = cursor.getString(columnIndexColor);
                 int syncStatus = cursor.getInt(columnIndexSyncStatus);
 
 //                 Create a new Category object with all required parameters
-                Category category = new Category(categoryID, name, color, syncStatus);
+                Category category = new Category(categoryID, name, icon, color, syncStatus);
                 arrayListCategory.add(category);
             } else {
                 // Handle the case where the column indices are not found
@@ -171,5 +176,11 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     public void onColorClick(String colorDescription) {
         Toast.makeText(getContext(), "Resource Name: " + colorDescription, Toast.LENGTH_LONG).show();
         color = colorDescription;
+    }
+
+    @Override
+    public void onIconClick(String iconDescription) {
+        Toast.makeText(getContext(), "Resource Name: " + iconDescription, Toast.LENGTH_LONG).show();
+        icon = iconDescription;
     }
 }

@@ -111,7 +111,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                 Cursor categoryCursor = dbHelper.readBillFromLocalDatabase(database);
                 int columnIndexID_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry._ID);
                 int columnIndexName_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
-//        int columnIndexIcon_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
+                int columnIndexIcon_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
                 int columnIndexColor_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
                 int columnIndexSyncStatus_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_SYNC_STATUS);
                 while (categoryCursor.moveToNext()) {
@@ -119,7 +119,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                     if (syncStatus_CATEGORY == DbContract.SYNC_STATUS_FAILED) {
                         int categoryID = categoryCursor.getInt(columnIndexID_CATEGORY);
                         String name = categoryCursor.getString(columnIndexName_CATEGORY);
-//                        int icon = categoryCursor.getInt(columnIndexIcon_CATEGORY);
+                        String icon = categoryCursor.getString(columnIndexIcon_CATEGORY);
                         String color = categoryCursor.getString(columnIndexColor_CATEGORY);
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCCATEGORY,
                                 new Response.Listener<String>() {
@@ -129,7 +129,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                                             JSONObject jsonObject = new JSONObject(response);
                                             String serverResponse = jsonObject.getString("response");
                                             if (serverResponse.equals("OK")) {
-                                                dbHelper.updateCategoryInLocalDatabase(categoryID, name, color, DbContract.SYNC_STATUS_OK, database);
+                                                dbHelper.updateCategoryInLocalDatabase(categoryID, name, icon, color, DbContract.SYNC_STATUS_OK, database);
                                                 context.sendBroadcast(new Intent(DbContract.UI_UPDATE_BROADCAST));
                                             }
                                             else{

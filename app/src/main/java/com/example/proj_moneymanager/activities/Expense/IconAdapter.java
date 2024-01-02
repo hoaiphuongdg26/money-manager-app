@@ -1,7 +1,7 @@
 package com.example.proj_moneymanager.activities.Expense;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,27 +27,22 @@ public class IconAdapter extends BaseAdapter {
             R.drawable.ic_wifi,
             // ... Thêm các icon khác
     };
-    private int iconelectedPosition = -1;
+    private int selectedPosition = -1;
     public IconAdapter(EditCategoryFragment context) {
         this.context = context.requireContext();
     }
-
     @Override
     public int getCount() {
         return iconDrawables.length;
     }
-
     @Override
     public Object getItem(int position) {
         return iconDrawables[position];
     }
-
     @Override
     public long getItemId(int position) {
         return position;
     }
-
-    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View gridViewItem = convertView;
@@ -63,35 +58,54 @@ public class IconAdapter extends BaseAdapter {
             public void onClick(View v) {
                 // Xử lý sự kiện khi ImageButton được chọn
                 setSelectedPosition(position);
-
+                int iconDrawableId = iconDrawables[position];
+                String iconDescription = getResourceName(iconDrawableId);
+//                Toast.makeText(context, "Resource Name: " + iconDescription, Toast.LENGTH_LONG).show();
+                // Notify the listener with the selected icon description
+                if (iconClickListener != null) {
+                    iconClickListener.onIconClick(iconDescription);
+                }
             }
         });
 
         // Highlight selected button
-        btnIcon.setSelected(iconelectedPosition == position);
+        btnIcon.setSelected(selectedPosition == position);
 
         return gridViewItem;
     }
+    String getResourceName(int iconDrawableId) {
+        try {
+            return context.getResources().getResourceEntryName(iconDrawableId);
+        } catch (Resources.NotFoundException e) {
+            // Log the exception or handle it accordingly
+            e.printStackTrace();
+            return null;
+        }
+    }
     public void setSelectedPosition(int position) {
-        iconelectedPosition = position;
+        selectedPosition = position;
         notifyDataSetChanged(); // Refresh GridView to update selected item
-        notifyColorSelectedListener(iconDrawables[position]); // Notify the listener with the selected color
+        notifyIconSelectedListener(iconDrawables[position]); // Notify the listener with the selected icon
     }
 
-    // Define a listener interface to notify the selected color
+    // Define a listener interface to notify the selected icon
     public interface OnIconSelectedListener {
-        void onColorSelected(int colorDrawableId);
+        void onIconSelected(int iconDrawableId);
     }
 
     private IconAdapter.OnIconSelectedListener iconSelectedListener;
-
-    public void setOnColorSelectedListener(IconAdapter.OnIconSelectedListener listener) {
-        iconSelectedListener = listener;
+    private void notifyIconSelectedListener(int iconDrawableId) {
+        if (iconSelectedListener != null) {
+            iconSelectedListener.onIconSelected(iconDrawableId);
+        }
+    }
+    public interface OnIconClickListener {
+        void onIconClick(String iconDescription);
     }
 
-    private void notifyColorSelectedListener(int iconDrawableId) {
-        if (iconSelectedListener != null) {
-            iconSelectedListener.onColorSelected(iconDrawableId);
-        }
+    private IconAdapter.OnIconClickListener iconClickListener;
+    public IconAdapter(EditCategoryFragment context, IconAdapter.OnIconClickListener iconClickListener) {
+        this.context = context.requireContext();
+        this.iconClickListener = iconClickListener;
     }
 }
