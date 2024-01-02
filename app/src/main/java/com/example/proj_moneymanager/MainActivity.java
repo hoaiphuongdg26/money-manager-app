@@ -6,6 +6,9 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.proj_moneymanager.Object.UserInformation;
-import com.example.proj_moneymanager.activities.ExpenseFragment;
+import com.example.proj_moneymanager.activities.Expense.ExpenseFragment;
 import com.example.proj_moneymanager.activities.HomeFragment;
 import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
@@ -65,23 +68,18 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.menu_home:
                     replaceFragment(homeFragment);
-                    binding.textviewHeader.setText("HOME");
                     break;
                 case R.id.menu_chart:
                     replaceFragment(statisticFragment);
-                    binding.textviewHeader.setText("STATISTC");
                     break;
                 case R.id.menu_money:
                     replaceFragment(expenseFragment);
-                    binding.textviewHeader.setText("EXPENSE");
                     break;
                 case R.id.menu_calendar:
                     replaceFragment(calendarFragment);
-                    binding.textviewHeader.setText("CALENDAR");
                     break;
                 case R.id.menu_profile:
                     replaceFragment(profileFragment);
-                    binding.textviewHeader.setText("PROFILE");
                     break;
             }
             return true;
@@ -105,7 +103,18 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frame_layout,fragment);
         fragmentTransaction.commit();
     }
-
+    public void onBackButtonClick(View view) {
+        // Xử lý khi click ImageButton back
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.button_click);
+        view.startAnimation(animation);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager != null && fragmentManager.getBackStackEntryCount() > 0) {
+            // Nếu có fragment trong Stack, quay lại fragment trước đó
+            fragmentManager.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();

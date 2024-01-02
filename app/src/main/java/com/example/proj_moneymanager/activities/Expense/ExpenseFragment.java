@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager.activities;
+package com.example.proj_moneymanager.activities.Expense;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -14,6 +14,8 @@ import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -21,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.Object.Bill;
+import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -39,11 +42,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ExpenseFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ExpenseFragment extends Fragment {
     FragmentExpenseBinding binding;
     private Button monthYearText;
@@ -52,47 +50,11 @@ public class ExpenseFragment extends Fragment {
 
     String Note;
     double Expense;
-    ImageButton Import;
+    Button Import;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public ExpenseFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ExpenseFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ExpenseFragment newInstance(String param1, String param2) {
-        ExpenseFragment fragment = new ExpenseFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -101,12 +63,23 @@ public class ExpenseFragment extends Fragment {
         binding = FragmentExpenseBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
 
+        // Edit category
+        ImageButton imagebuttonEditCategory = binding.imagebuttonEditCategory;
+        imagebuttonEditCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Gọi sự kiện khi click ImageButton
+                onEditCategoryButtonClick();
+            }
+        });
+
+
         // Xử lý chọn tháng nhanh
         initDatePicker(view);
         monthYearText = (Button) binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
 
-        Import = (ImageButton) binding.btnImport;
+        Import = (Button) binding.btnImport;
         Import.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +89,17 @@ public class ExpenseFragment extends Fragment {
         });
         return view;
     }
+    public void onEditCategoryButtonClick (){
+        EditCategoryFragment editCategoryFragment = new EditCategoryFragment();
 
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame_layout, editCategoryFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
     private void initDatePicker(View view)
     {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
@@ -216,7 +199,7 @@ public class ExpenseFragment extends Fragment {
 //        return (networkInfo != null && networkInfo.isConnected());
         return NetworkMonitor.checkNetworkConnection(getContext());
     }
-    public void readFromLocalStorage() {
+    private void readFromLocalStorage() {
         arrayListBill.clear();
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -269,7 +252,7 @@ public class ExpenseFragment extends Fragment {
     }
     private void insertBillToServer(long userid, long categoryid, String note, Date timecreate, Double expense) {
         if (checkNetworkConnection()){
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {

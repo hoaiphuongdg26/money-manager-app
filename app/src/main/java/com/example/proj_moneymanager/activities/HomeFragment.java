@@ -1,44 +1,46 @@
 package com.example.proj_moneymanager.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ImageButton;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.example.proj_moneymanager.activities.Setting.Setting;
+import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.activities.Setting.SettingFragment;
 import com.example.proj_moneymanager.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
     private FragmentHomeBinding homeBinding;
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         homeBinding = FragmentHomeBinding.inflate(inflater, container, false);
+
+        // Bắt sự kiện click vào button "setting" sau khi view đã được tạo
+        ImageButton imagebuttonEditCategory = homeBinding.buttonSetting;
+        imagebuttonEditCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Gọi sự kiện khi click
+                onSettingButtonClick();
+            }
+        });
         return homeBinding.getRoot();
     }
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onSettingButtonClick (){
+        SettingFragment settingFragment = new SettingFragment();
 
-            // Bắt sự kiện click vào button "setting" sau khi view đã được tạo
-            homeBinding.buttonSetting.setOnClickListener(v -> {
-            // Hiển thị toast message khi nút được click
-            Toast.makeText(requireContext(), "Button Setting clicked!", Toast.LENGTH_SHORT).show();
-            //Chuyển qua setting
-                // Tạo Intent để chuyển từ Fragment này sang Activity Setting
-                Intent intent = new Intent(requireActivity(), Setting.class);
-                // Bắt đầu Activity mới
-                startActivity(intent);
-            });
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame_layout, settingFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
     }
 }
