@@ -34,8 +34,8 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
     @Override
     protected String doInBackground(Void... voids) {
         DbHelper dbHelper = new DbHelper(context);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, DbContract.SERVER_URL,
-                //Can tạo 1 url mới hoặc sửa sync.php cho việc get dâta
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, DbContract.SERVER_URL_GETDATABASE,
+                //Can tạo 1 url mới hoặc sửa sync.php cho việc get data
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -44,6 +44,7 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
                             Response = new JSONObject(response);
                             String serverResponse = Response.getString("response");
                             if (serverResponse.equals("OK")) {
+                                // Lấy dữ liệu từ server cho bảng Bill
                                 JSONArray BillData = Response.getJSONArray("billdata");
                                 // Open local SQLite database
                                 SQLiteDatabase database = dbHelper.getWritableDatabase();
@@ -79,6 +80,22 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
                                     database.insert(DbContract.BillEntry.TABLE_NAME, null, values);
                                 }
                                 // Close the database
+                                database.close();
+
+                                // Lấy dữ liệu từ server cho bảng Category
+                                JSONArray categoryData = Response.getJSONArray("categorydata");
+                                database = dbHelper.getWritableDatabase();
+                                database.delete(DbContract.CategoryEntry.TABLE_NAME, null, null);
+
+                                for (int i = 0; i < categoryData.length(); i++) {
+                                    JSONObject categoryItem = categoryData.getJSONObject(i);
+                                    ContentValues values = new ContentValues();
+                                    values.put(DbContract.CategoryEntry._ID, Integer.parseInt(categoryItem.getString("ID")));
+                                    values.put(DbContract.CategoryEntry.COLUMN_NAME, categoryItem.getString("Name"));
+//                                    values.put(DbContract.CategoryEntry.COLUMN_ICON, categoryItem.getString("Icon"));
+                                    values.put(DbContract.CategoryEntry.COLUMN_COLOR, categoryItem.getInt("Color"));
+                                    database.insert(DbContract.CategoryEntry.TABLE_NAME, null, values);
+                                }
                                 database.close();
                             } else {
                                 // Handle server response other than "OK"

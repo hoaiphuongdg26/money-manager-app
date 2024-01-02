@@ -3,7 +3,6 @@ package com.example.proj_moneymanager.database;
 import static com.example.proj_moneymanager.database.DbContract.BillEntry;
 import static com.example.proj_moneymanager.database.DbContract.UserInformationEntry;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -36,9 +35,16 @@ public class DbHelper extends SQLiteOpenHelper {
                     BillEntry.COLUMN_TIMECREATE + " DATETIME," +
                     BillEntry.COLUMN_EXPENSE + " DOUBLE," +
                     BillEntry.COLUMN_SYNC_STATUS + " INTEGER);";
-
+    private static final String CREATE_TABLE_CATEGORY =
+            "CREATE TABLE IF NOT EXISTS " + DbContract.CategoryEntry.TABLE_NAME + " (" +
+                    DbContract.CategoryEntry._ID + " INTEGER PRIMARY KEY," +
+                    DbContract.CategoryEntry.COLUMN_NAME + " VARCHAR(150)," +
+                    DbContract.CategoryEntry.COLUMN_ICON + " VARCHAR(150)," +
+                    DbContract.CategoryEntry.COLUMN_COLOR + " VARCHAR(150)," +
+                    DbContract.CategoryEntry.COLUMN_SYNC_STATUS + " INTEGER);";
     private static final String DROP_TABLE_USERINFORMATION = "DROP TABLE IF EXISTS " + UserInformationEntry.TABLE_NAME;
     private static final String DROP_TABLE_BILL = "DROP TABLE IF EXISTS " + BillEntry.TABLE_NAME;
+    private static final String DROP_TABLE_CATEGORY = "DROP TABLE IF EXISTS " + DbContract.CategoryEntry.TABLE_NAME;
 
     public DbHelper(Context context) {
         super(context, DbContract.DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,6 +57,7 @@ public class DbHelper extends SQLiteOpenHelper {
 //            db.execSQL(DROP_TABLE_USERINFORMATION);
             db.execSQL(CREATE_TABLE_USERINFORMATION);
             db.execSQL(CREATE_TABLE_BILL);
+            db.execSQL(CREATE_TABLE_CATEGORY);
         } catch (SQLException e) {
             Log.e("DbHelper", "Error creating tables: " + e.getMessage());
         }
@@ -60,6 +67,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(DROP_TABLE_USERINFORMATION);
         db.execSQL(DROP_TABLE_BILL);
+        db.execSQL(DROP_TABLE_CATEGORY);
         onCreate(db);
     }
     public void insertUserToLocalDatabase(String userID, String fullName, String userName, String password, String email, String phoneNumber, int synstatus, SQLiteDatabase database) {
@@ -74,25 +82,7 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(UserInformationEntry.COLUMN_SYNC_STATUS, synstatus);
         database.insertWithOnConflict(UserInformationEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
-    @SuppressLint("Range")
-    public long getUniqueUserID() {
-        SQLiteDatabase database = this.getWritableDatabase();
-        long userId = -1;
 
-        // Câu truy vấn SQL SELECT để lấy ID của bản ghi đầu tiên từ bảng userinformation
-        String query = "SELECT _id FROM "+ UserInformationEntry.TABLE_NAME +" LIMIT 1";
-        Cursor cursor = database.rawQuery(query, null);
-
-        // Kiểm tra xem có bản ghi nào không và lấy ID nếu có
-        if (cursor.moveToFirst()) {
-            userId = cursor.getLong(cursor.getColumnIndex("_id"));
-        }
-
-        cursor.close();
-        database.close();
-
-        return userId;
-    }
     // TABLE BILL
     public Cursor readBillFromLocalDatabase(SQLiteDatabase database) {
         String query = "SELECT " +
@@ -106,16 +96,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 " FROM " + BillEntry.TABLE_NAME;
 
         return database.rawQuery(query, null);
-    }
-
-    public void updateBillLocalDatabase(int billID, int syncStatus, SQLiteDatabase database) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(BillEntry.COLUMN_SYNC_STATUS, syncStatus);
-
-        String selection = BillEntry._ID + " = ?";
-        String[] selectionArgs = {String.valueOf(billID)};
-
-        database.update(BillEntry.TABLE_NAME, contentValues, selection, selectionArgs);
     }
 
     public long insertBillToLocalDatabaseFromApp(long userID, long categoryId, String note, Date timecreate, double money, int synstatus, SQLiteDatabase database) {
@@ -171,19 +151,36 @@ public class DbHelper extends SQLiteOpenHelper {
                 null
         );
     }
-
-    public void updateSyncStatus(long billID, int syncStatus, SQLiteDatabase database) {
+    public long insertCategoryToLocalDatabaseFromApp(String name, String color, int syncstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
-        values.put(BillEntry.COLUMN_SYNC_STATUS, syncStatus);
+        values.put(DbContract.CategoryEntry.COLUMN_NAME, name);
+//        values.put(DbContract.CategoryEntry.COLUMN_ICON, icon);
+        values.put(DbContract.CategoryEntry.COLUMN_COLOR, color);
+        values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, syncstatus);
 
-        String selection = BillEntry._ID + " = ?";
-        String[] selectionArgs = {String.valueOf(billID)};
-
-        database.update(
-                BillEntry.TABLE_NAME,
-                values,
-                selection,
-                selectionArgs
-        );
+        // Insert dữ liệu và trả về ID của hàng vừa thêm
+        return database.insert(DbContract.CategoryEntry.TABLE_NAME, null, values);
     }
+    public Cursor readCategoryFromLocalDatabase(SQLiteDatabase database) {
+        String query = "SELECT " +
+                DbContract.CategoryEntry._ID + ", " +
+                DbContract.CategoryEntry.COLUMN_NAME + ", " +
+//                DbContract.CategoryEntry.COLUMN_ICON + ", " +
+                DbContract.CategoryEntry.COLUMN_COLOR + ", " +
+                DbContract.CategoryEntry.COLUMN_SYNC_STATUS +
+                " FROM " + DbContract.CategoryEntry.TABLE_NAME;
+
+        return database.rawQuery(query, null);
+    }
+    public void updateCategoryInLocalDatabase(int id, String name, String color, int synstatus, SQLiteDatabase database) {
+        ContentValues values = new ContentValues();
+        values.put(DbContract.CategoryEntry._ID, id);
+        values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, synstatus);
+
+        String selection = DbContract.CategoryEntry._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+
+        database.update(DbContract.CategoryEntry.TABLE_NAME, values, selection, selectionArgs);
+    }
+
 }

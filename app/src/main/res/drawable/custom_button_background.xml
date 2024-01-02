@@ -12,7 +12,11 @@
         <shape>
             <solid android:color="@color/white" />
             <corners android:radius="10dp" />
-
+            <gradient
+                android:startColor="#5278C7"
+                android:endColor="#233F78"
+                android:angle="360"
+                />
         </shape>
     </item>
 </selector>

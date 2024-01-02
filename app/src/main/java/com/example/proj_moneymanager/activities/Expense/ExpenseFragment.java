@@ -14,6 +14,8 @@ import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -21,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.Object.Bill;
+import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -38,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 public class ExpenseFragment extends Fragment {
     FragmentExpenseBinding binding;
     private Button monthYearText;
@@ -46,25 +50,37 @@ public class ExpenseFragment extends Fragment {
 
     String Note;
     double Expense;
-    ImageButton Import;
+    Button Import;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
 
 
     public ExpenseFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentExpenseBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
 
+        // Edit category
+        ImageButton imagebuttonEditCategory = binding.imagebuttonEditCategory;
+        imagebuttonEditCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Gọi sự kiện khi click ImageButton
+                onEditCategoryButtonClick();
+            }
+        });
+
+
         // Xử lý chọn tháng nhanh
         initDatePicker(view);
         monthYearText = (Button) binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
 
-        Import = (ImageButton) binding.btnImport;
+        Import = (Button) binding.btnImport;
         Import.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +90,17 @@ public class ExpenseFragment extends Fragment {
         });
         return view;
     }
+    public void onEditCategoryButtonClick (){
+        EditCategoryFragment editCategoryFragment = new EditCategoryFragment();
 
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame_layout, editCategoryFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
     private void initDatePicker(View view)
     {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
@@ -171,7 +197,7 @@ public class ExpenseFragment extends Fragment {
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
     }
-    public void readFromLocalStorage() {
+    private void readFromLocalStorage() {
         arrayListBill.clear();
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -224,7 +250,7 @@ public class ExpenseFragment extends Fragment {
     }
     private void insertBillToServer(long userid, long categoryid, String note, Date timecreate, Double expense) {
         if (checkNetworkConnection()){
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
