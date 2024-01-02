@@ -93,7 +93,7 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
                                     values.put(DbContract.CategoryEntry._ID, Integer.parseInt(categoryItem.getString("ID")));
                                     values.put(DbContract.CategoryEntry.COLUMN_NAME, categoryItem.getString("Name"));
 //                                    values.put(DbContract.CategoryEntry.COLUMN_ICON, categoryItem.getString("Icon"));
-                                    values.put(DbContract.CategoryEntry.COLUMN_COLOR, categoryItem.getInt("Color"));
+                                    values.put(DbContract.CategoryEntry.COLUMN_COLOR, categoryItem.getString("Color"));
                                     database.insert(DbContract.CategoryEntry.TABLE_NAME, null, values);
                                 }
                                 database.close();

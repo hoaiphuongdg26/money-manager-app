@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager.activities;
+package com.example.proj_moneymanager.activities.Expense;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
