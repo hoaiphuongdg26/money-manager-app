@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 28, 2023 at 12:53 AM
+-- Generation Time: Jan 02, 2024 at 03:23 AM
 -- Server version: 5.7.40
 -- PHP Version: 8.1.13
 
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `bill` (
   `Expense` double DEFAULT NULL,
   `sync_status` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `bill`
@@ -46,8 +46,29 @@ CREATE TABLE IF NOT EXISTS `bill` (
 INSERT INTO `bill` (`ID`, `UserID`, `CategoryID`, `Note`, `TimeCreate`, `Expense`, `sync_status`) VALUES
 (5, 3, 1, 'not', '2023-12-28 00:00:00', 100000, NULL),
 (6, 3, 1, 'notoff', '2023-12-28 00:00:00', 300000, NULL),
-(7, 3, 1, 'notoff2', '2023-12-28 00:00:00', 300000, NULL),
-(8, 3, 1, 'not28', '2023-12-28 00:00:00', 10000, NULL);
+(10, 3, 1, 'note test db local', '2024-01-01 00:00:00', 10000, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `category`
+--
+
+DROP TABLE IF EXISTS `category`;
+CREATE TABLE IF NOT EXISTS `category` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(150) DEFAULT NULL,
+  `Icon` varchar(150) DEFAULT NULL,
+  `Color` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`ID`, `Name`, `Icon`, `Color`) VALUES
+(1, 'Food', NULL, 'colorbutton_1');
 
 -- --------------------------------------------------------
 
