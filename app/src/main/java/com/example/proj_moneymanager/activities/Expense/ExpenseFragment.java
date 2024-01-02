@@ -1,5 +1,6 @@
-package com.example.proj_moneymanager.activities;
+package com.example.proj_moneymanager.activities.Expense;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.database.Cursor;
@@ -11,9 +12,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -21,6 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.Object.Bill;
+import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -38,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 public class ExpenseFragment extends Fragment {
     FragmentExpenseBinding binding;
     private Button monthYearText;
@@ -46,25 +52,65 @@ public class ExpenseFragment extends Fragment {
 
     String Note;
     double Expense;
-    ImageButton Import;
+    int isExpense;
+    ImageButton Ibtn_Income, Ibtn_Expense;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
-
+    Button Import;
 
     public ExpenseFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentExpenseBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
 
+        // Edit category
+        ImageButton imagebuttonEditCategory = binding.imagebuttonEditCategory;
+        imagebuttonEditCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Gọi sự kiện khi click ImageButton
+                onEditCategoryButtonClick();
+            }
+        });
+
+
         // Xử lý chọn tháng nhanh
         initDatePicker(view);
         monthYearText = (Button) binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
 
-        Import = (ImageButton) binding.btnImport;
+        Ibtn_Expense = binding.imgbtnExpense;
+        //Mặc định khi chuyển sang view này là Expense
+        binding.textviewTypeofbill.setText("Expense");
+        isExpense = -1;
+
+        Ibtn_Income = binding.imgbtnIncome;
+        Ibtn_Income.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //set màu cho image button
+                //set text
+                binding.textviewTypeofbill.setText("Income");
+                //thay đổi chỉ số nhân = +1;
+                isExpense = 1;
+            }
+        });
+        Ibtn_Expense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //set màu cho image button
+                //set text
+                binding.textviewTypeofbill.setText("Expense");
+                //thay đổi chỉ số nhân = -1;
+                isExpense = -1;
+            }
+        });
+        Import = (Button) binding.btnImport;
+
         Import.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +120,17 @@ public class ExpenseFragment extends Fragment {
         });
         return view;
     }
+    public void onEditCategoryButtonClick (){
+        EditCategoryFragment editCategoryFragment = new EditCategoryFragment();
 
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame_layout, editCategoryFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
     private void initDatePicker(View view)
     {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
@@ -149,29 +205,58 @@ public class ExpenseFragment extends Fragment {
         //default should never happen
         return "JAN";
     }
+    @SuppressLint("SuspiciousIndentation")
     private void ImportBill(){
-        // Lấy data ngày
-        String datetimeString = monthYearText.getText().toString();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
-        try {
-            DateTime = dateFormat.parse(datetimeString);
-            Note = binding.edittextNote.getText().toString();
-            Expense = Double.parseDouble(binding.edittextExpense.getText().toString());
-            int CategoryID = 1;
-            long UserID = getArguments().getLong("UserID", 0);
+        //kiểm tra tv tiền
+        if(!binding.edittextTypeofbill.getText().toString().isEmpty()){
+            if(binding.edittextNote.getText().toString().isEmpty()) Note = "Unnamed Bill";
+                else Note = binding.edittextNote.getText().toString();
+                try{
+                    Expense = Double.parseDouble(binding.edittextTypeofbill.getText().toString());
+                    Expense = Expense*isExpense;
+                }catch (NumberFormatException e){
+                    Toast.makeText(getContext(),"Please enter a valid number",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Lấy data ngày
+                String datetimeString = monthYearText.getText().toString();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
+                try {
+                    DateTime = dateFormat.parse(datetimeString);
 
-            // Ghi vào db
-            insertBillToServer(UserID, CategoryID, Note, DateTime, Expense);
+                    // Lấy giờ, phút và giây của hệ thống
+                    Calendar currentCalendar = Calendar.getInstance();
+                    int hour = currentCalendar.get(Calendar.HOUR_OF_DAY);
+                    int minute = currentCalendar.get(Calendar.MINUTE);
+                    int second = currentCalendar.get(Calendar.SECOND);
+                    // Cập nhật giờ, phút và giây vào biến DateTime
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(DateTime);
+                    calendar.set(Calendar.HOUR_OF_DAY, hour);
+                    calendar.set(Calendar.MINUTE, minute);
+                    calendar.set(Calendar.SECOND, second);
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-            // Xử lý khi có lỗi chuyển đổi
+                    // DateTime đã được cập nhật với giờ, phút và giây của hệ thống
+                    Date updatedDateTime = calendar.getTime();
+                    int CategoryID = 1;
+                    long UserID = getArguments().getLong("UserID", 0);
+
+                    // Ghi vào db
+                    insertBillToServer(UserID, CategoryID, Note, updatedDateTime, Expense);
+                    //set giá trị mặc định cho các textview
+                    binding.edittextNote.setText("");
+                    binding.edittextTypeofbill.setText("");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    // Xử lý khi có lỗi chuyển đổi
+                }
         }
+        else Toast.makeText(getContext(),"Please enter a valid value",Toast.LENGTH_SHORT).show();
     }
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
     }
-    public void readFromLocalStorage() {
+    private void readFromLocalStorage() {
         arrayListBill.clear();
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -222,9 +307,9 @@ public class ExpenseFragment extends Fragment {
         dbHelper.close();
         return billID;
     }
-    private void insertBillToServer(long userid, long categoryid, String note, Date timecreate, Double expense) {
+    private void    insertBillToServer(long userid, long categoryid, String note, Date timecreate, Double expense) {
         if (checkNetworkConnection()){
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -237,6 +322,7 @@ public class ExpenseFragment extends Fragment {
                                 }else {
                                     billid = insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
                                 }
+                                Toast.makeText(getContext(),"Import bill successfully", Toast.LENGTH_SHORT).show();
                             }catch (JSONException e){
                                 e.printStackTrace();
                             }

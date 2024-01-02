@@ -22,9 +22,12 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.annotation.NonNull;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +43,7 @@ import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
 import com.example.proj_moneymanager.databinding.DialogBillEditBinding;
 import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +51,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -68,7 +73,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     ImageButton btnPreviousMonth;
     ImageButton btnNextMonth;
     FragmentCalendarBinding binding;
+    TextView tv_income,tv_expense,tv_total;
     private BroadcastReceiver broadcastReceiver;
+    long UserID;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,7 +83,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //        View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         binding = FragmentCalendarBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
-
+        UserID = getArguments().getLong("UserID", 0);
         //Xử lý Calendar
         initWidgets(view);
         selectedDate = LocalDate.now();
@@ -105,6 +112,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //        monthYearText = view.findViewById(R.id.btn_datetime_detail);
         monthYearText = binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
+        tv_income = binding.textviewIncome;
+        tv_expense = binding.textviewExpense;
+        tv_total = binding.textviewTotal;
 
         //Xử lý History Adapter cho listview
         lv_historyOption = view.findViewById(R.id.lv_optHistory);
@@ -295,6 +305,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             try {
                 Date DateTime = dateFormat.parse(datetimeString);
                 eachday_historyOption.clear();
+                ContentValues contentValues = MoneyCalculate(UserID,DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),"Day",getContext());
+                tv_income.setText(String.valueOf(contentValues.get("Income")));
+                tv_expense.setText(String.valueOf(contentValues.get("Expense")));
+                tv_total.setText(String.valueOf(contentValues.get("Total")));
+                ArrayList<History_Option> temp = new ArrayList<>();
                 //query arraylist history option userid + datetime
                 for (History_Option historyOption : arr_historyOption) {
                     Date date = historyOption.getDateTime();
@@ -353,11 +368,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             }
         });
     }
-    private String makeDateString(int day, int month, int year)
+    public static String makeDateString(int day, int month, int year)
     {
         return getMonthFormat(month) + " " + year;
     }
-    private String getMonthFormat(int month)
+    public static String getMonthFormat(int month)
     {
         if(month == 1)
             return "January";
@@ -378,7 +393,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         if(month == 9)
             return "September";
         if(month == 10)
-            return "Octorber";
+            return "October";
         if(month == 11)
             return "November";
         if(month == 12)
@@ -459,7 +474,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         Date finalTimeCreate = timeCreate;
 
                         double expense = cursor.getDouble(columnIndexMoney);
-                        StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL,
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                                 new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
@@ -520,7 +535,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
                 readFromLocalStorageTask.execute();
                 // Gửi yêu cầu xóa dữ liệu tương ứng trên server
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL,
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
@@ -560,52 +575,95 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         });
         dialog.show();
     }
-//    public void readFromLocalStorage() {
-//        arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
-//
-//        DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
-//        SQLiteDatabase database = dbHelper.getReadableDatabase();
-//        Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
-//
-//        //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
-//        int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
-//        //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
-//        int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
-//        int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
-//        int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
-//        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
-//
-//        while (cursor.moveToNext()) {
-//            // Check if the column indices are valid before accessing the values
-//            if (columnIndexNote != -1 && columnIndexMoney != -1) {
-//                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-//                int userID = cursor.getInt(columnIndexUserID);
-////                int categoryID = cursor.getInt(columnIndexCategoryID);
-//                double money = cursor.getDouble(columnIndexMoney);
-//                String note = cursor.getString(columnIndexNote);
-//                int sync = cursor.getInt(columnIndexSyncStatus);
-//
-//                // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
-//                History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, String.valueOf(money), sync);
-//                // Thêm vào danh sách
-//                arr_historyOption.add(historyOption);
-//            } else {
-//                // Handle the case where the column indices are not found
-//            }
-//        }
-//
-//        //adapter.notifyDataSetChanged();
-//
-//
-//        // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
-//        historyAdapter = new HistoryAdapter(
-//                requireActivity(),
-//                arr_historyOption
-//        );
-//        lv_historyOption.setAdapter(historyAdapter);
-//        historyAdapter.notifyDataSetChanged();
-//        cursor.close();
-//        dbHelper.close();
-//    }
+    //Hàm thống kê income, expense total
+    //public static -> các activity khác có thẻ dùng lại. vd biểu đồ
+    public static ContentValues MoneyCalculate(long userid, int day, int month, int year, String calBy, Context context){
+        ContentValues contentValues = new ContentValues();
+        LocalDate FirstDayOfWeek = LocalDate.of(year + 1, Month.of(month+1),day);
+        int firstDayOfWeek;
+        switch(FirstDayOfWeek.getDayOfWeek()){
+            case MONDAY:
+                firstDayOfWeek = 1;
+                break;
+            case TUESDAY:
+                firstDayOfWeek = 2;
+                break;
+            case WEDNESDAY:
+                firstDayOfWeek = 3;
+                break;
+            case THURSDAY:
+                firstDayOfWeek = 4;
+                break;
+            case FRIDAY:
+                firstDayOfWeek = 5;
+                break;
+            case SATURDAY:
+                firstDayOfWeek = 6;
+                break;
+            default:
+                firstDayOfWeek = 0;
+                break;
+        }
+        FirstDayOfWeek = FirstDayOfWeek.minusDays(firstDayOfWeek);
+        //Toast.makeText(context,String.valueOf(FirstDayOfWeek.getDayOfMonth())+" - " +String.valueOf(FirstDayOfWeek.plusDays(6).getDayOfMonth()),Toast.LENGTH_LONG).show();
 
+        long Income = 0, Expense = 0, Total;
+        DbHelper dbHelper = new DbHelper(context); // Sửa lỗi: sử dụng requireContext() thay vì this
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
+
+        int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+        int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+        int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+
+        while (cursor.moveToNext()){
+            //if (columnIndexMoney != -1) {
+                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+                int userID = cursor.getInt(columnIndexUserID);
+                double money = cursor.getDouble(columnIndexMoney);
+                if(userID == userid && year == DateTime.getYear()){
+                    if(calBy!="Year"){
+                        if(month == DateTime.getMonth()){
+                            if(calBy!="Month"){
+                                if(calBy == "Week"){
+                                    if(isDateInWeek(DateTime.getDate(),FirstDayOfWeek.getDayOfMonth(),FirstDayOfWeek.plusDays(6).getDayOfMonth())){
+                                        if(money < 0) Expense += money;
+                                        else Income += money;
+                                    }
+                                }
+                                else{
+                                    if(day==DateTime.getDate()){
+                                        if(money < 0) Expense += money;
+                                        else Income += money;
+                                    }
+                                }
+                            }else {
+                                if(money < 0) Expense += money;
+                                else Income += money;
+                            }
+                        }
+                    }
+                    else {
+                        if(money < 0) Expense += money;
+                        else Income += money;
+                    }
+                }
+            //}
+        }
+        Total = Income + Expense;
+        contentValues.put("Income", Income);
+        contentValues.put("Expense", Expense);
+        contentValues.put("Total", Total);
+        return contentValues;
+    }
+    public static boolean isDateInWeek(int day, int weekFirst,int weekLast){
+        if(weekFirst<weekLast){
+            if(weekFirst<=day && day <= weekLast) return true;
+            else return false;
+        }
+        else{
+            if(day<weekFirst && day < weekLast) return true;
+            return false;
+        }
+    }
 }

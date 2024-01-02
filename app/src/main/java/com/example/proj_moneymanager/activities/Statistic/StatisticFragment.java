@@ -2,6 +2,7 @@ package com.example.proj_moneymanager.activities.Statistic;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,9 +10,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
 import com.example.proj_moneymanager.activities.Plan.HistoryAdapter;
 import com.example.proj_moneymanager.activities.Plan.History_Option;
 import com.example.proj_moneymanager.databinding.FragmentStatisticBinding;
@@ -23,10 +26,14 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,8 +42,9 @@ import java.util.List;
  */
 public class StatisticFragment extends Fragment {
     FragmentStatisticBinding binding;
-    private Button monthYearText;
+    private Button monthYearText, Btn_cal_week, Btn_cal_month, Btn_cal_year;
     private DatePickerDialog datePickerDialog;
+    long UserID;
 
     ListView lv_historyOption;
     ArrayList<History_Option> arr_historyOption;
@@ -88,12 +96,35 @@ public class StatisticFragment extends Fragment {
 
         binding = FragmentStatisticBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+        UserID = getArguments().getLong("UserID", 0);
 
         // Xử lý chọn tháng nhanh
         initDatePicker(view);
         monthYearText = binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
-
+        //Gán 3 button tính
+        Btn_cal_week = binding.btnCalWeek;
+        Btn_cal_month = binding.btnCalMonth;
+        Btn_cal_year = binding.btnCalYear;
+        calculate(false,false);
+        Btn_cal_week.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calculate(false,true);
+            }
+        });
+        Btn_cal_month.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calculate(false,false);
+            }
+        });
+        Btn_cal_year.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calculate(true,false);
+            }
+        });
         // Xử lý BarChart: https://www.youtube.com/watch?v=WdsmQ3Zyn84
         UtilsBarChart();
 
@@ -195,7 +226,7 @@ public class StatisticFragment extends Fragment {
     }
     private String makeDateString(int day, int month, int year)
     {
-        return getMonthFormat(month) + " " + year;
+        return day + " "+ getMonthFormat(month) + " " + year;
     }
     private String getMonthFormat(int month)
     {
@@ -218,7 +249,7 @@ public class StatisticFragment extends Fragment {
         if(month == 9)
             return "September";
         if(month == 10)
-            return "Octorber";
+            return "October";
         if(month == 11)
             return "November";
         if(month == 12)
@@ -226,5 +257,29 @@ public class StatisticFragment extends Fragment {
 
         //default should never happen
         return "JAN";
+    }
+    private void calculate(boolean byYear, boolean byWeek){
+        String datetimeString = monthYearText.getText().toString();
+        String calBy = "Month";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
+        try {
+            Date DateTime = dateFormat.parse(datetimeString);
+            int month = DateTime.getMonth(), day = DateTime.getDate();
+            if(!byYear) {
+                if(byWeek)
+                    calBy = "Week";
+                else calBy = "Month";
+            }
+            else {
+                calBy = "Year";
+            }
+            ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID, day,
+                    month, DateTime.getYear(), calBy, getContext());
+            binding.textviewIncome.setText(String.valueOf(contentValues.get("Income")));
+            binding.textviewExpense.setText(String.valueOf(contentValues.get("Expense")));
+            binding.textviewTotal.setText(String.valueOf(contentValues.get("Total")));
+        }catch (ParseException e){
+
+        }
     }
 }

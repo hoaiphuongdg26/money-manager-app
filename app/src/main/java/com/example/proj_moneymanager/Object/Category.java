@@ -3,12 +3,16 @@ package com.example.proj_moneymanager.Object;
 public class Category {
     int CategoryID;
     String Name;
-    int Icon;
+    String Icon;
     String Color;
+    int SyncStatus;
 
-    public Category(int categoryID, String name) {
-        CategoryID = categoryID;
-        Name = name;
+    public Category(int categoryID, String name, String icon, String color, int syncStatus) {
+        this.CategoryID = categoryID;
+        this.Name = name;
+        this.Icon = icon;
+        this.Color = color;
+        this.SyncStatus = syncStatus;
     }
 
     public int getCategoryID() {
