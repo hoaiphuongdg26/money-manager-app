@@ -40,7 +40,7 @@
             android:name=".activities.Statistic.StatisticFragment"
             android:exported="true" />
         <activity
-            android:name=".activities.ExpenseFragment"
+            android:name=".activities.Expense.ExpenseFragment"
             android:exported="true" />
         <activity
             android:name=".activities.Plan.CalendarFragment"
@@ -49,8 +49,11 @@
             android:name=".activities.Profile.ProfileFragment"
             android:exported="true" />
         <activity
-            android:name=".activities.Setting.Setting"
+            android:name=".activities.Setting.SettingFragment"
             android:exported="true" />
+        <activity
+            android:name=".activities.Expense.EditCategoryFragment"
+            android:exported="true"/>
         <receiver android:name=".database.NetworkMonitor"
             android:exported="true">
             <intent-filter>

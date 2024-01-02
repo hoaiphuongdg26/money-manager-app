@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- border_selector.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Button pressed state -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" /> <!-- Set the color when selected -->
+            <corners android:radius="10dp" />
+            <stroke android:color="@color/light_blue" android:width="2dp" /> <!-- Set border color and width -->
+        </shape>
+    </item>
+    <!-- Default state -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" /> <!-- Set the default color -->
+            <stroke android:color="@android:color/transparent" android:width="2dp" /> <!-- Set border color and width -->
+        </shape>
+    </item>
+</selector>

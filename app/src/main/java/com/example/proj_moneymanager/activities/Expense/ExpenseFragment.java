@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager.activities;
+package com.example.proj_moneymanager.activities.Expense;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -23,6 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.Object.Bill;
+import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -40,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 public class ExpenseFragment extends Fragment {
     FragmentExpenseBinding binding;
     private Button monthYearText;
@@ -49,18 +53,30 @@ public class ExpenseFragment extends Fragment {
     String Note;
     double Expense;
     int isExpense;
-    ImageButton Import, Ibtn_Income, Ibtn_Expense;
+    ImageButton Ibtn_Income, Ibtn_Expense;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
-
+    Button Import;
 
     public ExpenseFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentExpenseBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+
+        // Edit category
+        ImageButton imagebuttonEditCategory = binding.imagebuttonEditCategory;
+        imagebuttonEditCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Gọi sự kiện khi click ImageButton
+                onEditCategoryButtonClick();
+            }
+        });
+
 
         // Xử lý chọn tháng nhanh
         initDatePicker(view);
@@ -93,7 +109,8 @@ public class ExpenseFragment extends Fragment {
                 isExpense = -1;
             }
         });
-        Import = (ImageButton) binding.btnImport;
+        Import = (Button) binding.btnImport;
+
         Import.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +120,17 @@ public class ExpenseFragment extends Fragment {
         });
         return view;
     }
+    public void onEditCategoryButtonClick (){
+        EditCategoryFragment editCategoryFragment = new EditCategoryFragment();
 
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame_layout, editCategoryFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
     private void initDatePicker(View view)
     {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
@@ -181,11 +208,11 @@ public class ExpenseFragment extends Fragment {
     @SuppressLint("SuspiciousIndentation")
     private void ImportBill(){
         //kiểm tra tv tiền
-        if(!binding.edittextExpense.getText().toString().isEmpty()){
+        if(!binding.edittextTypeofbill.getText().toString().isEmpty()){
             if(binding.edittextNote.getText().toString().isEmpty()) Note = "Unnamed Bill";
                 else Note = binding.edittextNote.getText().toString();
                 try{
-                    Expense = Double.parseDouble(binding.edittextExpense.getText().toString());
+                    Expense = Double.parseDouble(binding.edittextTypeofbill.getText().toString());
                     Expense = Expense*isExpense;
                 }catch (NumberFormatException e){
                     Toast.makeText(getContext(),"Please enter a valid number",Toast.LENGTH_SHORT).show();
@@ -217,8 +244,8 @@ public class ExpenseFragment extends Fragment {
                     // Ghi vào db
                     insertBillToServer(UserID, CategoryID, Note, updatedDateTime, Expense);
                     //set giá trị mặc định cho các textview
-                    binding.edittextExpense.setText("");
-                    binding.edittextExpense.setText("");
+                    binding.edittextNote.setText("");
+                    binding.edittextTypeofbill.setText("");
                 } catch (ParseException e) {
                     e.printStackTrace();
                     // Xử lý khi có lỗi chuyển đổi
@@ -229,7 +256,7 @@ public class ExpenseFragment extends Fragment {
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
     }
-    public void readFromLocalStorage() {
+    private void readFromLocalStorage() {
         arrayListBill.clear();
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -282,7 +309,7 @@ public class ExpenseFragment extends Fragment {
     }
     private void    insertBillToServer(long userid, long categoryid, String note, Date timecreate, Double expense) {
         if (checkNetworkConnection()){
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
