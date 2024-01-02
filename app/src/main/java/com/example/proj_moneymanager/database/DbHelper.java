@@ -148,7 +148,32 @@ public class DbHelper extends SQLiteOpenHelper {
 
         database.update(BillEntry.TABLE_NAME, values, selection, selectionArgs);
     }
+    public Cursor getBill(int userID, Date timecreate, SQLiteDatabase database) {
+        String[] projection = {
+                BillEntry.COLUMN_NOTE,
+                BillEntry.COLUMN_TIMECREATE,
+                BillEntry.COLUMN_EXPENSE,
+                BillEntry.COLUMN_CATEGORY_ID,
+                BillEntry.COLUMN_USER_ID
+        };
 
+        String whereClause = DbContract.BillEntry.COLUMN_USER_ID + "=? AND " +
+                DbContract.BillEntry.COLUMN_TIMECREATE + "=?";
+        String[] whereArgs = new String[]{
+                String.valueOf(userID),
+                String.valueOf(timecreate.getTime())
+        };
+
+        return database.query(
+                BillEntry.TABLE_NAME,
+                projection,
+                whereClause,
+                whereArgs,
+                null,
+                null,
+                null
+        );
+    }
     public Cursor getBillById(long billID, SQLiteDatabase database) {
         String[] projection = {
                 BillEntry.COLUMN_NOTE,

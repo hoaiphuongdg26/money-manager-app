@@ -258,6 +258,7 @@ public class ExpenseFragment extends Fragment {
                     params.put("expense", String.valueOf(expense));
                     params.put("categoryID", String.valueOf(categoryid));
                     params.put("userID", String.valueOf(userid));
+                    params.put("method", "INSERT");
                     return params;
                 }
             };

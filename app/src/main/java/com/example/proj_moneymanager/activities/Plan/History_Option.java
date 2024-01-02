@@ -35,4 +35,6 @@ public class History_Option {
     public int getUserID() { return userID;}
 
     public Date getDateTime() { return DateTime;}
+
+    public char[] getId() {return new char[0];}
 }

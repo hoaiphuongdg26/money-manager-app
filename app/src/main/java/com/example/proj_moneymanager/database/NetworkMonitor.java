@@ -96,6 +96,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                                 params.put("expense", String.valueOf(expense));
                                 params.put("categoryID", String.valueOf(categoryID));
                                 params.put("userID", String.valueOf(userID));
+                                params.put("method", "INSERT");
                                 return params;
                             }
                         };
