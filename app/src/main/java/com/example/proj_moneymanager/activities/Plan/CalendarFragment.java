@@ -34,11 +34,13 @@ import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener {
@@ -201,9 +203,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
             try {
                 Date DateTime = dateFormat.parse(datetimeString);
-                ContentValues contentValues = MoneyCalculate(UserID,DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),getContext());
-                tv_income.setText("+"+String.valueOf(contentValues.get("Income")));
-                tv_expense.setText("-"+String.valueOf(contentValues.get("Expense")));
+                ContentValues contentValues = MoneyCalculate(UserID,DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),"Day",getContext());
+                tv_income.setText(String.valueOf(contentValues.get("Income")));
+                tv_expense.setText(String.valueOf(contentValues.get("Expense")));
                 tv_total.setText(String.valueOf(contentValues.get("Total")));
                 ArrayList<History_Option> temp = new ArrayList<>();
                 //query arraylist history option userid + datetime
@@ -264,11 +266,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             }
         });
     }
-    private String makeDateString(int day, int month, int year)
+    public static String makeDateString(int day, int month, int year)
     {
         return getMonthFormat(month) + " " + year;
     }
-    private String getMonthFormat(int month)
+    public static String getMonthFormat(int month)
     {
         if(month == 1)
             return "January";
@@ -289,7 +291,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         if(month == 9)
             return "September";
         if(month == 10)
-            return "Octorber";
+            return "October";
         if(month == 11)
             return "November";
         if(month == 12)
@@ -350,12 +352,38 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         dbHelper.close();
     }
     //Hàm thống kê income, expense total
-    //Nếu ngày = 0 -> thống kê theo tháng
-    //Nếu tháng = 0 -> thống kê theo năm
-    //Thống kê theo tuần thì chưa biết
     //public static -> các activity khác có thẻ dùng lại. vd biểu đồ
-    public static ContentValues MoneyCalculate(long userid, int day, int month, int year, Context context){
+    public static ContentValues MoneyCalculate(long userid, int day, int month, int year, String calBy, Context context){
         ContentValues contentValues = new ContentValues();
+
+        LocalDate FirstDayOfWeek = LocalDate.of(year + 1, Month.of(month+1),day);
+        int firstDayOfWeek;
+        switch(FirstDayOfWeek.getDayOfWeek()){
+            case MONDAY:
+                firstDayOfWeek = 1;
+                break;
+            case TUESDAY:
+                firstDayOfWeek = 2;
+                break;
+            case WEDNESDAY:
+                firstDayOfWeek = 3;
+                break;
+            case THURSDAY:
+                firstDayOfWeek = 4;
+                break;
+            case FRIDAY:
+                firstDayOfWeek = 5;
+                break;
+            case SATURDAY:
+                firstDayOfWeek = 6;
+                break;
+            default:
+                firstDayOfWeek = 0;
+                break;
+        }
+        FirstDayOfWeek = FirstDayOfWeek.minusDays(firstDayOfWeek);
+        //Toast.makeText(context,String.valueOf(FirstDayOfWeek.getDayOfMonth())+" - " +String.valueOf(FirstDayOfWeek.plusDays(6).getDayOfMonth()),Toast.LENGTH_LONG).show();
+
         long Income = 0, Expense = 0, Total;
         DbHelper dbHelper = new DbHelper(context); // Sửa lỗi: sử dụng requireContext() thay vì this
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -371,30 +399,48 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 int userID = cursor.getInt(columnIndexUserID);
                 double money = cursor.getDouble(columnIndexMoney);
                 if(userID == userid && year == DateTime.getYear()){
-                    if(month!=-1){
+                    if(calBy!="Year"){
                         if(month == DateTime.getMonth()){
-                            if(day!=-1){
-                                if(day==DateTime.getDate()){
-                                    if(money > 0) Expense += money;
-                                    else Income += money;
+                            if(calBy!="Month"){
+                                if(calBy == "Week"){
+                                    if(isDateInWeek(DateTime.getDate(),FirstDayOfWeek.getDayOfMonth(),FirstDayOfWeek.plusDays(6).getDayOfMonth())){
+                                        if(money < 0) Expense += money;
+                                        else Income += money;
+                                    }
+                                }
+                                else{
+                                    if(day==DateTime.getDate()){
+                                        if(money < 0) Expense += money;
+                                        else Income += money;
+                                    }
                                 }
                             }else {
-                                if(money > 0) Expense += money;
+                                if(money < 0) Expense += money;
                                 else Income += money;
                             }
                         }
                     }
                     else {
-                        if(money > 0) Expense += money;
+                        if(money < 0) Expense += money;
                         else Income += money;
                     }
                 }
             //}
         }
-        Total = Income - Expense;
-        contentValues.put("Income",Income);
-        contentValues.put("Expense",Expense);
-        contentValues.put("Total",Total);
+        Total = Income + Expense;
+        contentValues.put("Income", Income);
+        contentValues.put("Expense", Expense);
+        contentValues.put("Total", Total);
         return contentValues;
+    }
+    public static boolean isDateInWeek(int day, int weekFirst,int weekLast){
+        if(weekFirst<weekLast){
+            if(weekFirst<=day && day <= weekLast) return true;
+            else return false;
+        }
+        else{
+            if(day<weekFirst && day < weekLast) return true;
+            return false;
+        }
     }
 }

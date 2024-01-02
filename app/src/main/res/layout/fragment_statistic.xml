@@ -134,6 +134,7 @@
                 android:layout_weight="20"
                 android:layout_marginHorizontal="10dp">
                 <Button
+                    android:id="@+id/btn_cal_week"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -142,6 +143,7 @@
                     android:layout_margin="15dp"
                     />
                 <Button
+                    android:id="@+id/btn_cal_month"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -150,6 +152,7 @@
                     android:layout_margin="15dp"
                     />
                 <Button
+                    android:id="@+id/btn_cal_year"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

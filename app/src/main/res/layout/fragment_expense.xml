@@ -55,6 +55,7 @@
                         android:elevation="50dp"
                         >
                         <ImageButton
+                            android:id="@+id/imgbtn_expense"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
@@ -66,6 +67,7 @@
                             android:contentDescription="Button to view expense"
                             />
                         <ImageButton
+                            android:id="@+id/imgbtn_income"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
@@ -119,7 +121,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textview_expense"
+                    android:id="@+id/textview_typeofbill"
                     android:text="Expense"
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="16sp"
@@ -137,7 +139,7 @@
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="16sp"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
-                    app:layout_constraintTop_toBottomOf="@id/textview_expense"
+                    app:layout_constraintTop_toBottomOf="@id/textview_typeofbill"
                     android:layout_marginTop="10dp"
                     android:textColor="@color/black_blue"
                     >
@@ -219,8 +221,8 @@
                     android:text="VNĐ"
                     android:textSize="16sp"
                     app:layout_constraintRight_toRightOf="@+id/right_forward"
-                    app:layout_constraintTop_toTopOf="@id/textview_expense"
-                    app:layout_constraintBottom_toBottomOf="@id/textview_expense"
+                    app:layout_constraintTop_toTopOf="@id/textview_typeofbill"
+                    app:layout_constraintBottom_toBottomOf="@id/textview_typeofbill"
                     >
                 </TextView>
 
@@ -229,8 +231,8 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/edittext_income"
-                    app:layout_constraintTop_toTopOf="@id/textview_expense"
-                    app:layout_constraintBottom_toBottomOf="@id/textview_expense"
+                    app:layout_constraintTop_toTopOf="@id/textview_typeofbill"
+                    app:layout_constraintBottom_toBottomOf="@id/textview_typeofbill"
                     app:layout_constraintLeft_toLeftOf="@id/left_forward"
                     app:layout_constraintRight_toLeftOf="@id/textview_VND"
                     android:layout_marginRight="5dp"

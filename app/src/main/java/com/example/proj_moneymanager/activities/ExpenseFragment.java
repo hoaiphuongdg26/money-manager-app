@@ -48,7 +48,8 @@ public class ExpenseFragment extends Fragment {
 
     String Note;
     double Expense;
-    ImageButton Import;
+    int isExpense;
+    ImageButton Import, Ibtn_Income, Ibtn_Expense;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
 
 
@@ -66,6 +67,32 @@ public class ExpenseFragment extends Fragment {
         monthYearText = (Button) binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
 
+        Ibtn_Expense = binding.imgbtnExpense;
+        //Mặc định khi chuyển sang view này là Expense
+        binding.textviewTypeofbill.setText("Expense");
+        isExpense = -1;
+
+        Ibtn_Income = binding.imgbtnIncome;
+        Ibtn_Income.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //set màu cho image button
+                //set text
+                binding.textviewTypeofbill.setText("Income");
+                //thay đổi chỉ số nhân = +1;
+                isExpense = 1;
+            }
+        });
+        Ibtn_Expense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //set màu cho image button
+                //set text
+                binding.textviewTypeofbill.setText("Expense");
+                //thay đổi chỉ số nhân = -1;
+                isExpense = -1;
+            }
+        });
         Import = (ImageButton) binding.btnImport;
         Import.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,6 +186,7 @@ public class ExpenseFragment extends Fragment {
                 else Note = binding.edittextNote.getText().toString();
                 try{
                     Expense = Double.parseDouble(binding.edittextExpense.getText().toString());
+                    Expense = Expense*isExpense;
                 }catch (NumberFormatException e){
                     Toast.makeText(getContext(),"Please enter a valid number",Toast.LENGTH_SHORT).show();
                     return;

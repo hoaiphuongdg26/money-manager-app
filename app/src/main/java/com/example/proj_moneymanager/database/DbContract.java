@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 public class DbContract {
     public static final int SYNC_STATUS_OK = 0;
     public static final int SYNC_STATUS_FAILED = 1;
-    public static final String SERVER_URL = "http://172.16.1.54/money_management/sync.php/";
+    public static final String SERVER_URL = "http://172.16.1.224/money_management/sync.php/";
     public static final String UI_UPDATE_BROADCAST = "com.example.proj_moneynanager.uiupdatebroadcast";
     public static final String DATABASE_NAME = "moneyManagement";
 
