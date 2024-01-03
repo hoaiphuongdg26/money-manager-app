@@ -60,7 +60,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     String Note;
     double Expense;
     Button Import;
-    int CategoryID;
+    long CategoryID;
     int isExpense;
     ImageButton Ibtn_Income, Ibtn_Expense;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
@@ -390,7 +390,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         }
     }
     @Override
-    public void onCategoryClick(int categoryId) {
+    public void onCategoryClick(long categoryId) {
         CategoryID = categoryId;
         categoryAdapter.setSelectedPosition(categoryId); // Assuming you have a reference to the adapter
         categoryAdapter.notifyDataSetChanged();

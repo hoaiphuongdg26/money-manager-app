@@ -17,7 +17,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:focusable="true"
         android:clickable="true"
-        android:background="@drawable/colorbutton_0"
+        android:background="@drawable/colorbutton_default"
         >
         <LinearLayout
             android:id="@id/linearlayout_border"
@@ -25,7 +25,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:background="@drawable/border_selector3"
-            android:onClick="getPosition"
             >
         <ImageButton
             android:id="@+id/imagebutton_iconCategory"
@@ -46,7 +45,7 @@
             android:fontFamily="@font/sf_pro_text_medium"
             android:gravity="center"
             android:layout_marginBottom="20dp"
-            android:text="Food"
+            android:text="####"
             android:textColor="@color/white"
             android:layout_gravity="center"
             />

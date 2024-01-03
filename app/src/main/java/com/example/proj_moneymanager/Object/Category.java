@@ -1,13 +1,13 @@
 package com.example.proj_moneymanager.Object;
 
 public class Category {
-    int CategoryID;
+    long CategoryID;
     String Name;
     String Icon;
     String Color;
     int SyncStatus;
 
-    public Category(int categoryID, String name, String icon, String color, int syncStatus) {
+    public Category(long categoryID, String name, String icon, String color, int syncStatus) {
         this.CategoryID = categoryID;
         this.Name = name;
         this.Icon = icon;
@@ -15,7 +15,7 @@ public class Category {
         this.SyncStatus = syncStatus;
     }
 
-    public int getID() {
+    public long getID() {
         return CategoryID;
     }
 

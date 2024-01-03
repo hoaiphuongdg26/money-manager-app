@@ -20,7 +20,7 @@ public class CategoryAdapter extends BaseAdapter {
     private Context context;
     private Activity myContext;
     private ArrayList<Category> arrCategory;
-    private int selectedPosition = -1;
+    private long selectedPosition = -1;
     private Category categorySelectedListener;
     public CategoryAdapter(Activity context, ArrayList<Category> categoryOptions){
         this.myContext = context;
@@ -98,7 +98,7 @@ public class CategoryAdapter extends BaseAdapter {
                 notifyDataSetChanged();
 
                 // Save the selected category ID
-                int selectedCategoryId = arrCategory.get(position).getID(); // Replace with your actual method to get the category ID
+                long selectedCategoryId = arrCategory.get(position).getID(); // Replace with your actual method to get the category ID
 
                 // Notify the listener (ExpenseFragment) about the selected category ID
                 if (categoryClickListener != null) {
@@ -120,14 +120,14 @@ public class CategoryAdapter extends BaseAdapter {
     private int getResourceId(Context context, String resourceName) {
         return context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
     }
-    public void setSelectedPosition(int position) {
+    public void setSelectedPosition(long position) {
         if (position >= 0 && position < arrCategory.size()) {
             selectedPosition = position;
             notifyDataSetChanged();
         }// Refresh GridView to update selected item
     }
     public interface OnCategoryClickListener {
-        void onCategoryClick(int categoryId);
+        void onCategoryClick(long categoryId);
     }
     private OnCategoryClickListener categoryClickListener;
     public CategoryAdapter(ExpenseFragment context, OnCategoryClickListener categoryClickListener, ArrayList<Category> categoryOptions) {

@@ -35,8 +35,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.AsyncTasks.readCategoryFromLocalStorage;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.Bill;
+import com.example.proj_moneymanager.Object.Category;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
@@ -68,6 +70,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     ListView lv_historyOption;
 //    ArrayList<History_Option> arr_historyOption, eachday_historyOption;
     ArrayList<Bill> arrayListBill, eachday_arrayListBill;
+    ArrayList<Category> arryListCategory;
     BillAdapter billAdapter;
     private DatePickerDialog datePickerDialog;
     ImageButton btnPreviousMonth;
@@ -109,6 +112,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 previousMonthAction(v);
                 readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
+
+                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
+                readCategoryFromLocalStorage.execute();
             }
         });
 
@@ -120,6 +126,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 nextMonthAction(v);
                 readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
+
+                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
+                readCategoryFromLocalStorage.execute();
             }
         });
 
@@ -141,6 +150,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
         readFromLocalStorageTask.execute();
 
+        readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(),arryListCategory);
+        readCategoryFromLocalStorage.execute();
+
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -148,6 +160,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 //readFromLocalStorage();
                 readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
+
+                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
+                readCategoryFromLocalStorage.execute();
             }
         };
         lv_historyOption.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -338,7 +353,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         eachday_arrayListBill.add(bill);
                 }
                 //do vao adapter
-                billAdapter = new BillAdapter(requireActivity(),eachday_arrayListBill);
+                billAdapter = new BillAdapter(requireActivity(),eachday_arrayListBill, arryListCategory);
                 lv_historyOption.setAdapter(billAdapter);
             } catch (ParseException e) {
                 Toast.makeText(getContext(),"Error parsing Datetime",Toast.LENGTH_LONG).show();
@@ -474,6 +489,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 // Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
                 readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
+                
+                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
+                readCategoryFromLocalStorage.execute();
                 //fetch data mới lên remote db
                 Cursor cursor = dbHelper.getBill(billItem.getUserID(), billItem.getDatetime(), database);
                 int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
@@ -553,6 +571,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 database.delete(DbContract.BillEntry.TABLE_NAME, whereClause, whereArgs);
                 readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
+
+                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
+                readCategoryFromLocalStorage.execute();
                 // Gửi yêu cầu xóa dữ liệu tương ứng trên server
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                         new Response.Listener<String>() {

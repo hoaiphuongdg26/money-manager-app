@@ -21,7 +21,11 @@ public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> 
     }
     @Override
     protected String doInBackground(Void... voids) {
-        arrayListCategory.clear();
+        if (arrayListCategory == null) {
+            arrayListCategory = new ArrayList<>();
+        } else {
+            arrayListCategory.clear();
+        }
         DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.readCategoryFromLocalDatabase(database);

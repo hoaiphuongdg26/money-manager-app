@@ -11,6 +11,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.proj_moneymanager.Object.Category;
+
+import java.util.ArrayList;
 import java.util.Date;
 
 public class DbHelper extends SQLiteOpenHelper {
@@ -249,6 +252,54 @@ public class DbHelper extends SQLiteOpenHelper {
 
         cursor.close();
         return categoryName;
+    }
+    public Category getItemCategory(long categoryID, SQLiteDatabase database) {
+        Category category = null;
+
+        String[] projection = {
+                DbContract.CategoryEntry._ID,
+                DbContract.CategoryEntry.COLUMN_NAME,
+                DbContract.CategoryEntry.COLUMN_ICON,
+                DbContract.CategoryEntry.COLUMN_COLOR,
+                DbContract.CategoryEntry.COLUMN_SYNC_STATUS
+        };
+
+        String selection = DbContract.CategoryEntry._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(categoryID)};
+
+        Cursor cursor = database.query(
+                DbContract.CategoryEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        if (cursor.moveToFirst()) {
+            int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
+            int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
+            int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
+            int columnIndexColor = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
+            int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_SYNC_STATUS);
+
+            if (columnIndexCategoryID != -1 && columnIndexName != -1 &&
+                    columnIndexColor != -1 && columnIndexIcon != -1 &&
+                    columnIndexSyncStatus != -1) {
+
+                long id = cursor.getLong(columnIndexCategoryID);
+                String name = cursor.getString(columnIndexName);
+                String icon = cursor.getString(columnIndexIcon);
+                String color = cursor.getString(columnIndexColor);
+                int syncStatus = cursor.getInt(columnIndexSyncStatus);
+
+                category = new Category(id, name, icon, color, syncStatus);
+            }
+        }
+
+        cursor.close();
+        return category;
     }
 
 
