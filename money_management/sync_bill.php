@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $status = 'FAILED: Invalid datetime format';
     } else {
         // Format the DateTime object to the required format for MySQL DATETIME
+        
         $formattedDatetime = $timecreate->format('Y-m-d H:i:s');
         if($method == 'INSERT'){
             // Insert data into the database
