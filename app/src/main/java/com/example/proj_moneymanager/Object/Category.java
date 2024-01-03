@@ -38,4 +38,5 @@ public class Category {
     public String getIcon() {
         return Icon;
     }
+
 }

@@ -273,7 +273,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
 
                     // DateTime đã được cập nhật với giờ, phút và giây của hệ thống
                     Date updatedDateTime = calendar.getTime();
-                    int CategoryID = 1;
+//                    CategoryID = 1;
                     long UserID = getArguments().getLong("UserID", 0);
 
                     // Ghi vào db

@@ -129,7 +129,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         database.update(BillEntry.TABLE_NAME, values, selection, selectionArgs);
     }
-    public Cursor getBill(int userID, Date timecreate, SQLiteDatabase database) {
+    public Cursor getBill(long userID, Date timecreate, SQLiteDatabase database) {
         String[] projection = {
                 BillEntry.COLUMN_NOTE,
                 BillEntry.COLUMN_TIMECREATE,
@@ -223,4 +223,33 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return exists;
     }
+    public String getCategoryNameById(long categoryId, SQLiteDatabase database) {
+        String[] projection = {
+                DbContract.CategoryEntry.COLUMN_NAME
+        };
+
+        String selection = DbContract.CategoryEntry._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(categoryId)};
+
+        Cursor cursor = database.query(
+                DbContract.CategoryEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        String categoryName = "";
+
+        if (cursor.moveToFirst()) {
+            categoryName = cursor.getString(cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME));
+        }
+
+        cursor.close();
+        return categoryName;
+    }
+
+
 }

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,13 +35,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.MainActivity;
+import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
 import com.example.proj_moneymanager.databinding.DialogBillEditBinding;
 import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,8 +67,8 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     private LocalDate selectedDate;
     ListView lv_historyOption;
 //    ArrayList<History_Option> arr_historyOption, eachday_historyOption;
-    ArrayList<Bill>
-    HistoryAdapter historyAdapter;
+    ArrayList<Bill> arrayListBill, eachday_arrayListBill;
+    BillAdapter billAdapter;
     private DatePickerDialog datePickerDialog;
     ImageButton btnPreviousMonth;
     ImageButton btnNextMonth;
@@ -91,8 +93,8 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
         //Xử lý History Adapter cho listview
         lv_historyOption = view.findViewById(R.id.lv_optHistory);
-        arr_historyOption = new ArrayList<>();
-        eachday_historyOption = new ArrayList<>();
+        arrayListBill = new ArrayList<Bill>();
+        eachday_arrayListBill = new ArrayList<Bill>();
 
         //Xử lý Calendar
         initWidgets(view);
@@ -105,7 +107,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             public void onClick(View v) {
                 // Call the method to handle the previous month action
                 previousMonthAction(v);
-                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
             }
         });
@@ -116,7 +118,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             public void onClick(View v) {
                 // Call the method to handle the previous month action
                 nextMonthAction(v);
-                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
             }
         });
@@ -132,11 +134,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
         //Xử lý History Adapter cho listview
         lv_historyOption = view.findViewById(R.id.lv_optHistory);
-        arr_historyOption = new ArrayList<>();
-        eachday_historyOption = new ArrayList<>();
+        arrayListBill = new ArrayList<>();
+        eachday_arrayListBill = new ArrayList<>();
 
         //readFromLocalStorage();
-        readBillFromLocalStorage readFromLocalStorageTask = new readBillFromLocalStorage(this);
+        readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
         readFromLocalStorageTask.execute();
 
         broadcastReceiver = new BroadcastReceiver() {
@@ -144,7 +146,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             public void onReceive(Context context, Intent intent) {
                 //loading the again
                 //readFromLocalStorage();
-                readBillFromLocalStorage readFromLocalStorageTask = new readBillFromLocalStorage(context,);
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
             }
         };
@@ -152,24 +154,24 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Lấy ra mục được chọn từ Adapter
-                History_Option selectedBill = historyAdapter.getArrHistoryOption().get(position);
+                Bill selectedBill = billAdapter.getArrHistoryOption().get(position);
                 dialogEditBill(selectedBill, position);
             }
         });
         return view;
     }
-    class readFromLocalStorageTask extends AsyncTask<Void, Void, ArrayList<History_Option>> {
-        public readFromLocalStorageTask(CalendarFragment calendarFragment) {}
+    class readFromLocalStorageTask extends AsyncTask<Void, Void, ArrayList<Bill>> {
+        public readFromLocalStorageTask() {}
 
         @Override
-        protected void onPostExecute(ArrayList<History_Option> arrResult) {
+        protected void onPostExecute(ArrayList<Bill> arrResult) {
             super.onPostExecute(arrResult);
-            historyAdapter = new HistoryAdapter(
+            billAdapter = new BillAdapter(
                     requireActivity(),
-                    arr_historyOption
+                    arrayListBill
             );
-            lv_historyOption.setAdapter(historyAdapter);
-            historyAdapter.notifyDataSetChanged();
+            lv_historyOption.setAdapter(billAdapter);
+            billAdapter.notifyDataSetChanged();
 //            cursor.close();
 //            dbHelper.close();
             Toast.makeText(getContext(), "read data completely", Toast.LENGTH_LONG).show();
@@ -181,8 +183,8 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         }
 
         @Override
-        protected ArrayList<History_Option> doInBackground(Void... voids) {
-            arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
+        protected ArrayList<Bill> doInBackground(Void... voids) {
+            arrayListBill.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
 
             DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
             SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -198,9 +200,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 tv_expense.setText(String.valueOf(contentValues.get("Expense")));
                 tv_total.setText(String.valueOf(contentValues.get("Total")));
 
-                //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+                int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
                 int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
-                //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+                int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
                 int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
                 int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
                 int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
@@ -212,15 +214,16 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
 
                         if(DateTime.getMonth()==mDateTime.getMonth()){
-                            int userID = cursor.getInt(columnIndexUserID);
-//                            int categoryID = cursor.getInt(columnIndexCategoryID);
+                            long billID = cursor.getLong(columnIndexBillID);
+                            long userID = cursor.getInt(columnIndexUserID);
+                            long categoryID = cursor.getInt(columnIndexCategoryID);
                             double money = cursor.getDouble(columnIndexMoney);
                             String note = cursor.getString(columnIndexNote);
                             int sync = cursor.getInt(columnIndexSyncStatus);
-                            // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
-                            History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, MainActivity.formatCurrency(money), sync);
+                            // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
+                            Bill bill = new Bill(billID, userID,categoryID, note,  DateTime, money, sync);
                             // Thêm vào danh sách
-                            arr_historyOption.add(historyOption);
+                            arrayListBill.add(bill);
                         }
                     } else {
                         // Handle the case where the column indices are not found
@@ -231,7 +234,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 e.printStackTrace();
                 // Xử lý khi có lỗi chuyển đổi
             }
-            return arr_historyOption;
+            return arrayListBill;
         }
     }
 
@@ -320,23 +323,23 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
             try {
                 Date DateTime = dateFormat.parse(datetimeString);
-                eachday_historyOption.clear();
+                eachday_arrayListBill.clear();
                 ContentValues contentValues = MoneyCalculate(UserID,DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),"Day",getContext());
                 tv_income.setText(MainActivity.formatCurrency((double)contentValues.get("Income")));
                 tv_expense.setText(MainActivity.formatCurrency((double)contentValues.get("Expense")));
                 tv_total.setText(MainActivity.formatCurrency((double)contentValues.get("Total")));
-                ArrayList<History_Option> temp = new ArrayList<>();
+                ArrayList<Bill> temp = new ArrayList<>();
                 //query arraylist history option userid + datetime
-                for (History_Option historyOption : arr_historyOption) {
-                    Date date = historyOption.getDateTime();
+                for (Bill bill : arrayListBill) {
+                    Date date = bill.getDatetime();
                     assert DateTime != null;
                     if(DateTime.getDate() == date.getDate() && DateTime.getMonth() == date.getMonth() && DateTime.getYear() == date.getYear())
                         //gans vao arraylist
-                        eachday_historyOption.add(historyOption);
+                        eachday_arrayListBill.add(bill);
                 }
                 //do vao adapter
-                historyAdapter = new HistoryAdapter(requireActivity(),eachday_historyOption);
-                lv_historyOption.setAdapter(historyAdapter);
+                billAdapter = new BillAdapter(requireActivity(),eachday_arrayListBill);
+                lv_historyOption.setAdapter(billAdapter);
             } catch (ParseException e) {
                 Toast.makeText(getContext(),"Error parsing Datetime",Toast.LENGTH_LONG).show();
                 e.printStackTrace();
@@ -423,7 +426,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         datePickerDialog.show();
     }
 
-    public void dialogEditBill(final History_Option billItem, int position) {
+    public void dialogEditBill(final Bill billItem, int position) {
         final Dialog dialog = new Dialog(getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         @NonNull DialogBillEditBinding bindingDialogEdit = DialogBillEditBinding.inflate(getLayoutInflater());
@@ -437,13 +440,13 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         }
 
         // Set thông tin của bill vào dialog để chỉnh sửa
-        bindingDialogEdit.edittextNote.setText(billItem.getLabelInfo());
-        bindingDialogEdit.edittextExpense.setText(billItem.getPrice());
+        bindingDialogEdit.edittextNote.setText(billItem.getNote());
+        bindingDialogEdit.edittextExpense.setText(String.valueOf(billItem.getMoney()));
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(billItem.getDateTime());
-        String datetimeString = billItem.getDateTime().getDate() + " " + makeDateString(billItem.getDateTime().getDate(),
-                billItem.getDateTime().getMonth()+1,calendar.get(Calendar.YEAR));
+        calendar.setTime(billItem.getDatetime());
+        String datetimeString = billItem.getDatetime().getDate() + " " + makeDateString(billItem.getDatetime().getDate(),
+                billItem.getDatetime().getMonth()+1,calendar.get(Calendar.YEAR));
         bindingDialogEdit.btnDatetimeDetail.setText(datetimeString);
         bindingDialogEdit.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -464,15 +467,15 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         DbContract.BillEntry.COLUMN_TIMECREATE + "=?";
                 String[] whereArgs = new String[]{
                         String.valueOf(billItem.getUserID()),
-                        String.valueOf(billItem.getDateTime().getTime())
+                        String.valueOf(billItem.getDatetime().getTime())
                 };
                 // Thực hiện cập nhật dữ liệu vào local db
                 database.update(DbContract.BillEntry.TABLE_NAME, values, whereClause, whereArgs);
                 // Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
-                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
                 //fetch data mới lên remote db
-                Cursor cursor = dbHelper.getBill(billItem.getUserID(), billItem.getDateTime(), database);
+                Cursor cursor = dbHelper.getBill(billItem.getUserID(), billItem.getDatetime(), database);
                 int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
                 int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
                 int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
@@ -544,11 +547,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         DbContract.BillEntry.COLUMN_TIMECREATE + "=?";
                 String[] whereArgs = new String[]{
                         String.valueOf(billItem.getUserID()),
-                        String.valueOf(billItem.getDateTime().getTime())
+                        String.valueOf(billItem.getDatetime().getTime())
                 };
                 // Thực hiện xóa dữ liệu từ local db
                 database.delete(DbContract.BillEntry.TABLE_NAME, whereClause, whereArgs);
-                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask();
                 readFromLocalStorageTask.execute();
                 // Gửi yêu cầu xóa dữ liệu tương ứng trên server
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
@@ -579,7 +582,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         Map<String, String> params = new HashMap<>();
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                         params.put("userID", String.valueOf(billItem.getUserID()));
-                        params.put("timecreate", dateFormat.format(billItem.getDateTime()));
+                        params.put("timecreate", dateFormat.format(billItem.getDatetime()));
                         params.put("method", "DELETE");
                         return params;
                     }
