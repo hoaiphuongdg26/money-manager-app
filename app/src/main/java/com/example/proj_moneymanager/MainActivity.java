@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         // Lấy dữ liệu từ Login trong intent
         Intent intent = getIntent();
         UserInformation userInformation = new UserInformation();
-        UserID = intent.getIntExtra("UserID", 0);
+        UserID = intent.getLongExtra("UserID", 0);
 
         // Gửi dữ liệu đến ExpenseFragment
         Bundle bundle = new Bundle();
