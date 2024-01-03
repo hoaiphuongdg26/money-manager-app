@@ -2,40 +2,64 @@ package com.example.proj_moneymanager.activities.Plan;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+
+import androidx.annotation.NonNull;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
+import com.example.proj_moneymanager.database.MySingleton;
+import com.example.proj_moneymanager.databinding.DialogBillEditBinding;
 import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener {
 
@@ -43,13 +67,15 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate;
     ListView lv_historyOption;
-    ArrayList<History_Option> arr_historyOption;
+    ArrayList<History_Option> arr_historyOption, eachday_historyOption;
     HistoryAdapter historyAdapter;
     private DatePickerDialog datePickerDialog;
     ImageButton btnPreviousMonth;
     ImageButton btnNextMonth;
     FragmentCalendarBinding binding;
+    TextView tv_income,tv_expense,tv_total;
     private BroadcastReceiver broadcastReceiver;
+    long UserID;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,7 +83,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //        View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         binding = FragmentCalendarBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
-
+        UserID = getArguments().getLong("UserID", 0);
         //Xử lý Calendar
         initWidgets(view);
         selectedDate = LocalDate.now();
@@ -86,22 +112,109 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //        monthYearText = view.findViewById(R.id.btn_datetime_detail);
         monthYearText = binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
+        tv_income = binding.textviewIncome;
+        tv_expense = binding.textviewExpense;
+        tv_total = binding.textviewTotal;
 
         //Xử lý History Adapter cho listview
         lv_historyOption = view.findViewById(R.id.lv_optHistory);
         arr_historyOption = new ArrayList<>();
+        eachday_historyOption = new ArrayList<>();
         //Chỗ này sau này sẽ lấy từ db ra đổ vào array
 //        arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
 //        arr_historyOption.add(new History_Option("Food", "Snack", R.drawable.btn_food,"-5,000"));
-        readFromLocalStorage();
+
+        //readFromLocalStorage();
+        readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(this);
+        readFromLocalStorageTask.execute();
+
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //loading the again
-                readFromLocalStorage();
+                //readFromLocalStorage();
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readFromLocalStorageTask.execute();
             }
         };
+        lv_historyOption.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Lấy ra mục được chọn từ Adapter
+                History_Option selectedBill = historyAdapter.getArrHistoryOption().get(position);
+                dialogEditBill(selectedBill, position);
+            }
+        });
         return view;
+    }
+    class readFromLocalStorageTask extends AsyncTask<Void, Void, ArrayList<History_Option>> {
+        public readFromLocalStorageTask(CalendarFragment calendarFragment) {}
+
+        @Override
+        protected void onPostExecute(ArrayList<History_Option> arrResult) {
+            super.onPostExecute(arrResult);
+            historyAdapter = new HistoryAdapter(
+                    requireActivity(),
+                    arr_historyOption
+            );
+            lv_historyOption.setAdapter(historyAdapter);
+            historyAdapter.notifyDataSetChanged();
+//            cursor.close();
+//            dbHelper.close();
+            Toast.makeText(getContext(), "read data completely", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected ArrayList<History_Option> doInBackground(Void... voids) {
+            arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
+
+            DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
+            SQLiteDatabase database = dbHelper.getReadableDatabase();
+            Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
+
+            //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+            int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+            //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+            int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
+            int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+            int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+            int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
+
+            while (cursor.moveToNext()) {
+                // Check if the column indices are valid before accessing the values
+                if (columnIndexNote != -1 && columnIndexMoney != -1) {
+                    Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+                    int userID = cursor.getInt(columnIndexUserID);
+//                int categoryID = cursor.getInt(columnIndexCategoryID);
+                    double money = cursor.getDouble(columnIndexMoney);
+                    String note = cursor.getString(columnIndexNote);
+                    int sync = cursor.getInt(columnIndexSyncStatus);
+
+                    // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
+                    History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, String.valueOf(money), sync);
+                    // Thêm vào danh sách
+                    arr_historyOption.add(historyOption);
+                } else {
+                    // Handle the case where the column indices are not found
+                }
+            }
+            //adapter.notifyDataSetChanged();
+            // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
+//            historyAdapter = new HistoryAdapter(
+//                    requireActivity(),
+//                    arr_historyOption
+//            );
+//            lv_historyOption.setAdapter(historyAdapter);
+//            historyAdapter.notifyDataSetChanged();
+//            cursor.close();
+//            dbHelper.close();
+            return arr_historyOption;
+        }
     }
 
     @Override
@@ -191,6 +304,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
             try {
                 Date DateTime = dateFormat.parse(datetimeString);
+                eachday_historyOption.clear();
+                ContentValues contentValues = MoneyCalculate(UserID,DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),"Day",getContext());
+                tv_income.setText(String.valueOf(contentValues.get("Income")));
+                tv_expense.setText(String.valueOf(contentValues.get("Expense")));
+                tv_total.setText(String.valueOf(contentValues.get("Total")));
                 ArrayList<History_Option> temp = new ArrayList<>();
                 //query arraylist history option userid + datetime
                 for (History_Option historyOption : arr_historyOption) {
@@ -198,10 +316,10 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                     assert DateTime != null;
                     if(DateTime.getDate() == date.getDate() && DateTime.getMonth() == date.getMonth() && DateTime.getYear() == date.getYear())
                         //gans vao arraylist
-                        temp.add(historyOption);
+                        eachday_historyOption.add(historyOption);
                 }
                 //do vao adapter
-                historyAdapter = new HistoryAdapter(requireActivity(),temp);
+                historyAdapter = new HistoryAdapter(requireActivity(),eachday_historyOption);
                 lv_historyOption.setAdapter(historyAdapter);
             } catch (ParseException e) {
                 Toast.makeText(getContext(),"Error parsing Datetime",Toast.LENGTH_LONG).show();
@@ -250,11 +368,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             }
         });
     }
-    private String makeDateString(int day, int month, int year)
+    public static String makeDateString(int day, int month, int year)
     {
         return getMonthFormat(month) + " " + year;
     }
-    private String getMonthFormat(int month)
+    public static String getMonthFormat(int month)
     {
         if(month == 1)
             return "January";
@@ -275,7 +393,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         if(month == 9)
             return "September";
         if(month == 10)
-            return "Octorber";
+            return "October";
         if(month == 11)
             return "November";
         if(month == 12)
@@ -288,52 +406,264 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     {
         datePickerDialog.show();
     }
-    public void readFromLocalStorage() {
-        arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
 
-        DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
+    public void dialogEditBill(final History_Option billItem, int position) {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        @NonNull DialogBillEditBinding bindingDialogEdit = DialogBillEditBinding.inflate(getLayoutInflater());
+        View viewDialogEdit = bindingDialogEdit.getRoot();
+        dialog.setContentView(viewDialogEdit);
+
+        // Thiết lập kích thước cho Dialog
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT); // Có thể thay đổi kích thước ở đây
+        }
+
+        // Set thông tin của bill vào dialog để chỉnh sửa
+        bindingDialogEdit.edittextNote.setText(billItem.getLabelInfo());
+        bindingDialogEdit.edittextExpense.setText(billItem.getPrice());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(billItem.getDateTime());
+        String datetimeString = billItem.getDateTime().getDate() + " " + makeDateString(billItem.getDateTime().getDate(),
+                billItem.getDateTime().getMonth()+1,calendar.get(Calendar.YEAR));
+        bindingDialogEdit.btnDatetimeDetail.setText(datetimeString);
+        bindingDialogEdit.btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        bindingDialogEdit.btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DbHelper dbHelper = new DbHelper(getContext());
+                SQLiteDatabase database = dbHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put("note", bindingDialogEdit.edittextNote.getText().toString());
+                values.put("expense", String.valueOf(bindingDialogEdit.edittextExpense.getText().toString()));
+                //values.put("categoryID", String.valueOf());
+                String whereClause = DbContract.BillEntry.COLUMN_USER_ID + "=? AND " +
+                        DbContract.BillEntry.COLUMN_TIMECREATE + "=?";
+                String[] whereArgs = new String[]{
+                        String.valueOf(billItem.getUserID()),
+                        String.valueOf(billItem.getDateTime().getTime())
+                };
+                // Thực hiện cập nhật dữ liệu vào local db
+                database.update(DbContract.BillEntry.TABLE_NAME, values, whereClause, whereArgs);
+                // Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readFromLocalStorageTask.execute();
+                //fetch data mới lên remote db
+                Cursor cursor = dbHelper.getBill(billItem.getUserID(), billItem.getDateTime(), database);
+                int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+                int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+                int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
+                int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+                int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+                if(cursor.moveToFirst()) {
+                        int userID = cursor.getInt(columnIndexUserID);
+                        int categoryID = cursor.getInt(columnIndexCategoryID);
+                        String note = cursor.getString(columnIndexNote);
+                        Date timeCreate = new Date();
+                        if (columnIndexDatetime != -1) {
+                            long datetimeInMillis = cursor.getLong(columnIndexDatetime);
+                            timeCreate = new Date(datetimeInMillis);
+                        }
+                        Date finalTimeCreate = timeCreate;
+
+                        double expense = cursor.getDouble(columnIndexMoney);
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
+                                new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response);
+                                        String serverResponse = jsonObject.getString("response");
+                                        if (serverResponse.equals("OK")) {
+                                            Toast.makeText(getContext(), "UPDATE COMPLETELY", Toast.LENGTH_LONG).show();
+                                        }
+                                        else{
+                                            //neu server tra về "fail"
+                                            Toast.makeText(getContext(),serverResponse,Toast.LENGTH_LONG).show();
+                                            Log.d("Update response error",serverResponse);
+                                            //khong lam gì cả
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // Handle error appropriately (e.g., log or notify the user)
+                                Toast.makeText(getContext(), "Fail to sync data", Toast.LENGTH_LONG);
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() throws AuthFailureError {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("note", note);
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                                params.put("timecreate", dateFormat.format(finalTimeCreate));
+                                params.put("expense", String.valueOf(expense));
+                                params.put("categoryID", String.valueOf(categoryID));
+                                params.put("userID", String.valueOf(userID));
+                                params.put("method","UPDATE");
+                                return params;
+                            }
+                        };
+                        MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+                        dialog.dismiss();
+                    }
+                    }});
+        bindingDialogEdit.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DbHelper dbHelper = new DbHelper(getContext());
+                SQLiteDatabase database = dbHelper.getWritableDatabase();
+                // Xác định điều kiện WHERE để xóa dữ liệu từ local db
+                String whereClause = DbContract.BillEntry.COLUMN_USER_ID + "=? AND " +
+                        DbContract.BillEntry.COLUMN_TIMECREATE + "=?";
+                String[] whereArgs = new String[]{
+                        String.valueOf(billItem.getUserID()),
+                        String.valueOf(billItem.getDateTime().getTime())
+                };
+                // Thực hiện xóa dữ liệu từ local db
+                database.delete(DbContract.BillEntry.TABLE_NAME, whereClause, whereArgs);
+                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readFromLocalStorageTask.execute();
+                // Gửi yêu cầu xóa dữ liệu tương ứng trên server
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response);
+                                    String serverResponse = jsonObject.getString("response");
+                                    if (serverResponse.equals("OK")) {
+                                        Toast.makeText(getContext(), "Delete successful", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(getContext(), "Delete failed", Toast.LENGTH_LONG).show();
+                                        Log.d("Delete response error", serverResponse);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getContext(), "Fail to delete data", Toast.LENGTH_LONG).show();
+                    }
+                }) {
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<>();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                        params.put("userID", String.valueOf(billItem.getUserID()));
+                        params.put("timecreate", dateFormat.format(billItem.getDateTime()));
+                        params.put("method", "DELETE");
+                        return params;
+                    }
+                };
+                // Thêm yêu cầu vào hàng đợi của Volley
+                MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+    //Hàm thống kê income, expense total
+    //public static -> các activity khác có thẻ dùng lại. vd biểu đồ
+    public static ContentValues MoneyCalculate(long userid, int day, int month, int year, String calBy, Context context){
+        ContentValues contentValues = new ContentValues();
+        LocalDate FirstDayOfWeek = LocalDate.of(year + 1, Month.of(month+1),day);
+        int firstDayOfWeek;
+        switch(FirstDayOfWeek.getDayOfWeek()){
+            case MONDAY:
+                firstDayOfWeek = 1;
+                break;
+            case TUESDAY:
+                firstDayOfWeek = 2;
+                break;
+            case WEDNESDAY:
+                firstDayOfWeek = 3;
+                break;
+            case THURSDAY:
+                firstDayOfWeek = 4;
+                break;
+            case FRIDAY:
+                firstDayOfWeek = 5;
+                break;
+            case SATURDAY:
+                firstDayOfWeek = 6;
+                break;
+            default:
+                firstDayOfWeek = 0;
+                break;
+        }
+        FirstDayOfWeek = FirstDayOfWeek.minusDays(firstDayOfWeek);
+        //Toast.makeText(context,String.valueOf(FirstDayOfWeek.getDayOfMonth())+" - " +String.valueOf(FirstDayOfWeek.plusDays(6).getDayOfMonth()),Toast.LENGTH_LONG).show();
+
+        long Income = 0, Expense = 0, Total;
+        DbHelper dbHelper = new DbHelper(context); // Sửa lỗi: sử dụng requireContext() thay vì this
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
 
-        //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
         int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
-        //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
-        int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
         int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
         int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
-        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
 
-        while (cursor.moveToNext()) {
-            // Check if the column indices are valid before accessing the values
-            if (columnIndexNote != -1 && columnIndexMoney != -1) {
+        while (cursor.moveToNext()){
+            //if (columnIndexMoney != -1) {
                 Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
                 int userID = cursor.getInt(columnIndexUserID);
-//                int categoryID = cursor.getInt(columnIndexCategoryID);
                 double money = cursor.getDouble(columnIndexMoney);
-                String note = cursor.getString(columnIndexNote);
-                int sync = cursor.getInt(columnIndexSyncStatus);
-
-                // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
-                History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, String.valueOf(money), sync);
-                // Thêm vào danh sách
-                arr_historyOption.add(historyOption);
-            } else {
-                // Handle the case where the column indices are not found
-            }
+                if(userID == userid && year == DateTime.getYear()){
+                    if(calBy!="Year"){
+                        if(month == DateTime.getMonth()){
+                            if(calBy!="Month"){
+                                if(calBy == "Week"){
+                                    if(isDateInWeek(DateTime.getDate(),FirstDayOfWeek.getDayOfMonth(),FirstDayOfWeek.plusDays(6).getDayOfMonth())){
+                                        if(money < 0) Expense += money;
+                                        else Income += money;
+                                    }
+                                }
+                                else{
+                                    if(day==DateTime.getDate()){
+                                        if(money < 0) Expense += money;
+                                        else Income += money;
+                                    }
+                                }
+                            }else {
+                                if(money < 0) Expense += money;
+                                else Income += money;
+                            }
+                        }
+                    }
+                    else {
+                        if(money < 0) Expense += money;
+                        else Income += money;
+                    }
+                }
+            //}
         }
-
-        //adapter.notifyDataSetChanged();
-
-
-        // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
-        historyAdapter = new HistoryAdapter(
-                requireActivity(),
-                arr_historyOption
-        );
-        lv_historyOption.setAdapter(historyAdapter);
-        historyAdapter.notifyDataSetChanged();
-        cursor.close();
-        dbHelper.close();
+        Total = Income + Expense;
+        contentValues.put("Income", Income);
+        contentValues.put("Expense", Expense);
+        contentValues.put("Total", Total);
+        return contentValues;
     }
-
+    public static boolean isDateInWeek(int day, int weekFirst,int weekLast){
+        if(weekFirst<weekLast){
+            if(weekFirst<=day && day <= weekLast) return true;
+            else return false;
+        }
+        else{
+            if(day<weekFirst && day < weekLast) return true;
+            return false;
+        }
+    }
 }

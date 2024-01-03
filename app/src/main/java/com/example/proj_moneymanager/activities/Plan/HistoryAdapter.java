@@ -62,4 +62,8 @@ public class HistoryAdapter  extends BaseAdapter {
         if (arrHistoryOption.get(position).getSync() == 1 ) img_dotOffline.setVisibility(View.VISIBLE);
         return convertView;
     }
+
+    public List<History_Option> getArrHistoryOption() {
+        return arrHistoryOption;
+    }
 }
