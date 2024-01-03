@@ -27,6 +27,9 @@ import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.ActivityMainBinding;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     NetworkMonitor networkMonitor;
@@ -115,6 +118,44 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+    public static String formatCurrency(double amount) {
+        boolean isNegative = false;
+        // Chia thành phần nguyên và phần thập phân
+        if(amount<0) {
+            amount*=-1;
+            isNegative = true;
+        }
+        long integerPart = (long) amount;
+        int decimalPart = (int) ((amount - integerPart) * 100);
+
+        // Định dạng phần nguyên
+        String formattedIntegerPart = formatIntegerPart(integerPart);
+
+        // Định dạng phần thập phân
+        String formattedDecimalPart = String.format("%02d", decimalPart);
+
+        String result;
+        // Kết hợp phần nguyên và phần thập phân
+        if(decimalPart!=0)
+             result = formattedIntegerPart + "," + formattedDecimalPart;
+        else result = formattedIntegerPart;
+        return isNegative? "-"+result:result;
+    }
+
+    public static String formatIntegerPart(long integerPart) {
+        if(integerPart == 0) return "0";
+        String result = "";
+        int temp = (int) integerPart;
+        while(temp > 0){
+            String part = "";
+            if(temp/1000 > 0)  part = String.format("%03d",temp % 1000);
+            else part = String.valueOf(temp % 1000);
+            result = part + result;
+            temp/=1000;
+            if(temp>0) result = "." + result;
+        }
+        return result;
     }
     @Override
     protected void onResume() {
