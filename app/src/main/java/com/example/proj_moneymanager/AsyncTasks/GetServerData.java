@@ -1,4 +1,4 @@
-package com.example.proj_moneymanager;
+package com.example.proj_moneymanager.AsyncTasks;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -92,7 +92,7 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
                                     ContentValues values = new ContentValues();
                                     values.put(DbContract.CategoryEntry._ID, Integer.parseInt(categoryItem.getString("ID")));
                                     values.put(DbContract.CategoryEntry.COLUMN_NAME, categoryItem.getString("Name"));
-//                                    values.put(DbContract.CategoryEntry.COLUMN_ICON, categoryItem.getString("Icon"));
+                                    values.put(DbContract.CategoryEntry.COLUMN_ICON, categoryItem.getString("Icon"));
                                     values.put(DbContract.CategoryEntry.COLUMN_COLOR, categoryItem.getString("Color"));
                                     database.insert(DbContract.CategoryEntry.TABLE_NAME, null, values);
                                 }
@@ -108,7 +108,7 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // Handle error appropriately (e.g., log or notify the user)
-                        //Toast.makeText(getApplicationContext(), "Fail to sync data", Toast.LENGTH_LONG);
+                        Toast.makeText(context.getApplicationContext(), "Fail to sync data", Toast.LENGTH_LONG);
                 }
         });
         MySingleton.getInstance(context).addToRequestQueue(stringRequest);

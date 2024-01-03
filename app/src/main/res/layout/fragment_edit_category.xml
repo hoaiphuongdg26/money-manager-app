@@ -123,6 +123,7 @@
                     android:layout_marginBottom="10dp"
                     app:layout_constraintRight_toRightOf="parent"
                     android:background="@drawable/border_selector"
+                    android:verticalSpacing="10dp"
                     />
                 <TextView
                     android:id="@+id/textview_Color_addCategory"

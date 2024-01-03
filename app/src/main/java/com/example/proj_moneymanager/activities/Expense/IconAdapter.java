@@ -13,7 +13,7 @@ import com.example.proj_moneymanager.R;
 public class IconAdapter extends BaseAdapter {
     private Context context;
 
-    // Danh sách các màu
+    // Danh sách các màu 30dpx30dp
     private int[] iconDrawables = {
             R.drawable.ic_car,
             R.drawable.ic_card,
@@ -25,6 +25,7 @@ public class IconAdapter extends BaseAdapter {
             R.drawable.ic_shopping_cart,
             R.drawable.ic_water,
             R.drawable.ic_wifi,
+            R.drawable.ic_game,
             // ... Thêm các icon khác
     };
     private int selectedPosition = -1;
@@ -83,9 +84,11 @@ public class IconAdapter extends BaseAdapter {
         }
     }
     public void setSelectedPosition(int position) {
-        selectedPosition = position;
-        notifyDataSetChanged(); // Refresh GridView to update selected item
-        notifyIconSelectedListener(iconDrawables[position]); // Notify the listener with the selected icon
+        if (position >= 0 && position < iconDrawables.length) {
+            selectedPosition = position;
+            notifyDataSetChanged(); // Refresh GridView to update selected item
+            notifyIconSelectedListener(iconDrawables[position]);
+        }// Notify the listener with the selected icon
     }
 
     // Define a listener interface to notify the selected icon

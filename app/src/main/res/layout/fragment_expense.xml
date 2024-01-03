@@ -276,7 +276,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:numColumns="4"
-                    tools:listitem="@layout/gv_item_color"
+                    tools:listitem="@layout/gv_item_category"
                     android:layout_marginHorizontal="5dp"
                     app:layout_constraintTop_toBottomOf="@+id/textview_category"
                     app:layout_constraintBottom_toTopOf="@+id/btn_import"
@@ -284,7 +284,8 @@
                     app:layout_constraintRight_toRightOf="parent"
                     android:layout_marginVertical="10dp"
                     android:background="@drawable/border_selector"
-
+                    android:horizontalSpacing="10dp"
+                    android:verticalSpacing="10dp"
                     />
                 <Button
                     android:id="@+id/btn_import"

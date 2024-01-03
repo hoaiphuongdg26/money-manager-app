@@ -1,6 +1,5 @@
 package com.example.proj_moneymanager.activities.Expense;
 
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.AsyncTasks.readCategoryFromLocalStorage;
 import com.example.proj_moneymanager.Object.Category;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
@@ -43,6 +43,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     Button Import;
     ColorAdapter colorAdapter;
     IconAdapter iconAdapter;
+    long categoryID;
     String color, icon;
     public EditCategoryFragment(){}
     @Override
@@ -75,9 +76,21 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
         // Lấy data
         String name = nameCategory.getText().toString();
         if (name != null && icon != null && color != null) {
-             insertCategoryToServer(name);
+            DbHelper dbHelper = new DbHelper(getContext());
+            if (dbHelper.isCategoryNameExists(name)) {
+                // Nếu name đã tồn tại, thông báo lỗi và không tiếp tục thực hiện import
+                Toast.makeText(getContext(), "Category name already exists", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                insertCategoryToServer(name);
+                nameCategory.setText(""); // Xoá nội dung của EditText
+                colorAdapter.setSelectedPosition(-1);
+                iconAdapter.setSelectedPosition(-1);
+            }
+            dbHelper.close();
         } else {
             // Xử lý trường hợp khi thiếu input
+            Toast.makeText(getContext(), "Please enter all fields", Toast.LENGTH_SHORT).show();
         }
     }
     private void insertCategoryToServer(String name) {
@@ -90,10 +103,11 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                                 JSONObject jsonObject = new JSONObject(response);
                                 String Response= jsonObject.getString("response");
                                 if (Response.equals("OK")){
-                                    insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_OK);
-                                    Toast.makeText(getContext(), "Import successful", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "Insert: " + "Name: " + name + ", Icon: " + icon + ", Color: " + color, Toast.LENGTH_LONG).show();
+                                    categoryID = insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_OK);
+//                                    Toast.makeText(getContext(), "Import successful", Toast.LENGTH_LONG).show();
                                 }else {
-                                    insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
+                                    categoryID = insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
                                     Toast.makeText(getContext(), "Import failed", Toast.LENGTH_LONG).show();
                                 }
                             }catch (JSONException e){
@@ -104,8 +118,12 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
-                    Toast.makeText(getContext(), "Error occurred during import", Toast.LENGTH_LONG).show();
+                    String errorMessage = "Error occurred during import";
+                    categoryID = insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
+                    if (error != null && error.getMessage() != null) {
+                        errorMessage = error.getMessage();
+                    }
+                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
                 }
             }){
                 @Nullable
@@ -121,7 +139,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
             MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
         }
         else {
-            insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
+            categoryID = insertCategoryToLocalDatabaseFromApp(name, icon, color, DbContract.SYNC_STATUS_FAILED);
             Toast.makeText(getContext(), "No network connection. Import failed.", Toast.LENGTH_LONG).show();
         }
 
@@ -133,54 +151,20 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         long categoryID = dbHelper.insertCategoryToLocalDatabaseFromApp(name, icon, color, syncstatus, database);
-        readFromLocalStorage();
+        readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(),arrayListCategory);
+        readCategoryFromLocalStorage.execute();
         dbHelper.close();
         return categoryID;
     }
-    private void readFromLocalStorage() {
-        arrayListCategory.clear();
-        DbHelper dbHelper = new DbHelper(getContext());
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = dbHelper.readCategoryFromLocalDatabase(database);
-
-        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
-        int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
-        int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
-        int columnIndexColor = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
-        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_SYNC_STATUS);
-
-        while (cursor.moveToNext()) {
-            // Check if the column indices are valid before accessing the values
-            if (columnIndexCategoryID != -1 && columnIndexName != -1 &&
-                    columnIndexColor != -1 && columnIndexSyncStatus != -1) {
-
-                int categoryID = cursor.getInt(columnIndexCategoryID);
-                String name = cursor.getString(columnIndexName);
-                String icon = cursor.getString(columnIndexIcon);
-                String color = cursor.getString(columnIndexColor);
-                int syncStatus = cursor.getInt(columnIndexSyncStatus);
-
-//                 Create a new Category object with all required parameters
-                Category category = new Category(categoryID, name, icon, color, syncStatus);
-                arrayListCategory.add(category);
-            } else {
-                // Handle the case where the column indices are not found
-                // You may log an error, throw an exception, or handle it in some way
-            }
-        }
-        cursor.close();
-        dbHelper.close();
-    }
-
     @Override
     public void onColorClick(String colorDescription) {
-        Toast.makeText(getContext(), "Resource Name: " + colorDescription, Toast.LENGTH_LONG).show();
         color = colorDescription;
+//        Toast.makeText(getContext(),"Selected color: " + color, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onIconClick(String iconDescription) {
-        Toast.makeText(getContext(), "Resource Name: " + iconDescription, Toast.LENGTH_LONG).show();
         icon = iconDescription;
+//        Toast.makeText(getContext(),"Selected icon: " + icon, Toast.LENGTH_LONG).show();
     }
 }

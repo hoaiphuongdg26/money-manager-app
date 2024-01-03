@@ -2,6 +2,10 @@ package com.example.proj_moneymanager.activities.Expense;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.GridView;
 import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
@@ -22,7 +27,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.AsyncTasks.readCategoryFromLocalStorage;
 import com.example.proj_moneymanager.Object.Bill;
+import com.example.proj_moneymanager.Object.Category;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
@@ -42,7 +49,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class ExpenseFragment extends Fragment {
+public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCategoryClickListener  {
     FragmentExpenseBinding binding;
     private Button monthYearText;
     private DatePickerDialog datePickerDialog;
@@ -51,9 +58,11 @@ public class ExpenseFragment extends Fragment {
     String Note;
     double Expense;
     Button Import;
+    int CategoryID;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
-
-
+    ArrayList<Category> arrayListCategory = new ArrayList<Category>();
+    private CategoryAdapter categoryAdapter; // Add this line
+    private BroadcastReceiver broadcastReceiver;
     public ExpenseFragment() {
         // Required empty public constructor
     }
@@ -74,7 +83,18 @@ public class ExpenseFragment extends Fragment {
             }
         });
 
-
+        readCategoryFromLocalStorage readCategoryFromLocalStorageTask = new readCategoryFromLocalStorage(getContext(), arrayListCategory);
+        readCategoryFromLocalStorageTask.execute();
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //loading the again
+                readCategoryFromLocalStorageTask.execute();
+            }
+        };
+        categoryAdapter = new CategoryAdapter(this, this, arrayListCategory);
+        GridView gridView = binding.gridviewCategory;
+        gridView.setAdapter(categoryAdapter);
         // Xử lý chọn tháng nhanh
         initDatePicker(view);
         monthYearText = (Button) binding.btnDatetimeDetail;
@@ -89,6 +109,21 @@ public class ExpenseFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getActivity() != null) {
+            getActivity().registerReceiver(broadcastReceiver, new IntentFilter(DbContract.UI_UPDATE_BROADCAST));}
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(broadcastReceiver);
+        }
     }
     public void onEditCategoryButtonClick (){
         EditCategoryFragment editCategoryFragment = new EditCategoryFragment();
@@ -183,7 +218,6 @@ public class ExpenseFragment extends Fragment {
             DateTime = dateFormat.parse(datetimeString);
             Note = binding.edittextNote.getText().toString();
             Expense = Double.parseDouble(binding.edittextExpense.getText().toString());
-            int CategoryID = 1;
             long UserID = getArguments().getLong("UserID", 0);
 
             // Ghi vào db
@@ -197,7 +231,7 @@ public class ExpenseFragment extends Fragment {
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
     }
-    private void readFromLocalStorage() {
+    private void readBillFromLocalStorage() {
         arrayListBill.clear();
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -244,7 +278,7 @@ public class ExpenseFragment extends Fragment {
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         long billID = dbHelper.insertBillToLocalDatabaseFromApp(userID, categoryId, note, timecreate, expense, synstatus, database);
-        readFromLocalStorage();
+        readBillFromLocalStorage();
         dbHelper.close();
         return billID;
     }
@@ -292,5 +326,47 @@ public class ExpenseFragment extends Fragment {
         else {
             insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
         }
+    }
+    private void readCategoryFromLocalStorage() {
+        arrayListCategory.clear();
+        DbHelper dbHelper = new DbHelper(getContext());
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = dbHelper.readCategoryFromLocalDatabase(database);
+
+        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
+        int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
+        int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
+        int columnIndexColor = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
+        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_SYNC_STATUS);
+
+        while (cursor.moveToNext()) {
+            // Check if the column indices are valid before accessing the values
+            if (columnIndexCategoryID != -1 && columnIndexName != -1 &&
+                    columnIndexColor != -1 && columnIndexSyncStatus != -1) {
+
+                int categoryID = cursor.getInt(columnIndexCategoryID);
+                String name = cursor.getString(columnIndexName);
+                String icon = cursor.getString(columnIndexIcon);
+                String color = cursor.getString(columnIndexColor);
+                int syncStatus = cursor.getInt(columnIndexSyncStatus);
+
+//                 Create a new Category object with all required parameters
+                Category category = new Category(categoryID, name, icon, color, syncStatus);
+                arrayListCategory.add(category);
+            } else {
+                // Handle the case where the column indices are not found
+                // You may log an error, throw an exception, or handle it in some way
+            }
+        }
+        cursor.close();
+        dbHelper.close();
+
+    }
+
+    @Override
+    public void onCategoryClick(int categoryId) {
+        CategoryID = categoryId;
+        categoryAdapter.setSelectedPosition(categoryId); // Assuming you have a reference to the adapter
+        categoryAdapter.notifyDataSetChanged();
     }
 }

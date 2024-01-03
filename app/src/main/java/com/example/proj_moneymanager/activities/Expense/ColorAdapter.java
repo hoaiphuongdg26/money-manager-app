@@ -85,9 +85,11 @@ public class ColorAdapter extends BaseAdapter {
         }
     }
     public void setSelectedPosition(int position) {
-        selectedPosition = position;
-        notifyDataSetChanged(); // Refresh GridView to update selected item
-        notifyColorSelectedListener(colorDrawables[position]); // Notify the listener with the selected color
+        if (position >= 0 && position < colorDrawables.length) {
+            selectedPosition = position;
+            notifyDataSetChanged(); // Refresh GridView to update selected item
+            notifyColorSelectedListener(colorDrawables[position]);// Notify the listener with the selected color
+        }
     }
 
     // Define a listener interface to notify the selected color

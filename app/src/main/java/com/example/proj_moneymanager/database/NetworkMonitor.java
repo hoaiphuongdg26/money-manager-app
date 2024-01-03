@@ -151,8 +151,8 @@ public class NetworkMonitor extends BroadcastReceiver {
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
                                 params.put("name", name);
-//                                params.put("icon", icon);
-                                params.put("color", String.valueOf(color));
+                                params.put("icon", icon);
+                                params.put("color", color);
                                 return params;
                             }
                         };

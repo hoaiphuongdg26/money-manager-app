@@ -15,7 +15,7 @@ public class Category {
         this.SyncStatus = syncStatus;
     }
 
-    public int getCategoryID() {
+    public int getID() {
         return CategoryID;
     }
 
@@ -29,5 +29,13 @@ public class Category {
 
     public void setCategoryID(int categoryID) {
         CategoryID = categoryID;
+    }
+
+    public String getColor() {
+        return Color;
+    }
+
+    public String getIcon() {
+        return Icon;
     }
 }

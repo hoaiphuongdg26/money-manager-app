@@ -55,6 +55,7 @@ public class DbHelper extends SQLiteOpenHelper {
         try {
 //            db.execSQL(DROP_TABLE_BILL);
 //            db.execSQL(DROP_TABLE_USERINFORMATION);
+//            db.execSQL(DROP_TABLE_CATEGORY);
             db.execSQL(CREATE_TABLE_USERINFORMATION);
             db.execSQL(CREATE_TABLE_BILL);
             db.execSQL(CREATE_TABLE_CATEGORY);
@@ -182,5 +183,19 @@ public class DbHelper extends SQLiteOpenHelper {
 
         database.update(DbContract.CategoryEntry.TABLE_NAME, values, selection, selectionArgs);
     }
+    public boolean isCategoryNameExists(String name) {
+        SQLiteDatabase database = getReadableDatabase();
 
+        // Truy vấn kiểm tra xem đã tồn tại name trong cơ sở dữ liệu hay chưa
+        String query = "SELECT * FROM " + DbContract.CategoryEntry.TABLE_NAME +
+                " WHERE " + DbContract.CategoryEntry.COLUMN_NAME + " = ?";
+        Cursor cursor = database.rawQuery(query, new String[]{name});
+
+        boolean exists = cursor.getCount() > 0;
+
+        // Đóng cursor sau khi kiểm tra xong
+        cursor.close();
+
+        return exists;
+    }
 }

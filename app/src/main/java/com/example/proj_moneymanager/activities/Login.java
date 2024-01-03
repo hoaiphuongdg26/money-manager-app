@@ -22,7 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.proj_moneymanager.GetServerData;
+import com.example.proj_moneymanager.AsyncTasks.GetServerData;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
