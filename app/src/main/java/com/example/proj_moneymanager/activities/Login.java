@@ -209,7 +209,7 @@ public class Login extends AppCompatActivity {
                         if (response.body().getStatus().equals("ok")) {
                             if (response.body().getResultCode() == 1) {
                                 ApiResponse.UserData userData = apiResponse.getUserData();
-                                int UserID = userData.getUserID();
+                                long UserID = userData.getUserID();
                                 String uFullName = userData.getFullName();
                                 String uUserName = userData.getUserName();
                                 String uPassword = userData.getPassword();
@@ -233,10 +233,7 @@ public class Login extends AppCompatActivity {
 
                                 //asynctask kéo dữ liệu từ remote về GET
                                 GetServerData getServerData = new GetServerData(Login.this);
-                                getServerData.execute();
-                                //add class vo day
-
-
+                                getServerData.execute(UserID);
 
                                 dbHelper.close();
                                 //CreateSqliteDb();

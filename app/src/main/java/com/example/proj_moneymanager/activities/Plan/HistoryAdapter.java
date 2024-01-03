@@ -48,6 +48,7 @@ public class HistoryAdapter  extends BaseAdapter {
         //get view
         TextView txt_Label = (TextView) convertView.findViewById(R.id.textview_eachCategory);
         txt_Label.setText(arrHistoryOption.get(position).getLabel());
+        //settext(EditCategoryF.getCName(arrBill.get(postion).getCarID));
 
         TextView txt_labelInfo = (TextView) convertView.findViewById(R.id.textview_noteForEachCategory);
         txt_labelInfo.setText(arrHistoryOption.get(position).getLabelInfo());
