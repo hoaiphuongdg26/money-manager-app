@@ -43,44 +43,54 @@ public class CategoryAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+    static class ViewHolder {
+        TextView nameTextView;
+        ImageButton iconImageButton;
+        FrameLayout colorframeLayout;
+        LinearLayout borderLinearLayout;
 
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
         if (convertView == null) {
             convertView = LayoutInflater.from(myContext).inflate(R.layout.gv_item_category, parent, false);
+            viewHolder = new ViewHolder();
+            viewHolder.nameTextView = convertView.findViewById(R.id.textview_nameCategory);
+            viewHolder.iconImageButton = convertView.findViewById(R.id.imagebutton_iconCategory);
+            viewHolder.borderLinearLayout = convertView.findViewById(R.id.linearlayout_border);
+            viewHolder.colorframeLayout = convertView.findViewById(R.id.framelayout_color);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        // Find views in the layout
-        TextView nameTextView = convertView.findViewById(R.id.textview_nameCategory);
-        ImageButton iconImageButton = convertView.findViewById(R.id.imagebutton_iconCategory);
-        LinearLayout colorLinearLayout = convertView.findViewById(R.id.linearlayout_color);
-        FrameLayout frameLayout = convertView.findViewById(R.id.item_category);
 
         // Get the Category object for the current position
         Category category = arrCategory.get(position);
 
         // Set name
-        nameTextView.setText(category.getName());
+        viewHolder.nameTextView.setText(category.getName());
 
         // Set icon
         if (category.getIcon() != null) {
             int iconResourceId = getResourceId(myContext, category.getIcon());
-            iconImageButton.setImageResource(iconResourceId);
+            viewHolder.iconImageButton.setImageResource(iconResourceId);
         } else {
             // Provide a default icon or handle it accordingly
-            iconImageButton.setImageResource(R.drawable.ic_question);
+            viewHolder.iconImageButton.setImageResource(R.drawable.ic_question);
         }
 
         // Set color
         if (category.getColor() != null) {
             int colorResourceId = getResourceId(myContext, category.getColor());
-            colorLinearLayout.setBackgroundResource(colorResourceId);
+            viewHolder.colorframeLayout.setBackgroundResource(colorResourceId);
         } else {
             // Provide a default color or handle it accordingly
-            colorLinearLayout.setBackgroundResource(R.drawable.colorbutton_default);
+            viewHolder.colorframeLayout.setBackgroundResource(R.drawable.colorbutton_default);
         }
 
         // Handle click on FrameLayout
-        frameLayout.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Set selected position and notify data set changed
@@ -93,13 +103,18 @@ public class CategoryAdapter extends BaseAdapter {
                 // Notify the listener (ExpenseFragment) about the selected category ID
                 if (categoryClickListener != null) {
                     categoryClickListener.onCategoryClick(selectedCategoryId);
-//                    Toast.makeText(context, selectedCategoryId, Toast.LENGTH_LONG).show();
+                    // Toast.makeText(context, selectedCategoryId, Toast.LENGTH_LONG).show();
                 }
             }
-        });
+        };
+        // Set click listener for all relevant views
+        viewHolder.borderLinearLayout.setOnClickListener(clickListener);
+        viewHolder.colorframeLayout.setOnClickListener(clickListener);
+        viewHolder.iconImageButton.setOnClickListener(clickListener);
+        viewHolder.nameTextView.setOnClickListener(clickListener);
 
         // Highlight selected button
-        frameLayout.setSelected(selectedPosition == position);
+        viewHolder.borderLinearLayout.setSelected(selectedPosition == position);
         return convertView;
     }
     private int getResourceId(Context context, String resourceName) {

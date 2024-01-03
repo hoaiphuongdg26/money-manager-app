@@ -6,7 +6,7 @@ public class Bill {
     int BillID, UserID, CategoryID;
     String Note;
     Date Datetime;
-    //Date Date; chua test dc
+
     double Money;
     int SyncStatus;
 

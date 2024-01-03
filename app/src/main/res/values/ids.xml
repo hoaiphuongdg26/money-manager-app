@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="linearlayout_color" type="id" />
+    <item name="linearlayout_border" type="id" />
 </resources>

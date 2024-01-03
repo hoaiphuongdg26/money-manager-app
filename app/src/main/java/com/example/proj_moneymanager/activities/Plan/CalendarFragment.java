@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,9 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import androidx.annotation.NonNull;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,13 +34,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.AsyncTasks.readBillFromLocalStorage;
+import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
 import com.example.proj_moneymanager.databinding.DialogBillEditBinding;
 import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,7 +65,8 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate;
     ListView lv_historyOption;
-    ArrayList<History_Option> arr_historyOption, eachday_historyOption;
+//    ArrayList<History_Option> arr_historyOption, eachday_historyOption;
+    ArrayList<Bill>
     HistoryAdapter historyAdapter;
     private DatePickerDialog datePickerDialog;
     ImageButton btnPreviousMonth;
@@ -120,12 +119,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         lv_historyOption = view.findViewById(R.id.lv_optHistory);
         arr_historyOption = new ArrayList<>();
         eachday_historyOption = new ArrayList<>();
-        //Chỗ này sau này sẽ lấy từ db ra đổ vào array
-//        arr_historyOption.add(new History_Option("Food", "Breakfast", R.drawable.btn_food,"-25,000"));
-//        arr_historyOption.add(new History_Option("Food", "Snack", R.drawable.btn_food,"-5,000"));
 
         //readFromLocalStorage();
-        readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(this);
+        readBillFromLocalStorage readFromLocalStorageTask = new readBillFromLocalStorage(this);
         readFromLocalStorageTask.execute();
 
         broadcastReceiver = new BroadcastReceiver() {
@@ -133,7 +129,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             public void onReceive(Context context, Intent intent) {
                 //loading the again
                 //readFromLocalStorage();
-                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+                readBillFromLocalStorage readFromLocalStorageTask = new readBillFromLocalStorage(context,);
                 readFromLocalStorageTask.execute();
             }
         };
@@ -147,76 +143,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         });
         return view;
     }
-    class readFromLocalStorageTask extends AsyncTask<Void, Void, ArrayList<History_Option>> {
-        public readFromLocalStorageTask(CalendarFragment calendarFragment) {}
-
-        @Override
-        protected void onPostExecute(ArrayList<History_Option> arrResult) {
-            super.onPostExecute(arrResult);
-            historyAdapter = new HistoryAdapter(
-                    requireActivity(),
-                    arr_historyOption
-            );
-            lv_historyOption.setAdapter(historyAdapter);
-            historyAdapter.notifyDataSetChanged();
-//            cursor.close();
-//            dbHelper.close();
-            Toast.makeText(getContext(), "read data completely", Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected ArrayList<History_Option> doInBackground(Void... voids) {
-            arr_historyOption.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
-
-            DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
-            SQLiteDatabase database = dbHelper.getReadableDatabase();
-            Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
-
-            //int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
-            int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
-            //int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
-            int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
-            int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
-            int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
-            int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
-
-            while (cursor.moveToNext()) {
-                // Check if the column indices are valid before accessing the values
-                if (columnIndexNote != -1 && columnIndexMoney != -1) {
-                    Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-                    int userID = cursor.getInt(columnIndexUserID);
-//                int categoryID = cursor.getInt(columnIndexCategoryID);
-                    double money = cursor.getDouble(columnIndexMoney);
-                    String note = cursor.getString(columnIndexNote);
-                    int sync = cursor.getInt(columnIndexSyncStatus);
-
-                    // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
-                    History_Option historyOption = new History_Option(DateTime, userID,"Test", note, R.drawable.btn_food, String.valueOf(money), sync);
-                    // Thêm vào danh sách
-                    arr_historyOption.add(historyOption);
-                } else {
-                    // Handle the case where the column indices are not found
-                }
-            }
-            //adapter.notifyDataSetChanged();
-            // Sau khi đọc xong dữ liệu từ cơ sở dữ liệu, cập nhật Adapter để hiển thị
-//            historyAdapter = new HistoryAdapter(
-//                    requireActivity(),
-//                    arr_historyOption
-//            );
-//            lv_historyOption.setAdapter(historyAdapter);
-//            historyAdapter.notifyDataSetChanged();
-//            cursor.close();
-//            dbHelper.close();
-            return arr_historyOption;
-        }
-    }
-
     @Override
     public void onStart() {
         super.onStart();

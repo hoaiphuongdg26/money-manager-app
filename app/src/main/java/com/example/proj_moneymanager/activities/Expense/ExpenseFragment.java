@@ -389,42 +389,6 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
             insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
         }
     }
-    private void readCategoryFromLocalStorage() {
-        arrayListCategory.clear();
-        DbHelper dbHelper = new DbHelper(getContext());
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = dbHelper.readCategoryFromLocalDatabase(database);
-
-        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
-        int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
-        int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
-        int columnIndexColor = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
-        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_SYNC_STATUS);
-
-        while (cursor.moveToNext()) {
-            // Check if the column indices are valid before accessing the values
-            if (columnIndexCategoryID != -1 && columnIndexName != -1 &&
-                    columnIndexColor != -1 && columnIndexSyncStatus != -1) {
-
-                int categoryID = cursor.getInt(columnIndexCategoryID);
-                String name = cursor.getString(columnIndexName);
-                String icon = cursor.getString(columnIndexIcon);
-                String color = cursor.getString(columnIndexColor);
-                int syncStatus = cursor.getInt(columnIndexSyncStatus);
-
-//                 Create a new Category object with all required parameters
-                Category category = new Category(categoryID, name, icon, color, syncStatus);
-                arrayListCategory.add(category);
-            } else {
-                // Handle the case where the column indices are not found
-                // You may log an error, throw an exception, or handle it in some way
-            }
-        }
-        cursor.close();
-        dbHelper.close();
-
-    }
-
     @Override
     public void onCategoryClick(int categoryId) {
         CategoryID = categoryId;
