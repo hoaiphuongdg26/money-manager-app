@@ -71,7 +71,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                                         JSONObject jsonObject = new JSONObject(response);
                                         String serverResponse = jsonObject.getString("response");
                                         if (serverResponse.equals("OK")) {
-                                            dbHelper.updateBillInLocalDatabase(billID, userID, categoryID, note, finalTimeCreate, expense, DbContract.SYNC_STATUS_OK, database);
+                                            dbHelper.updateBillInLocalDatabase(billID, DbContract.SYNC_STATUS_OK, database);
                                             context.sendBroadcast(new Intent(DbContract.UI_UPDATE_BROADCAST));
                                         }
                                         else{
@@ -130,7 +130,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                                             JSONObject jsonObject = new JSONObject(response);
                                             String serverResponse = jsonObject.getString("response");
                                             if (serverResponse.equals("OK")) {
-                                                dbHelper.updateCategoryInLocalDatabase(categoryID, name, icon, color, DbContract.SYNC_STATUS_OK, database);
+                                                dbHelper.updateCategoryInLocalDatabase(categoryID, DbContract.SYNC_STATUS_OK, database);
                                                 context.sendBroadcast(new Intent(DbContract.UI_UPDATE_BROADCAST));
                                             }
                                             else{

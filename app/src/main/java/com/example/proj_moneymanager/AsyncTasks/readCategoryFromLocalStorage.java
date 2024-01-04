@@ -31,6 +31,7 @@ public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> 
         Cursor cursor = dbHelper.readCategoryFromLocalDatabase(database);
 
         int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
+        int columnIndexUserID = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_USER_ID);
         int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
         int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
         int columnIndexColor = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
@@ -42,14 +43,15 @@ public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> 
                     columnIndexColor != -1 && columnIndexIcon != -1 &&
                     columnIndexSyncStatus != -1) {
 
-                int categoryID = cursor.getInt(columnIndexCategoryID);
+                long categoryID = cursor.getLong(columnIndexCategoryID);
+                long UserID = cursor.getLong(columnIndexUserID);
                 String name = cursor.getString(columnIndexName);
                 String icon = cursor.getString(columnIndexIcon);
                 String color = cursor.getString(columnIndexColor);
                 int syncStatus = cursor.getInt(columnIndexSyncStatus);
 
 //                 Create a new Category object with all required parameters
-                Category category = new Category(categoryID, name, icon, color, syncStatus);
+                Category category = new Category(categoryID, UserID, name, icon, color, syncStatus);
                 arrayListCategory.add(category);
             } else {
                 // Handle the case where the column indices are not found

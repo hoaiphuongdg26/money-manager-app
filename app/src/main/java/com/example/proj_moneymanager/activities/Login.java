@@ -232,7 +232,7 @@ public class Login extends AppCompatActivity {
                                 //Đưa dữ liệu mà remote không có lên POST
 
                                 //asynctask kéo dữ liệu từ remote về GET
-                                GetServerData getServerData = new GetServerData(Login.this);
+                                GetServerData getServerData = new GetServerData(Login.this, UserID);
                                 getServerData.execute();
                                 //add class vo day
 

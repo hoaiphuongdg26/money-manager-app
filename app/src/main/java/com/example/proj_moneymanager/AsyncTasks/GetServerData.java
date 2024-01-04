@@ -26,15 +26,17 @@ import java.util.Locale;
 public class GetServerData extends AsyncTask<Void, Void, String> {
 
     private Context context;
+    private long UserID;
 
-    public GetServerData(Context context) {
+    public GetServerData(Context context, long userID) {
         this.context = context;
+        this.UserID = userID;
     }
 
     @Override
     protected String doInBackground(Void... voids) {
         DbHelper dbHelper = new DbHelper(context);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, DbContract.SERVER_URL_GETDATABASE,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, DbContract.SERVER_URL_GETDATABASE + "?UserID=" + UserID,
                 //Can tạo 1 url mới hoặc sửa sync.php cho việc get data
                 new Response.Listener<String>() {
                     @Override
@@ -51,7 +53,7 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
                                 //Xoá hết dữ liệu trên bảng bill hiện tại
                                 database.delete(DbContract.BillEntry.TABLE_NAME, null, null);
 
-                                //Add lại dữ liệu tuwf remote gui ve vao local database
+                                //Add lại dữ liệu từ remote gui ve vao local database
                                 for (int i = 0; i < BillData.length(); i++) {
                                     JSONObject billItem = BillData.getJSONObject(i);
                                     // Extract data from JSON object

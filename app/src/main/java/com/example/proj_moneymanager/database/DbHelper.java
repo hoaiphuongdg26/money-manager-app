@@ -13,7 +13,6 @@ import android.util.Log;
 
 import com.example.proj_moneymanager.Object.Category;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class DbHelper extends SQLiteOpenHelper {
@@ -41,6 +40,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_CATEGORY =
             "CREATE TABLE IF NOT EXISTS " + DbContract.CategoryEntry.TABLE_NAME + " (" +
                     DbContract.CategoryEntry._ID + " INTEGER PRIMARY KEY," +
+                    DbContract.CategoryEntry.COLUMN_USER_ID + " INTEGER," +
                     DbContract.CategoryEntry.COLUMN_NAME + " VARCHAR(150)," +
                     DbContract.CategoryEntry.COLUMN_ICON + " VARCHAR(150)," +
                     DbContract.CategoryEntry.COLUMN_COLOR + " VARCHAR(150)," +
@@ -115,7 +115,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return database.insert(BillEntry.TABLE_NAME, null, values);
     }
 
-    public void updateBillInLocalDatabase(int id, int userID, int categoryId, String note, Date datetime, double money, int synstatus, SQLiteDatabase database) {
+    public void updateBillInLocalDatabase(int id, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(BillEntry._ID, id);
 //        values.put(BillEntry.COLUMN_USER_ID, userID);
@@ -180,8 +180,11 @@ public class DbHelper extends SQLiteOpenHelper {
                 null
         );
     }
-    public long insertCategoryToLocalDatabaseFromApp(String name, String icon, String color, int syncstatus, SQLiteDatabase database) {
+
+    // TABLE CATEGORY
+    public long insertCategoryToLocalDatabaseFromApp(long userID, String name, String icon, String color, int syncstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
+        values.put(DbContract.CategoryEntry.COLUMN_USER_ID, userID);
         values.put(DbContract.CategoryEntry.COLUMN_NAME, name);
         values.put(DbContract.CategoryEntry.COLUMN_ICON, icon);
         values.put(DbContract.CategoryEntry.COLUMN_COLOR, color);
@@ -193,6 +196,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public Cursor readCategoryFromLocalDatabase(SQLiteDatabase database) {
         String query = "SELECT " +
                 DbContract.CategoryEntry._ID + ", " +
+                DbContract.CategoryEntry.COLUMN_USER_ID + ", " +
                 DbContract.CategoryEntry.COLUMN_NAME + ", " +
                 DbContract.CategoryEntry.COLUMN_ICON + ", " +
                 DbContract.CategoryEntry.COLUMN_COLOR + ", " +
@@ -201,7 +205,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return database.rawQuery(query, null);
     }
-    public void updateCategoryInLocalDatabase(int id, String name, String icon, String color, int synstatus, SQLiteDatabase database) {
+    public void updateCategoryInLocalDatabase(long id, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(DbContract.CategoryEntry._ID, id);
         values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, synstatus);
@@ -211,12 +215,14 @@ public class DbHelper extends SQLiteOpenHelper {
 
         database.update(DbContract.CategoryEntry.TABLE_NAME, values, selection, selectionArgs);
     }
-    public boolean isCategoryNameExists(String name) {
+    public boolean isCategoryNameExists(String name, long userID) {
         SQLiteDatabase database = getReadableDatabase();
 
         // Truy vấn kiểm tra xem đã tồn tại name trong cơ sở dữ liệu hay chưa
         String query = "SELECT * FROM " + DbContract.CategoryEntry.TABLE_NAME +
-                " WHERE " + DbContract.CategoryEntry.COLUMN_NAME + " = ?";
+                " WHERE " + DbContract.CategoryEntry.COLUMN_NAME + " = ?" +
+                " AND " + DbContract.CategoryEntry.COLUMN_USER_ID + " = " + userID;
+
         Cursor cursor = database.rawQuery(query, new String[]{name});
 
         boolean exists = cursor.getCount() > 0;
@@ -226,6 +232,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return exists;
     }
+
     public String getCategoryNameById(long categoryId, SQLiteDatabase database) {
         String[] projection = {
                 DbContract.CategoryEntry.COLUMN_NAME
@@ -245,9 +252,9 @@ public class DbHelper extends SQLiteOpenHelper {
         );
 
         String categoryName = "";
-
+        int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
         if (cursor.moveToFirst()) {
-            categoryName = cursor.getString(cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME));
+            categoryName = cursor.getString(columnIndexName);
         }
 
         cursor.close();
@@ -258,6 +265,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         String[] projection = {
                 DbContract.CategoryEntry._ID,
+                DbContract.CategoryEntry.COLUMN_USER_ID,
                 DbContract.CategoryEntry.COLUMN_NAME,
                 DbContract.CategoryEntry.COLUMN_ICON,
                 DbContract.CategoryEntry.COLUMN_COLOR,
@@ -279,6 +287,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
+            int columnIndexUserID = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_USER_ID);
             int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
             int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
             int columnIndexColor = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
@@ -289,12 +298,13 @@ public class DbHelper extends SQLiteOpenHelper {
                     columnIndexSyncStatus != -1) {
 
                 long id = cursor.getLong(columnIndexCategoryID);
+                long userid = cursor.getLong(columnIndexUserID);
                 String name = cursor.getString(columnIndexName);
                 String icon = cursor.getString(columnIndexIcon);
                 String color = cursor.getString(columnIndexColor);
                 int syncStatus = cursor.getInt(columnIndexSyncStatus);
 
-                category = new Category(id, name, icon, color, syncStatus);
+                category = new Category(id, userid, name, icon, color, syncStatus);
             }
         }
 

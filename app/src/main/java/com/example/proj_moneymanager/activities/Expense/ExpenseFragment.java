@@ -56,11 +56,10 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     private Button monthYearText;
     private DatePickerDialog datePickerDialog;
     Date DateTime;
-
     String Note;
     double Expense;
     Button Import;
-    long CategoryID;
+    long CategoryID, UserID;
     int isExpense;
     ImageButton Ibtn_Income, Ibtn_Expense;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
@@ -157,7 +156,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     }
     public void onEditCategoryButtonClick (){
         EditCategoryFragment editCategoryFragment = new EditCategoryFragment();
-
+        editCategoryFragment.setUserID(UserID);
         FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager != null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -274,7 +273,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
                     // DateTime đã được cập nhật với giờ, phút và giây của hệ thống
                     Date updatedDateTime = calendar.getTime();
 //                    CategoryID = 1;
-                    long UserID = getArguments().getLong("UserID", 0);
+                    UserID = getArguments().getLong("UserID", 0);
 
                     // Ghi vào db
                     insertBillToServer(UserID, CategoryID, Note, updatedDateTime, Expense);

@@ -27,9 +27,6 @@ import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.ActivityMainBinding;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     NetworkMonitor networkMonitor;

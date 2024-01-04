@@ -5,9 +5,9 @@ import android.provider.BaseColumns;
 public class DbContract {
     public static final int SYNC_STATUS_OK = 0;
     public static final int SYNC_STATUS_FAILED = 1;
-    public static final String SERVER_URL_SYNCBILL = "http://192.168.139.1/money_management/sync_bill.php/";
-    public static final String SERVER_URL_SYNCCATEGORY = "http://192.168.139.1/money_management/sync_category.php/";
-    public static final String SERVER_URL_GETDATABASE = "http://192.168.139.1/money_management/getDatabase.php/";
+    public static final String SERVER_URL_SYNCBILL = "http://10.0.135.90/money_management/sync_bill.php/";
+    public static final String SERVER_URL_SYNCCATEGORY = "http://10.0.135.90/money_management/sync_category.php/";
+    public static final String SERVER_URL_GETDATABASE = "http://10.0.135.90/money_management/getDatabase.php/";
     public static final String UI_UPDATE_BROADCAST = "com.example.proj_moneynanager.uiupdatebroadcast";
     public static final String DATABASE_NAME = "moneyManagement";
 
@@ -25,6 +25,7 @@ public class DbContract {
     // Bảng CATEGORY
     public static class CategoryEntry implements BaseColumns {
         public static final String TABLE_NAME = "CATEGORY";
+        public static final String COLUMN_USER_ID = "UserID";
         public static final String COLUMN_NAME = "Name";
         public static final String COLUMN_COLOR = "Color";
         public static final String COLUMN_ICON = "Icon";

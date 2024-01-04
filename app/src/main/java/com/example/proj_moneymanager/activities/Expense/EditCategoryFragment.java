@@ -43,12 +43,16 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     Button Import;
     ColorAdapter colorAdapter;
     IconAdapter iconAdapter;
-    long categoryID;
+    long categoryID, UserID;
     String color, icon;
+    public void setUserID(long userID) {
+        this.UserID = userID;
+    }
     public EditCategoryFragment(){}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        UserID = getArguments().getLong("UserID", 0);
         binding = FragmentEditCategoryBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
 
@@ -77,7 +81,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
         String name = nameCategory.getText().toString();
         if (name != null && icon != null && color != null) {
             DbHelper dbHelper = new DbHelper(getContext());
-            if (dbHelper.isCategoryNameExists(name)) {
+            if (dbHelper.isCategoryNameExists(name, UserID)) {
                 // Nếu name đã tồn tại, thông báo lỗi và không tiếp tục thực hiện import
                 Toast.makeText(getContext(), "Category name already exists", Toast.LENGTH_SHORT).show();
             }
@@ -150,7 +154,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     private long insertCategoryToLocalDatabaseFromApp(String name, String icon, String color, int syncstatus){
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
-        long categoryID = dbHelper.insertCategoryToLocalDatabaseFromApp(name, icon, color, syncstatus, database);
+        long categoryID = dbHelper.insertCategoryToLocalDatabaseFromApp(UserID, name, icon, color, syncstatus, database);
         readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(),arrayListCategory);
         readCategoryFromLocalStorage.execute();
         dbHelper.close();
