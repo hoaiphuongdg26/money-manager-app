@@ -62,7 +62,8 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     long UserID;
     String CategoryID, billID;
     int isExpense;
-    ImageButton Ibtn_Income, Ibtn_Expense, btnNextDay, btnPreviousDay;
+    Button Ibtn_Income, Ibtn_Expense;
+    ImageButton btnNextDay, btnPreviousDay;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
     ArrayList<Category> arrayListCategory = new ArrayList<Category>();
     private CategoryAdapter categoryAdapter; // Add this line

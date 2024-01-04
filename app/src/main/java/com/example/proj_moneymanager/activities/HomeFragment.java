@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.proj_moneymanager.R;
-import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
+import com.example.proj_moneymanager.activities.Setting.MoreFragment;
 import com.example.proj_moneymanager.activities.Setting.SettingFragment;
 import com.example.proj_moneymanager.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
@@ -34,6 +34,15 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 // Gọi sự kiện khi click
                 onSettingButtonClick();
+            }
+        });
+        // Bắt sự kiện click vào button "more" sau khi view đã được tạo
+        ImageButton imagebuttonMore = homeBinding.buttonMore;
+        imagebuttonMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Gọi sự kiện khi click
+                onMoreButtonClick();
             }
         });
         // Bắt sự kiện click vào button "calendar" sau khi view đã được tạo
@@ -82,21 +91,13 @@ public class HomeFragment extends Fragment {
             fragmentTransaction.commit();
         }
     }
-    public void onCalendarButtonClick (){
-        CalendarFragment calendarFragment = new CalendarFragment();
-
-        // truyền UserID qua
-        Bundle bundle = new Bundle();
-        bundle.putLong("UserID", UserID);
-        calendarFragment.setArguments(bundle);
-
-        // Set the bundle to the fragment
-        calendarFragment.setArguments(bundle);
+    public void onMoreButtonClick (){
+        MoreFragment moreFragment = new MoreFragment();
 
         FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager != null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.frame_layout, calendarFragment);
+            fragmentTransaction.replace(R.id.frame_layout, moreFragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }

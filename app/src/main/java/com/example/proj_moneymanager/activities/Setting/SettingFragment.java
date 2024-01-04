@@ -31,7 +31,7 @@ public class SettingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        FragmentSettingBinding binding = FragmentSettingBinding.inflate(inflater, container, false);
+        binding = FragmentSettingBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         //Xử lý Setting Adapter cho listview
