@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/blue"/> <!-- Màu khi checkbox được chọn -->
+    <size android:width="16sp" android:height="16sp"/> <!-- Kích thước của checkbox -->
+    <stroke android:width="2dp" android:color="@color/silver"/>
+</shape>
