@@ -38,10 +38,12 @@ public class CategoryAdapter extends BaseAdapter {
     public Object getItem(int position) {
         return arrCategory.get(position);
     }
-
     @Override
     public long getItemId(int position) {
-        return position;
+        if (position >= 0 && position < arrCategory.size()) {
+            return arrCategory.get(position).getID();
+        }
+        return -1;
     }
     static class ViewHolder {
         TextView nameTextView;
@@ -98,12 +100,12 @@ public class CategoryAdapter extends BaseAdapter {
                 notifyDataSetChanged();
 
                 // Save the selected category ID
-                long selectedCategoryId = arrCategory.get(position).getID(); // Replace with your actual method to get the category ID
+                long selectedCategoryId = getItemId(position);
 
                 // Notify the listener (ExpenseFragment) about the selected category ID
                 if (categoryClickListener != null) {
                     categoryClickListener.onCategoryClick(selectedCategoryId);
-                    // Toast.makeText(context, selectedCategoryId, Toast.LENGTH_LONG).show();
+//                     Toast.makeText(context, (int) selectedCategoryId, Toast.LENGTH_LONG).show();
                 }
             }
         };

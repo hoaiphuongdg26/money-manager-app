@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class GetServerData extends AsyncTask<Void, Void, String> {
+public class GetServerData extends AsyncTask<Long, Void, String> {
 
     private Context context;
     private long UserID;
@@ -34,7 +34,7 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Void... voids) {
+    protected String doInBackground(Long... longs) {
         DbHelper dbHelper = new DbHelper(context);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, DbContract.SERVER_URL_GETDATABASE + "?UserID=" + UserID,
                 //Can tạo 1 url mới hoặc sửa sync.php cho việc get data
@@ -63,23 +63,25 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
 //                                                    String note = item.getString("Note");
                                     // Store data in local SQLite database
                                     ContentValues values = new ContentValues();
-                                    values.put("_ID", Integer.parseInt(billItem.getString("ID")));
-                                    values.put("UserID", Integer.parseInt(billItem.getString("UserID")));
-                                    values.put("CategoryID", Integer.parseInt(billItem.getString("CategoryID")));
-                                    values.put("Note", billItem.getString("Note"));
-                                    Date DateTime = new Date();
-                                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-                                    try {
-                                        DateTime = dateFormat.parse(billItem.getString("TimeCreate"));
+                                    if(longs[0]==Long.parseLong(billItem.getString("UserID"))){
+                                        values.put("_ID", Integer.parseInt(billItem.getString("ID")));
+                                        values.put("UserID", Long.parseLong(billItem.getString("UserID")));
+                                        values.put("CategoryID", Integer.parseInt(billItem.getString("CategoryID")));
+                                        values.put("Note", billItem.getString("Note"));
+                                        Date DateTime = new Date();
+                                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+                                        try {
+                                            DateTime = dateFormat.parse(billItem.getString("TimeCreate"));
+                                        }
+                                        catch (ParseException e){
+                                            e.printStackTrace();
+                                        }
+                                        assert DateTime != null;
+                                        values.put("TimeCreate", DateTime.getTime());
+                                        values.put("Expense", Double.parseDouble(billItem.getString("Expense")));
+                                        // Insert data into local SQLite database
+                                        database.insert(DbContract.BillEntry.TABLE_NAME, null, values);
                                     }
-                                    catch (ParseException e){
-                                        e.printStackTrace();
-                                    }
-                                    assert DateTime != null;
-                                    values.put("TimeCreate", DateTime.getTime());
-                                    values.put("Expense", Integer.parseInt(billItem.getString("Expense")));
-                                    // Insert data into local SQLite database
-                                    database.insert(DbContract.BillEntry.TABLE_NAME, null, values);
                                 }
                                 // Close the database
                                 database.close();
@@ -93,6 +95,7 @@ public class GetServerData extends AsyncTask<Void, Void, String> {
                                     JSONObject categoryItem = categoryData.getJSONObject(i);
                                     ContentValues values = new ContentValues();
                                     values.put(DbContract.CategoryEntry._ID, Integer.parseInt(categoryItem.getString("ID")));
+                                    values.put(DbContract.CategoryEntry.COLUMN_USER_ID, Integer.parseInt(categoryItem.getString("UserID")));
                                     values.put(DbContract.CategoryEntry.COLUMN_NAME, categoryItem.getString("Name"));
                                     values.put(DbContract.CategoryEntry.COLUMN_ICON, categoryItem.getString("Icon"));
                                     values.put(DbContract.CategoryEntry.COLUMN_COLOR, categoryItem.getString("Color"));

@@ -59,7 +59,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     String Note;
     double Expense;
     Button Import;
-    long CategoryID, UserID;
+    long CategoryID, UserID, billID;
     int isExpense;
     ImageButton Ibtn_Income, Ibtn_Expense;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
@@ -73,6 +73,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        UserID = getArguments().getLong("UserID", 0);
         binding = FragmentExpenseBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
 
@@ -155,8 +156,13 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         }
     }
     public void onEditCategoryButtonClick (){
+        Bundle args = new Bundle();
+        args.putLong("UserID", UserID); // Replace yourUserID with the actual user ID
+
         EditCategoryFragment editCategoryFragment = new EditCategoryFragment();
-        editCategoryFragment.setUserID(UserID);
+//        editCategoryFragment.setUserID(UserID);
+        editCategoryFragment.setArguments(args);
+
         FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager != null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -272,8 +278,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
 
                     // DateTime đã được cập nhật với giờ, phút và giây của hệ thống
                     Date updatedDateTime = calendar.getTime();
-//                    CategoryID = 1;
-                    UserID = getArguments().getLong("UserID", 0);
+
 
                     // Ghi vào db
                     insertBillToServer(UserID, CategoryID, Note, updatedDateTime, Expense);
@@ -343,6 +348,9 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     }
     private void insertBillToServer(long userid, long categoryid, String note, Date timecreate, Double expense) {
         if (checkNetworkConnection()){
+            billID = insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_PENDING);
+            DbHelper dbHelper = new DbHelper(getContext());
+            SQLiteDatabase database = dbHelper.getReadableDatabase();
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                     new Response.Listener<String>() {
                         @Override
@@ -350,34 +358,42 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 String Response= jsonObject.getString("response");
-                                long billid;
                                 if (Response.equals("OK")){
-                                    billid = insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_OK);
+                                    dbHelper.updateBillInLocalDatabase(billID, DbContract.SYNC_STATUS_OK, database);
                                 }else {
-                                    billid = insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
+                                    dbHelper.updateBillInLocalDatabase(billID, DbContract.SYNC_STATUS_FAILED, database);
                                 }
                                 Toast.makeText(getContext(),"Import bill successfully", Toast.LENGTH_SHORT).show();
                             }catch (JSONException e){
                                 e.printStackTrace();
                             }
-
+                            finally {
+                                dbHelper.close();
+                            }
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    long billid = insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
+                    String errorMessage = "Error occurred during import Bill";
+                    dbHelper.updateBillInLocalDatabase(billID, DbContract.SYNC_STATUS_FAILED, database);
+                    if (error != null && error.getMessage() != null) {
+                        errorMessage = error.getMessage();
+                    }
+                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                    dbHelper.close();
                 }
             }){
                 @Nullable
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
+                    params.put("billID", String.valueOf(billID));
+                    params.put("userID", String.valueOf(userid));
+                    params.put("categoryID", String.valueOf(categoryid));
                     params.put("note", note);
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                     params.put("timecreate", dateFormat.format(timecreate));
                     params.put("expense", String.valueOf(expense));
-                    params.put("categoryID", String.valueOf(categoryid));
-                    params.put("userID", String.valueOf(userid));
                     params.put("method", "INSERT");
                     return params;
                 }
@@ -385,13 +401,16 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
             MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
         }
         else {
-            insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
+            billID = insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
+            Toast.makeText(getContext(), "No network connection. Import Bill failed.", Toast.LENGTH_LONG).show();
         }
     }
     @Override
-    public void onCategoryClick(long categoryId) {
-        CategoryID = categoryId;
-        categoryAdapter.setSelectedPosition(categoryId); // Assuming you have a reference to the adapter
-        categoryAdapter.notifyDataSetChanged();
+    public void onCategoryClick(long selectedCategoryId) {
+        CategoryID = selectedCategoryId;
+        Toast.makeText(getContext(), "CategoryID: " +String.valueOf(selectedCategoryId), Toast.LENGTH_LONG).show();
+
+//        categoryAdapter.setSelectedPosition(selectedCategoryId); // Assuming you have a reference to the adapter
+//        categoryAdapter.notifyDataSetChanged();
     }
 }

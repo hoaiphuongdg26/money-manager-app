@@ -50,9 +50,9 @@ public class NetworkMonitor extends BroadcastReceiver {
                 while (billCursor.moveToNext()) {
                     int syncStatus_BILL = billCursor.getInt(columnIndexSyncStatus_BILL);
                     if (syncStatus_BILL == DbContract.SYNC_STATUS_FAILED) {
-                        int billID = billCursor.getInt(columnIndexID_BILL);
-                        int userID = billCursor.getInt(columnIndexUserID_BILL);
-                        int categoryID = billCursor.getInt(columnIndexCategoryID_BILL);
+                        long billID = billCursor.getLong(columnIndexID_BILL);
+                        long userID = billCursor.getLong(columnIndexUserID_BILL);
+                        long categoryID = billCursor.getLong(columnIndexCategoryID_BILL);
                         String note = billCursor.getString(columnIndexNote_BILL);
                         Date timeCreate = new Date();
                         if (columnIndexDatetime_BILL != -1) {
@@ -92,12 +92,13 @@ public class NetworkMonitor extends BroadcastReceiver {
                             @Override
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
+                                params.put("billID", String.valueOf(billID));
+                                params.put("categoryID", String.valueOf(categoryID));
+                                params.put("userID", String.valueOf(userID));
                                 params.put("note", note);
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                                 params.put("timecreate", dateFormat.format(finalTimeCreate));
                                 params.put("expense", String.valueOf(expense));
-                                params.put("categoryID", String.valueOf(categoryID));
-                                params.put("userID", String.valueOf(userID));
                                 params.put("method", "INSERT");
                                 return params;
                             }
@@ -111,6 +112,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                 //TABLE CATEGORY
                 Cursor categoryCursor = dbHelper.readBillFromLocalDatabase(database);
                 int columnIndexID_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry._ID);
+                int columnIndexUserID_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_USER_ID);
                 int columnIndexName_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
                 int columnIndexIcon_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
                 int columnIndexColor_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_COLOR);
@@ -118,7 +120,8 @@ public class NetworkMonitor extends BroadcastReceiver {
                 while (categoryCursor.moveToNext()) {
                     int syncStatus_CATEGORY = categoryCursor.getInt(columnIndexSyncStatus_CATEGORY);
                     if (syncStatus_CATEGORY == DbContract.SYNC_STATUS_FAILED) {
-                        int categoryID = categoryCursor.getInt(columnIndexID_CATEGORY);
+                        long categoryID = categoryCursor.getLong(columnIndexID_CATEGORY);
+                        long UserID = categoryCursor.getLong(columnIndexUserID_CATEGORY);
                         String name = categoryCursor.getString(columnIndexName_CATEGORY);
                         String icon = categoryCursor.getString(columnIndexIcon_CATEGORY);
                         String color = categoryCursor.getString(columnIndexColor_CATEGORY);
@@ -151,6 +154,8 @@ public class NetworkMonitor extends BroadcastReceiver {
                             @Override
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
+                                params.put ("categoryID", String.valueOf(categoryID));
+                                params.put ("userID", String.valueOf(UserID));
                                 params.put("name", name);
                                 params.put("icon", icon);
                                 params.put("color", color);

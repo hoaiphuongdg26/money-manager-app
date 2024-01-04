@@ -14,6 +14,7 @@ import android.util.Log;
 import com.example.proj_moneymanager.Object.Category;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -52,7 +53,10 @@ public class DbHelper extends SQLiteOpenHelper {
     public DbHelper(Context context) {
         super(context, DbContract.DATABASE_NAME, null, DATABASE_VERSION);
     }
-
+    public String generateUUID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
@@ -115,7 +119,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return database.insert(BillEntry.TABLE_NAME, null, values);
     }
 
-    public void updateBillInLocalDatabase(int id, int synstatus, SQLiteDatabase database) {
+    public void updateBillInLocalDatabase(long id, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(BillEntry._ID, id);
 //        values.put(BillEntry.COLUMN_USER_ID, userID);
