@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Proj_MoneyManager</string>
+    <string name="app_name">MoneyManager</string>
     <string name="login">LOGIN</string>
     <string name="signup">SIGNUP</string>
     <string name="pref_file_key">pref_file_key</string>

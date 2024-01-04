@@ -43,6 +43,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -61,11 +62,12 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     long UserID;
     String CategoryID, billID;
     int isExpense;
-    ImageButton Ibtn_Income, Ibtn_Expense;
+    ImageButton Ibtn_Income, Ibtn_Expense, btnNextDay, btnPreviousDay;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
     ArrayList<Category> arrayListCategory = new ArrayList<Category>();
     private CategoryAdapter categoryAdapter; // Add this line
     private BroadcastReceiver broadcastReceiver;
+    private LocalDate selectedDate;
     public ExpenseFragment() {
         // Required empty public constructor
     }
@@ -99,10 +101,30 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         categoryAdapter = new CategoryAdapter(this, this, arrayListCategory);
         GridView gridView = binding.gridviewCategory;
         gridView.setAdapter(categoryAdapter);
+
+        selectedDate = LocalDate.now();
         // Xử lý chọn tháng nhanh
         initDatePicker(view);
         monthYearText = (Button) binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
+
+
+        btnNextDay = binding.btnNextDay;
+        btnNextDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call the method to handle the previous month action
+                nextDayAction(v);
+            }
+        });
+        btnPreviousDay = binding.btnPreviousDay;
+        btnPreviousDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call the method to handle the previous month action
+                previousDayAction(v);
+            }
+        });
 
         Ibtn_Expense = binding.imgbtnExpense;
         //Mặc định khi chuyển sang view này là Expense
@@ -157,10 +179,9 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     }
     public void onEditCategoryButtonClick (){
         Bundle args = new Bundle();
-        args.putLong("UserID", UserID); // Replace yourUserID with the actual user ID
+        args.putLong("UserID", UserID);
 
         EditCategoryFragment editCategoryFragment = new EditCategoryFragment();
-//        editCategoryFragment.setUserID(UserID);
         editCategoryFragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -171,13 +192,23 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
             fragmentTransaction.commit();
         }
     }
-    private void initDatePicker(View view)
-    {
-        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
-        {
+    public void previousDayAction(View view) {
+        selectedDate = selectedDate.minusDays(1);
+        updateMonthYearText(selectedDate.getDayOfMonth(), selectedDate.getMonthValue() - 1, selectedDate.getYear());
+    }
+
+    public void nextDayAction(View view) {
+        selectedDate = selectedDate.plusDays(1);
+        updateMonthYearText(selectedDate.getDayOfMonth(), selectedDate.getMonthValue() - 1, selectedDate.getYear());
+    }
+    private void updateMonthYearText(int day, int month, int year) {
+        String date = makeDateString(day, month + 1, year);
+        monthYearText.setText(date);
+    }
+    private void initDatePicker(View view) {
+        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int day)
-            {
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
                 String date = makeDateString(day, month, year);
                 monthYearText.setText(date);
@@ -191,6 +222,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
 
         int style = AlertDialog.THEME_HOLO_LIGHT;
 
+        // Update the monthYearText here
         monthYearText = binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
 
@@ -243,7 +275,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
             return "December";
 
         //default should never happen
-        return "JAN";
+        return "ERROR";
     }
     @SuppressLint("SuspiciousIndentation")
     private void ImportBill(){
@@ -257,11 +289,11 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
                 Toast.makeText(getContext(), "Please select a category", Toast.LENGTH_SHORT).show();
                 return;
             }
-            try{
+            try {
                 Expense = Double.parseDouble(binding.edittextTypeofbill.getText().toString());
-                Expense = Expense*isExpense;
-            }catch (NumberFormatException e){
-                Toast.makeText(getContext(),"Please enter a valid number",Toast.LENGTH_SHORT).show();
+                Expense = Expense * isExpense;
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Please enter a valid number for the expense.", Toast.LENGTH_SHORT).show();
                 return;
             }
             // Lấy data ngày

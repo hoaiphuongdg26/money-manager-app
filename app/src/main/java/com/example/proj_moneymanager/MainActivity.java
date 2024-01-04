@@ -27,7 +27,10 @@ import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        HomeFragment.OnCalendarButtonClickListener,
+        HomeFragment.OnExpenseButtonClickListener,
+        HomeFragment.OnStatisticButtonClickListener{
     ActivityMainBinding binding;
     NetworkMonitor networkMonitor;
     DbHelper database = Login.database;
@@ -165,5 +168,53 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(networkMonitor);
+    }
+    private void selectTab(int itemId) {
+        binding.navBar.setSelectedItemId(itemId);
+    }
+    @Override
+    public void onCalendarButtonClick(long userID) {
+        // Xử lý sự kiện click từ HomeFragment
+        CalendarFragment calendarFragment = new CalendarFragment();
+
+        // Truyền UserID qua
+        Bundle bundle = new Bundle();
+        bundle.putLong("UserID", userID);
+        calendarFragment.setArguments(bundle);
+
+        // Thay thế fragment khi mục được chọn trong NavBar
+        replaceFragment(calendarFragment);
+        selectTab(R.id.menu_calendar);
+
+    }
+
+    @Override
+    public void onExpenseButtonClick(long userID) {
+        // Xử lý sự kiện click từ HomeFragment
+        ExpenseFragment expenseFragment = new ExpenseFragment();
+
+        // Truyền UserID qua
+        Bundle bundle = new Bundle();
+        bundle.putLong("UserID", userID);
+        expenseFragment.setArguments(bundle);
+
+        // Thay thế fragment khi mục được chọn trong NavBar
+        replaceFragment(expenseFragment);
+        selectTab(R.id.menu_money);
+    }
+
+    @Override
+    public void onStatisticButtonClick(long userID) {
+        // Xử lý sự kiện click từ HomeFragment
+        StatisticFragment statisticFragment = new StatisticFragment();
+
+        // Truyền UserID qua
+        Bundle bundle = new Bundle();
+        bundle.putLong("UserID", userID);
+        statisticFragment.setArguments(bundle);
+
+        // Thay thế fragment khi mục được chọn trong NavBar
+        replaceFragment(statisticFragment);
+        selectTab(R.id.menu_chart);
     }
 }
