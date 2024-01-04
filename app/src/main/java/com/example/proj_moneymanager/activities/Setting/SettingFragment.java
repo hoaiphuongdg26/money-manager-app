@@ -66,10 +66,18 @@ public class SettingFragment extends Fragment {
         binding.lvOptSetting.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Lấy ra mục được chọn từ Adapter
-                Setting_Option selectedOption = (Setting_Option) SettingAdapter.getItem(position);
-                // Hiển thị dialog hoặc thực hiện các xử lý tương ứng với mục đã chọn
-                dialogLanguageSetting(selectedOption, position);
+                if(position == 0) {
+                    // Lấy ra mục được chọn từ Adapter
+                    Setting_Option selectedOption = (Setting_Option) SettingAdapter.getItem(position);
+                    // Hiển thị dialog hoặc thực hiện các xử lý tương ứng với mục đã chọn
+                    dialogLanguageSetting(selectedOption, position);
+                }
+                else if(position == 1) {
+                    //setting theme
+                }
+                else {
+                    //setting text format
+                }
             }
         });
 
