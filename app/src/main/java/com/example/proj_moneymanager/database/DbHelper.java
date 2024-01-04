@@ -31,7 +31,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_BILL =
             "CREATE TABLE IF NOT EXISTS " + BillEntry.TABLE_NAME + " (" +
-                    BillEntry._ID + " INTEGER PRIMARY KEY," +
+                    BillEntry.COLUMN_ID + " VARCHAR(36) PRIMARY KEY," +
                     BillEntry.COLUMN_USER_ID + " INTEGER," +
                     BillEntry.COLUMN_CATEGORY_ID + " INTEGER," +
                     BillEntry.COLUMN_NOTE + " VARCHAR(150)," +
@@ -40,7 +40,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     BillEntry.COLUMN_SYNC_STATUS + " INTEGER);";
     private static final String CREATE_TABLE_CATEGORY =
             "CREATE TABLE IF NOT EXISTS " + DbContract.CategoryEntry.TABLE_NAME + " (" +
-                    DbContract.CategoryEntry._ID + " INTEGER PRIMARY KEY," +
+                    DbContract.CategoryEntry.COLUMN_ID + " VARCHAR(36) PRIMARY KEY," +
                     DbContract.CategoryEntry.COLUMN_USER_ID + " INTEGER," +
                     DbContract.CategoryEntry.COLUMN_NAME + " VARCHAR(150)," +
                     DbContract.CategoryEntry.COLUMN_ICON + " VARCHAR(150)," +
@@ -94,7 +94,7 @@ public class DbHelper extends SQLiteOpenHelper {
     // TABLE BILL
     public Cursor readBillFromLocalDatabase(SQLiteDatabase database) {
         String query = "SELECT " +
-                BillEntry.TABLE_NAME + "." + BillEntry._ID + ", " +
+                BillEntry.TABLE_NAME + "." + BillEntry.COLUMN_ID + ", " +
                 BillEntry.COLUMN_USER_ID + ", " +
                 BillEntry.COLUMN_CATEGORY_ID + ", " +
                 BillEntry.COLUMN_NOTE + ", " +
@@ -106,8 +106,12 @@ public class DbHelper extends SQLiteOpenHelper {
         return database.rawQuery(query, null);
     }
 
-    public long insertBillToLocalDatabaseFromApp(long userID, long categoryId, String note, Date timecreate, double money, int synstatus, SQLiteDatabase database) {
+    public String insertBillToLocalDatabaseFromApp(long userID, String categoryId, String note, Date timecreate, double money, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
+
+        String billID = UUID.randomUUID().toString();
+        values.put(BillEntry.COLUMN_ID, billID);
+
         values.put(BillEntry.COLUMN_USER_ID, userID);
         values.put(BillEntry.COLUMN_CATEGORY_ID, categoryId);
         values.put(BillEntry.COLUMN_NOTE, note);
@@ -115,13 +119,13 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(BillEntry.COLUMN_EXPENSE, money);
         values.put(BillEntry.COLUMN_SYNC_STATUS, synstatus);
 
-        // Insert dữ liệu và trả về ID của hàng vừa thêm
-        return database.insert(BillEntry.TABLE_NAME, null, values);
+        database.insert(BillEntry.TABLE_NAME, null, values);
+        return billID;
     }
 
-    public void updateBillInLocalDatabase(long id, int synstatus, SQLiteDatabase database) {
+    public void updateBillInLocalDatabase(String billId, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
-        values.put(BillEntry._ID, id);
+        values.put(BillEntry.COLUMN_ID, billId);
 //        values.put(BillEntry.COLUMN_USER_ID, userID);
 //        values.put(BillEntry.COLUMN_CATEGORY_ID, categoryId);
 //        values.put(BillEntry.COLUMN_NOTE, note);
@@ -131,8 +135,8 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(BillEntry.COLUMN_SYNC_STATUS, synstatus);
 
         //mới sửa
-        String selection = BillEntry._ID + " = ?";
-        String[] selectionArgs = {String.valueOf(id)};
+        String selection = BillEntry.COLUMN_ID + " = ?";
+        String[] selectionArgs = {billId};
 
         database.update(BillEntry.TABLE_NAME, values, selection, selectionArgs);
     }
@@ -171,7 +175,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 BillEntry.COLUMN_USER_ID
         };
 
-        String selection = BillEntry._ID + " = ?";
+        String selection = BillEntry.COLUMN_ID + " = ?";
         String[] selectionArgs = {String.valueOf(billID)};
 
         return database.query(
@@ -186,20 +190,25 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // TABLE CATEGORY
-    public long insertCategoryToLocalDatabaseFromApp(long userID, String name, String icon, String color, int syncstatus, SQLiteDatabase database) {
+    public String insertCategoryToLocalDatabaseFromApp(long userID, String name, String icon, String color, int syncstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
+
+        String categoryID = UUID.randomUUID().toString();
+        values.put(DbContract.CategoryEntry.COLUMN_ID, categoryID);
+
         values.put(DbContract.CategoryEntry.COLUMN_USER_ID, userID);
         values.put(DbContract.CategoryEntry.COLUMN_NAME, name);
         values.put(DbContract.CategoryEntry.COLUMN_ICON, icon);
         values.put(DbContract.CategoryEntry.COLUMN_COLOR, color);
         values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, syncstatus);
 
+        database.insert(DbContract.CategoryEntry.TABLE_NAME, null, values);
         // Insert dữ liệu và trả về ID của hàng vừa thêm
-        return database.insert(DbContract.CategoryEntry.TABLE_NAME, null, values);
+        return categoryID;
     }
     public Cursor readCategoryFromLocalDatabase(SQLiteDatabase database) {
         String query = "SELECT " +
-                DbContract.CategoryEntry._ID + ", " +
+                DbContract.CategoryEntry.COLUMN_ID + ", " +
                 DbContract.CategoryEntry.COLUMN_USER_ID + ", " +
                 DbContract.CategoryEntry.COLUMN_NAME + ", " +
                 DbContract.CategoryEntry.COLUMN_ICON + ", " +
@@ -209,13 +218,13 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return database.rawQuery(query, null);
     }
-    public void updateCategoryInLocalDatabase(long id, int synstatus, SQLiteDatabase database) {
+    public void updateCategoryInLocalDatabase(String categoryId, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
-        values.put(DbContract.CategoryEntry._ID, id);
+        values.put(DbContract.CategoryEntry.COLUMN_ID, categoryId);
         values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, synstatus);
 
-        String selection = DbContract.CategoryEntry._ID + " = ?";
-        String[] selectionArgs = {String.valueOf(id)};
+        String selection = DbContract.CategoryEntry.COLUMN_ID + " = ?";
+        String[] selectionArgs = {categoryId};
 
         database.update(DbContract.CategoryEntry.TABLE_NAME, values, selection, selectionArgs);
     }
@@ -237,12 +246,12 @@ public class DbHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-    public String getCategoryNameById(long categoryId, SQLiteDatabase database) {
+    public String getCategoryNameById(String categoryId, SQLiteDatabase database) {
         String[] projection = {
                 DbContract.CategoryEntry.COLUMN_NAME
         };
 
-        String selection = DbContract.CategoryEntry._ID + " = ?";
+        String selection = DbContract.CategoryEntry.COLUMN_ID + " = ?";
         String[] selectionArgs = {String.valueOf(categoryId)};
 
         Cursor cursor = database.query(
@@ -264,11 +273,11 @@ public class DbHelper extends SQLiteOpenHelper {
         cursor.close();
         return categoryName;
     }
-    public Category getItemCategory(long categoryID, SQLiteDatabase database) {
+    public Category getItemCategory(String categoryID, SQLiteDatabase database) {
         Category category = null;
 
         String[] projection = {
-                DbContract.CategoryEntry._ID,
+                DbContract.CategoryEntry.COLUMN_ID,
                 DbContract.CategoryEntry.COLUMN_USER_ID,
                 DbContract.CategoryEntry.COLUMN_NAME,
                 DbContract.CategoryEntry.COLUMN_ICON,
@@ -276,8 +285,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 DbContract.CategoryEntry.COLUMN_SYNC_STATUS
         };
 
-        String selection = DbContract.CategoryEntry._ID + " = ?";
-        String[] selectionArgs = {String.valueOf(categoryID)};
+        String selection = DbContract.CategoryEntry.COLUMN_ID + " = ?";
+        String[] selectionArgs = {categoryID};
 
         Cursor cursor = database.query(
                 DbContract.CategoryEntry.TABLE_NAME,
@@ -290,7 +299,7 @@ public class DbHelper extends SQLiteOpenHelper {
         );
 
         if (cursor.moveToFirst()) {
-            int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
+            int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ID);
             int columnIndexUserID = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_USER_ID);
             int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
             int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
@@ -301,14 +310,14 @@ public class DbHelper extends SQLiteOpenHelper {
                     columnIndexColor != -1 && columnIndexIcon != -1 &&
                     columnIndexSyncStatus != -1) {
 
-                long id = cursor.getLong(columnIndexCategoryID);
+                String categoryId = cursor.getString(columnIndexCategoryID);
                 long userid = cursor.getLong(columnIndexUserID);
                 String name = cursor.getString(columnIndexName);
                 String icon = cursor.getString(columnIndexIcon);
                 String color = cursor.getString(columnIndexColor);
                 int syncStatus = cursor.getInt(columnIndexSyncStatus);
 
-                category = new Category(id, userid, name, icon, color, syncStatus);
+                category = new Category(categoryId, userid, name, icon, color, syncStatus);
             }
         }
 

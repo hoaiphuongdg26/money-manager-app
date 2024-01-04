@@ -39,7 +39,7 @@ public class readBillFromLocalStorage extends AsyncTask<Void, Void, String> {
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
 
-        int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+        int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_ID);
         int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
         int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
         int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
@@ -50,10 +50,10 @@ public class readBillFromLocalStorage extends AsyncTask<Void, Void, String> {
         while (cursor.moveToNext()) {
             // Check if the column indices are valid before accessing the values
             if (columnIndexNote != -1 && columnIndexMoney != -1) {
-                long billID = cursor.getLong(columnIndexBillID);
+                String billID = cursor.getString(columnIndexBillID);
                 Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
                 long userID = cursor.getLong(columnIndexUserID);
-                long categoryID = cursor.getLong(columnIndexCategoryID);
+                String categoryID = cursor.getString(columnIndexCategoryID);
                 double money = cursor.getDouble(columnIndexMoney);
                 String note = cursor.getString(columnIndexNote);
                 int sync = cursor.getInt(columnIndexSyncStatus);

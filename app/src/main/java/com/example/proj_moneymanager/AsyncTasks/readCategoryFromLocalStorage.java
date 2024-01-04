@@ -30,7 +30,7 @@ public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> 
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.readCategoryFromLocalDatabase(database);
 
-        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry._ID);
+        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ID);
         int columnIndexUserID = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_USER_ID);
         int columnIndexName = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
         int columnIndexIcon = cursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
@@ -43,7 +43,7 @@ public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> 
                     columnIndexColor != -1 && columnIndexIcon != -1 &&
                     columnIndexSyncStatus != -1) {
 
-                long categoryID = cursor.getLong(columnIndexCategoryID);
+                String categoryID = cursor.getString(columnIndexCategoryID);
                 long UserID = cursor.getLong(columnIndexUserID);
                 String name = cursor.getString(columnIndexName);
                 String icon = cursor.getString(columnIndexIcon);

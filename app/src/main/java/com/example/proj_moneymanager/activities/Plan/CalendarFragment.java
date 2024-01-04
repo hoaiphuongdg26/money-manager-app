@@ -77,7 +77,8 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     FragmentCalendarBinding binding;
     TextView tv_income,tv_expense,tv_total;
     private BroadcastReceiver broadcastReceiver;
-    long userID, billID;
+    long userID;
+    String billID;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -196,7 +197,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             SQLiteDatabase database = dbHelper.getReadableDatabase();
             Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
             // Lấy data ngày
-                int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+                int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_ID);
                 int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
                 int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
                 int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
@@ -208,9 +209,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                     // Check if the column indices are valid before accessing the values
                     if (columnIndexNote != -1 && columnIndexMoney != -1) {
                         Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-                        billID = cursor.getLong(columnIndexBillID);
+                        billID = cursor.getString(columnIndexBillID);
                         userID = cursor.getInt(columnIndexUserID);
-                        long categoryID = cursor.getLong(columnIndexCategoryID);
+                        String categoryID = cursor.getString(columnIndexCategoryID);
                         long money = cursor.getLong(columnIndexMoney);
                         String note = cursor.getString(columnIndexNote);
                         int sync = cursor.getInt(columnIndexSyncStatus);

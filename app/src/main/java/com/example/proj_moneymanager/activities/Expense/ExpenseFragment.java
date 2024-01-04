@@ -19,7 +19,6 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -59,7 +58,8 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     String Note;
     double Expense;
     Button Import;
-    long CategoryID, UserID, billID;
+    long UserID;
+    String CategoryID, billID;
     int isExpense;
     ImageButton Ibtn_Income, Ibtn_Expense;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
@@ -250,47 +250,53 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         //kiểm tra tv tiền
         if(!binding.edittextTypeofbill.getText().toString().isEmpty()){
             if(binding.edittextNote.getText().toString().isEmpty()) Note = "Unnamed Bill";
-                else Note = binding.edittextNote.getText().toString();
-                try{
-                    Expense = Double.parseDouble(binding.edittextTypeofbill.getText().toString());
-                    Expense = Expense*isExpense;
-                }catch (NumberFormatException e){
-                    Toast.makeText(getContext(),"Please enter a valid number",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                // Lấy data ngày
-                String datetimeString = monthYearText.getText().toString();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
-                try {
-                    DateTime = dateFormat.parse(datetimeString);
+            else Note = binding.edittextNote.getText().toString();
 
-                    // Lấy giờ, phút và giây của hệ thống
-                    Calendar currentCalendar = Calendar.getInstance();
-                    int hour = currentCalendar.get(Calendar.HOUR_OF_DAY);
-                    int minute = currentCalendar.get(Calendar.MINUTE);
-                    int second = currentCalendar.get(Calendar.SECOND);
-                    // Cập nhật giờ, phút và giây vào biến DateTime
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(DateTime);
-                    calendar.set(Calendar.HOUR_OF_DAY, hour);
-                    calendar.set(Calendar.MINUTE, minute);
-                    calendar.set(Calendar.SECOND, second);
+            // Kiểm tra CategoryID
+            if (CategoryID == null || CategoryID.isEmpty()) {
+                Toast.makeText(getContext(), "Please select a category", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try{
+                Expense = Double.parseDouble(binding.edittextTypeofbill.getText().toString());
+                Expense = Expense*isExpense;
+            }catch (NumberFormatException e){
+                Toast.makeText(getContext(),"Please enter a valid number",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // Lấy data ngày
+            String datetimeString = monthYearText.getText().toString();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
+            try {
+                DateTime = dateFormat.parse(datetimeString);
 
-                    // DateTime đã được cập nhật với giờ, phút và giây của hệ thống
-                    Date updatedDateTime = calendar.getTime();
+                // Lấy giờ, phút và giây của hệ thống
+                Calendar currentCalendar = Calendar.getInstance();
+                int hour = currentCalendar.get(Calendar.HOUR_OF_DAY);
+                int minute = currentCalendar.get(Calendar.MINUTE);
+                int second = currentCalendar.get(Calendar.SECOND);
+                // Cập nhật giờ, phút và giây vào biến DateTime
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(DateTime);
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.SECOND, second);
+
+                // DateTime đã được cập nhật với giờ, phút và giây của hệ thống
+                Date updatedDateTime = calendar.getTime();
 
 
-                    // Ghi vào db
-                    insertBillToServer(UserID, CategoryID, Note, updatedDateTime, Expense);
-                    //set giá trị mặc định cho các textview
-                    binding.edittextNote.setText("");
-                    binding.edittextTypeofbill.setText("");
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    // Xử lý khi có lỗi chuyển đổi
-                }
+                // Ghi vào db
+                insertBillToServer(UserID, CategoryID, Note, updatedDateTime, Expense);
+                //set giá trị mặc định cho các textview
+                binding.edittextNote.setText("");
+                binding.edittextTypeofbill.setText("");
+            } catch (ParseException e) {
+                e.printStackTrace();
+                // Xử lý khi có lỗi chuyển đổi
+            }
         }
-        else Toast.makeText(getContext(),"Please enter a valid value",Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getContext(),"Please enter a valid value for money!",Toast.LENGTH_SHORT).show();
     }
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
@@ -301,7 +307,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
 
-        int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry._ID);
+        int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_ID);
         int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
         int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
         int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
@@ -315,9 +321,9 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
                     columnIndexCategoryID != -1 && columnIndexMoney != -1 &&
                     columnIndexSyncStatus != -1) {
 
-                int billID = cursor.getInt(columnIndexBillID);
+                String billID = cursor.getString(columnIndexBillID);
                 int userID = cursor.getInt(columnIndexUserID);
-                int categoryID = cursor.getInt(columnIndexCategoryID);
+                String categoryID = cursor.getString(columnIndexCategoryID);
                 String note = cursor.getString(columnIndexNote);
                 Date timeCreate = new Date();
                 if (columnIndexDatetime != -1) {
@@ -338,15 +344,15 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         cursor.close();
         dbHelper.close();
     }
-    private long insertBillToLocalDatabaseFromApp(long userID, long categoryId, String note, Date timecreate, double expense, int synstatus){
+    private String insertBillToLocalDatabaseFromApp(long userID, String categoryId, String note, Date timecreate, double expense, int synstatus){
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
-        long billID = dbHelper.insertBillToLocalDatabaseFromApp(userID, categoryId, note, timecreate, expense, synstatus, database);
+        String billID = dbHelper.insertBillToLocalDatabaseFromApp(userID, categoryId, note, timecreate, expense, synstatus, database);
         readBillFromLocalStorage();
         dbHelper.close();
         return billID;
     }
-    private void insertBillToServer(long userid, long categoryid, String note, Date timecreate, Double expense) {
+    private void insertBillToServer(long userid, String categoryid, String note, Date timecreate, Double expense) {
         if (checkNetworkConnection()){
             billID = insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_PENDING);
             DbHelper dbHelper = new DbHelper(getContext());
@@ -383,13 +389,12 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
                     dbHelper.close();
                 }
             }){
-                @Nullable
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
-                    params.put("billID", String.valueOf(billID));
+                    params.put("billID", billID);
                     params.put("userID", String.valueOf(userid));
-                    params.put("categoryID", String.valueOf(categoryid));
+                    params.put("categoryID", categoryid);
                     params.put("note", note);
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                     params.put("timecreate", dateFormat.format(timecreate));
@@ -406,11 +411,8 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         }
     }
     @Override
-    public void onCategoryClick(long selectedCategoryId) {
+    public void onCategoryClick(String selectedCategoryId) {
         CategoryID = selectedCategoryId;
-        Toast.makeText(getContext(), "CategoryID: " +String.valueOf(selectedCategoryId), Toast.LENGTH_LONG).show();
-
-//        categoryAdapter.setSelectedPosition(selectedCategoryId); // Assuming you have a reference to the adapter
-//        categoryAdapter.notifyDataSetChanged();
+//        Toast.makeText(getContext(), "CategoryID: " +String.valueOf(selectedCategoryId), Toast.LENGTH_LONG).show();
     }
 }

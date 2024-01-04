@@ -39,7 +39,7 @@ public class NetworkMonitor extends BroadcastReceiver {
 
                 // TABLE BILL
                 Cursor billCursor = dbHelper.readBillFromLocalDatabase(database);
-                int columnIndexID_BILL = billCursor.getColumnIndex(DbContract.BillEntry._ID);
+                int columnIndexID_BILL = billCursor.getColumnIndex(DbContract.BillEntry.COLUMN_ID);
                 int columnIndexUserID_BILL = billCursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
                 int columnIndexCategoryID_BILL = billCursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
                 int columnIndexNote_BILL = billCursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
@@ -50,9 +50,9 @@ public class NetworkMonitor extends BroadcastReceiver {
                 while (billCursor.moveToNext()) {
                     int syncStatus_BILL = billCursor.getInt(columnIndexSyncStatus_BILL);
                     if (syncStatus_BILL == DbContract.SYNC_STATUS_FAILED) {
-                        long billID = billCursor.getLong(columnIndexID_BILL);
+                        String billID = billCursor.getString(columnIndexID_BILL);
                         long userID = billCursor.getLong(columnIndexUserID_BILL);
-                        long categoryID = billCursor.getLong(columnIndexCategoryID_BILL);
+                        String categoryID = billCursor.getString(columnIndexCategoryID_BILL);
                         String note = billCursor.getString(columnIndexNote_BILL);
                         Date timeCreate = new Date();
                         if (columnIndexDatetime_BILL != -1) {
@@ -111,7 +111,7 @@ public class NetworkMonitor extends BroadcastReceiver {
 
                 //TABLE CATEGORY
                 Cursor categoryCursor = dbHelper.readBillFromLocalDatabase(database);
-                int columnIndexID_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry._ID);
+                int columnIndexID_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ID);
                 int columnIndexUserID_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_USER_ID);
                 int columnIndexName_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);
                 int columnIndexIcon_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ICON);
@@ -120,7 +120,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                 while (categoryCursor.moveToNext()) {
                     int syncStatus_CATEGORY = categoryCursor.getInt(columnIndexSyncStatus_CATEGORY);
                     if (syncStatus_CATEGORY == DbContract.SYNC_STATUS_FAILED) {
-                        long categoryID = categoryCursor.getLong(columnIndexID_CATEGORY);
+                        String categoryID = categoryCursor.getString(columnIndexID_CATEGORY);
                         long UserID = categoryCursor.getLong(columnIndexUserID_CATEGORY);
                         String name = categoryCursor.getString(columnIndexName_CATEGORY);
                         String icon = categoryCursor.getString(columnIndexIcon_CATEGORY);

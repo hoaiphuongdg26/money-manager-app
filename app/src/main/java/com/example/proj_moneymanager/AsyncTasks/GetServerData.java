@@ -64,9 +64,9 @@ public class GetServerData extends AsyncTask<Long, Void, String> {
                                     // Store data in local SQLite database
                                     ContentValues values = new ContentValues();
                                     if(longs[0]==Long.parseLong(billItem.getString("UserID"))){
-                                        values.put("_ID", Integer.parseInt(billItem.getString("ID")));
+                                        values.put(DbContract.BillEntry.COLUMN_ID, billItem.getString("ID"));
                                         values.put("UserID", Long.parseLong(billItem.getString("UserID")));
-                                        values.put("CategoryID", Integer.parseInt(billItem.getString("CategoryID")));
+                                        values.put("CategoryID", billItem.getString("CategoryID"));
                                         values.put("Note", billItem.getString("Note"));
                                         Date DateTime = new Date();
                                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
@@ -94,7 +94,7 @@ public class GetServerData extends AsyncTask<Long, Void, String> {
                                 for (int i = 0; i < categoryData.length(); i++) {
                                     JSONObject categoryItem = categoryData.getJSONObject(i);
                                     ContentValues values = new ContentValues();
-                                    values.put(DbContract.CategoryEntry._ID, Integer.parseInt(categoryItem.getString("ID")));
+                                    values.put(DbContract.CategoryEntry.COLUMN_ID, categoryItem.getString("ID"));
                                     values.put(DbContract.CategoryEntry.COLUMN_USER_ID, Integer.parseInt(categoryItem.getString("UserID")));
                                     values.put(DbContract.CategoryEntry.COLUMN_NAME, categoryItem.getString("Name"));
                                     values.put(DbContract.CategoryEntry.COLUMN_ICON, categoryItem.getString("Icon"));

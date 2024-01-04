@@ -40,10 +40,13 @@ public class CategoryAdapter extends BaseAdapter {
     }
     @Override
     public long getItemId(int position) {
+        return position;
+    }
+    public String getSelectedId(int position) {
         if (position >= 0 && position < arrCategory.size()) {
             return arrCategory.get(position).getID();
         }
-        return -1;
+        return null;
     }
     static class ViewHolder {
         TextView nameTextView;
@@ -100,7 +103,7 @@ public class CategoryAdapter extends BaseAdapter {
                 notifyDataSetChanged();
 
                 // Save the selected category ID
-                long selectedCategoryId = getItemId(position);
+                String selectedCategoryId = getSelectedId(position);
 
                 // Notify the listener (ExpenseFragment) about the selected category ID
                 if (categoryClickListener != null) {
@@ -129,7 +132,7 @@ public class CategoryAdapter extends BaseAdapter {
         }// Refresh GridView to update selected item
     }
     public interface OnCategoryClickListener {
-        void onCategoryClick(long categoryId);
+        void onCategoryClick(String categoryId);
     }
     private OnCategoryClickListener categoryClickListener;
     public CategoryAdapter(ExpenseFragment context, OnCategoryClickListener categoryClickListener, ArrayList<Category> categoryOptions) {

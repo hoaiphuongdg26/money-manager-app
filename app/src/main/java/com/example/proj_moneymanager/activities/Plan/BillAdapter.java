@@ -69,7 +69,7 @@ public class BillAdapter extends BaseAdapter {
 
         DbHelper dbHelper = new DbHelper(convertView.getContext());
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        long categoryId = bill.getCategoryID();
+        String categoryId = bill.getCategoryID();
 
         TextView txt_Category = (TextView) convertView.findViewById(R.id.textview_eachCategory);
         String categoryName = dbHelper.getCategoryNameById(categoryId, database);

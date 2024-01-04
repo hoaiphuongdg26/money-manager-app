@@ -15,6 +15,7 @@ public class DbContract {
 
     public static class BillEntry implements BaseColumns {
         public static final String TABLE_NAME = "BILL";
+        public static final String COLUMN_ID = "ID";
         public static final String COLUMN_USER_ID = "UserID";
         public static final String COLUMN_CATEGORY_ID = "CategoryID";
         public static final String COLUMN_NOTE = "Note";
@@ -26,6 +27,8 @@ public class DbContract {
     // Bảng CATEGORY
     public static class CategoryEntry implements BaseColumns {
         public static final String TABLE_NAME = "CATEGORY";
+        public static final String COLUMN_ID = "ID";
+
         public static final String COLUMN_USER_ID = "UserID";
         public static final String COLUMN_NAME = "Name";
         public static final String COLUMN_COLOR = "Color";

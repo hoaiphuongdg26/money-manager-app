@@ -3,14 +3,15 @@ package com.example.proj_moneymanager.Object;
 import java.util.Date;
 
 public class Bill {
-    long BillID, UserID, CategoryID;
+    long UserID;
+    String BillID, CategoryID;
     String Note;
     Date Datetime;
 
     double Money;
     int SyncStatus;
 
-    public Bill(long billID, long userID, long categoryID, String note, Date datetime, double money, int syncstatus) {
+    public Bill(String billID, long userID, String categoryID, String note, Date datetime, double money, int syncstatus) {
         BillID = billID;
         UserID = userID;
         CategoryID = categoryID;
@@ -20,7 +21,7 @@ public class Bill {
         SyncStatus = syncstatus;
     }
 
-    public long getBillID() {
+    public String getBillID() {
         return BillID;
     }
 
@@ -28,7 +29,7 @@ public class Bill {
         return UserID;
     }
 
-    public long getCategoryID() {
+    public String getCategoryID() {
         return CategoryID;
     }
 

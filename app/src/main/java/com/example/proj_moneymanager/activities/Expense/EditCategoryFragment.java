@@ -43,7 +43,8 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     Button Import;
     ColorAdapter colorAdapter;
     IconAdapter iconAdapter;
-    long categoryID, UserID;
+    long  UserID;
+    String CategoryID;
     String color, icon;
     public EditCategoryFragment(){}
     @Override
@@ -96,7 +97,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     }
     private void insertCategoryToServer(String name) {
         if (checkNetworkConnection()){
-            categoryID = insertCategoryToLocalDatabaseFromApp(UserID, name, icon, color, DbContract.SYNC_STATUS_PENDING);
+            CategoryID = insertCategoryToLocalDatabaseFromApp(UserID, name, icon, color, DbContract.SYNC_STATUS_PENDING);
             DbHelper dbHelper = new DbHelper(getContext());
             SQLiteDatabase database = dbHelper.getReadableDatabase();
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCCATEGORY,
@@ -108,10 +109,10 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                                 String Response= jsonObject.getString("response");
                                 if (Response.equals("OK")){
                                     Toast.makeText(getContext(), "Insert: " + "Name: " + name + ", Icon: " + icon + ", Color: " + color, Toast.LENGTH_LONG).show();
-                                    dbHelper.updateCategoryInLocalDatabase(categoryID, DbContract.SYNC_STATUS_OK, database);
+                                    dbHelper.updateCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_OK, database);
                                     Toast.makeText(getContext(), "Import successful", Toast.LENGTH_LONG).show();
                                 }else {
-                                    dbHelper.updateCategoryInLocalDatabase(categoryID, DbContract.SYNC_STATUS_FAILED, database);
+                                    dbHelper.updateCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_FAILED, database);
                                     Toast.makeText(getContext(), "Import failed", Toast.LENGTH_LONG).show();
                                 }
                             }catch (JSONException e){
@@ -125,7 +126,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     String errorMessage = "Error occurred during import Category";
-                    dbHelper.updateCategoryInLocalDatabase(categoryID, DbContract.SYNC_STATUS_FAILED, database);
+                    dbHelper.updateCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_FAILED, database);
                     if (error != null && error.getMessage() != null) {
                         errorMessage = error.getMessage();
                     }
@@ -137,7 +138,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
-                    params.put("categoryID", String.valueOf(categoryID));
+                    params.put("categoryID", String.valueOf(CategoryID));
                     params.put("userID", String.valueOf(UserID));
                     params.put("name", name);
                     params.put("icon", icon);
@@ -148,7 +149,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
             MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
         }
         else {
-            categoryID = insertCategoryToLocalDatabaseFromApp(UserID, name, icon, color, DbContract.SYNC_STATUS_FAILED);
+            CategoryID = insertCategoryToLocalDatabaseFromApp(UserID, name, icon, color, DbContract.SYNC_STATUS_FAILED);
             Toast.makeText(getContext(), "No network connection. Import Category failed.", Toast.LENGTH_LONG).show();
         }
 
@@ -156,10 +157,10 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
     }
-    private long insertCategoryToLocalDatabaseFromApp(long UserID, String name, String icon, String color, int syncstatus){
+    private String insertCategoryToLocalDatabaseFromApp(long UserID, String name, String icon, String color, int syncstatus){
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
-        long categoryID = dbHelper.insertCategoryToLocalDatabaseFromApp(UserID, name, icon, color, syncstatus, database);
+        String categoryID = dbHelper.insertCategoryToLocalDatabaseFromApp(UserID, name, icon, color, syncstatus, database);
         readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(),arrayListCategory);
         readCategoryFromLocalStorage.execute();
         dbHelper.close();
