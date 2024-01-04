@@ -21,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.AsyncTasks.readCategoryFromLocalStorage;
 import com.example.proj_moneymanager.Object.Category;
+import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -81,7 +82,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
             DbHelper dbHelper = new DbHelper(getContext());
             if (dbHelper.isCategoryNameExists(name, UserID)) {
                 // Nếu name đã tồn tại, thông báo lỗi và không tiếp tục thực hiện import
-                Toast.makeText(getContext(), "Category name already exists", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.Category_name_already_exists), Toast.LENGTH_SHORT).show();
             }
             else {
                 insertCategoryToServer(name);
@@ -92,7 +93,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
             dbHelper.close();
         } else {
             // Xử lý trường hợp khi thiếu input
-            Toast.makeText(getContext(), "Please enter all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.Please_enter_all_fields), Toast.LENGTH_SHORT).show();
         }
     }
     private void insertCategoryToServer(String name) {
@@ -110,10 +111,11 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
                                 if (Response.equals("OK")){
                                     Toast.makeText(getContext(), "Insert: " + "Name: " + name + ", Icon: " + icon + ", Color: " + color, Toast.LENGTH_LONG).show();
                                     dbHelper.updateCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_OK, database);
-                                    Toast.makeText(getContext(), "Import successful", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), getString(R.string.Insert) + ": " + getString(R.string.Name)+": " + name + ", "+getString(R.string.Icon)+": " + icon + ", "+getString(R.string.Color)+": " + color, Toast.LENGTH_LONG).show();
+//                                    Toast.makeText(getContext(), "Import successful", Toast.LENGTH_LONG).show();
                                 }else {
                                     dbHelper.updateCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_FAILED, database);
-                                    Toast.makeText(getContext(), "Import failed", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(),getString(R.string.Import_failed), Toast.LENGTH_LONG).show();
                                 }
                             }catch (JSONException e){
                                 e.printStackTrace();
@@ -150,7 +152,7 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
         }
         else {
             CategoryID = insertCategoryToLocalDatabaseFromApp(UserID, name, icon, color, DbContract.SYNC_STATUS_FAILED);
-            Toast.makeText(getContext(), "No network connection. Import Category failed.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.No_network_connection_Import_failed), Toast.LENGTH_LONG).show();
         }
 
     }

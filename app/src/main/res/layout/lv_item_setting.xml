@@ -22,7 +22,7 @@
         android:id="@+id/textview_Language_Setting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Language"
+        android:text="@string/Language"
         android:fontFamily="@font/sf_pro_text_medium"
         android:textColor="@color/blue"
         android:textSize="20sp"
@@ -32,17 +32,4 @@
         app:layout_constraintBottom_toBottomOf="@id/imgv_language"
         >
     </TextView>
-    <ImageView
-        android:id="@+id/imgv_rightForward"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/icon_right_forward"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/imgv_language"
-        app:layout_constraintBottom_toBottomOf="@id/imgv_language"
-        android:layout_marginRight="15dp"
-
-        >
-    </ImageView>
 </androidx.constraintlayout.widget.ConstraintLayout>
