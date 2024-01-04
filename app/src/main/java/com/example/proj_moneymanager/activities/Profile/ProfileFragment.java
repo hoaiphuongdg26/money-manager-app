@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -50,16 +49,6 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
         this.context = context;
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ProfileFragment newInstance(String param1, String param2) {
         ProfileFragment fragment = new ProfileFragment(context);
         Bundle args = new Bundle();
@@ -89,10 +78,10 @@ public class ProfileFragment extends Fragment {
         lv_profileOption = view.findViewById(R.id.lv_optProfile);
         arr_profileOption = new ArrayList<>();
 
-        arr_profileOption.add(new Profile_Option("Name", "Group03", R.drawable.icon_person_profile));
-        arr_profileOption.add(new Profile_Option("Password", "********", R.drawable.icon_lock));
-        arr_profileOption.add(new Profile_Option("Switch Account", "group03@gmail.com", R.drawable.icon_switch));
-        arr_profileOption.add(new Profile_Option("Notification", "", R.drawable.icon_notification_fill));
+        arr_profileOption.add(new Profile_Option(getString(R.string.Name), "Group03", R.drawable.icon_person_profile));
+        arr_profileOption.add(new Profile_Option(getString(R.string.Password), "********", R.drawable.icon_lock));
+        arr_profileOption.add(new Profile_Option(getString(R.string.Switch_Account), "group03@gmail.com", R.drawable.icon_switch));
+        arr_profileOption.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
 
         ProfileAdapter profileAdapter = new ProfileAdapter(
                 requireActivity(),

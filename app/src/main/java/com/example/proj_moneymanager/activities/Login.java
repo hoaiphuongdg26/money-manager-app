@@ -125,7 +125,7 @@ public class Login extends AppCompatActivity {
                         performLogin();
                     }
                     else {
-                        Toast.makeText(getApplicationContext(), "Please enter Login information", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.Please_enter_Login_information), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -192,7 +192,7 @@ public class Login extends AppCompatActivity {
                         // No saved credentials found. Launch the One Tap sign-up flow, or
                         // do nothing and continue presenting the signed-out UI.
                         Log.d(TAG, e.getLocalizedMessage());
-                        Toast.makeText(getApplicationContext(), "Fail to login with Google", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.Fail_to_login_with_Google), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -239,6 +239,7 @@ public class Login extends AppCompatActivity {
 
 
                                 dbHelper.close();
+                                appConfig.loadLocale();
                                 //CreateSqliteDb();
                                 //Switch to Home
                                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -246,10 +247,10 @@ public class Login extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             } else {
-                                Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.Wrong_username_or_password), Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.Wrong_username_or_password), Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Toast.makeText(getApplicationContext(), "Can't connect to database", Toast.LENGTH_SHORT).show();

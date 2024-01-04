@@ -106,7 +106,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
 
         Ibtn_Expense = binding.imgbtnExpense;
         //Mặc định khi chuyển sang view này là Expense
-        binding.textviewTypeofbill.setText("Expense");
+        binding.textviewTypeofbill.setText(getString(R.string.Expense));
         isExpense = -1;
 
         Ibtn_Income = binding.imgbtnIncome;
@@ -115,7 +115,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
             public void onClick(View v) {
                 //set màu cho image button
                 //set text
-                binding.textviewTypeofbill.setText("Income");
+                binding.textviewTypeofbill.setText(getString(R.string.Income));
                 //thay đổi chỉ số nhân = +1;
                 isExpense = 1;
             }
@@ -125,7 +125,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
             public void onClick(View v) {
                 //set màu cho image button
                 //set text
-                binding.textviewTypeofbill.setText("Expense");
+                binding.textviewTypeofbill.setText(getString(R.string.Expense));
                 //thay đổi chỉ số nhân = -1;
                 isExpense = -1;
             }
@@ -250,7 +250,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
                     Expense = Double.parseDouble(binding.edittextTypeofbill.getText().toString());
                     Expense = Expense*isExpense;
                 }catch (NumberFormatException e){
-                    Toast.makeText(getContext(),"Please enter a valid number",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),getString(R.string.Please_enter_a_valid_number),Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // Lấy data ngày
@@ -286,7 +286,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
                     // Xử lý khi có lỗi chuyển đổi
                 }
         }
-        else Toast.makeText(getContext(),"Please enter a valid value",Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getContext(),getString(R.string.Please_enter_a_valid_value),Toast.LENGTH_SHORT).show();
     }
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
@@ -357,7 +357,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
                                 }else {
                                     billid = insertBillToLocalDatabaseFromApp(userid, categoryid, note, timecreate, expense, DbContract.SYNC_STATUS_FAILED);
                                 }
-                                Toast.makeText(getContext(),"Import bill successfully", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(),getString(R.string.Import_bill_successfully), Toast.LENGTH_SHORT).show();
                             }catch (JSONException e){
                                 e.printStackTrace();
                             }

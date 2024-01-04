@@ -1,16 +1,12 @@
 package com.example.proj_moneymanager.activities.Profile;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proj_moneymanager.R;
-import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.app.AppConfig;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
@@ -37,10 +33,10 @@ public class Profile extends AppCompatActivity {
         lv_profileOption = (ListView) findViewById(R.id.lv_optProfile);
         arr_profileOption = new ArrayList<Profile_Option>();
 
-        arr_profileOption.add(new Profile_Option("Name", "Group03", R.drawable.icon_person_profile));
-        arr_profileOption.add(new Profile_Option("Password", "********", R.drawable.icon_lock));
-        arr_profileOption.add(new Profile_Option("Switch Account", "group03@gmail.com", R.drawable.icon_switch));
-        arr_profileOption.add(new Profile_Option("Notification", "", R.drawable.icon_notification_fill));
+        arr_profileOption.add(new Profile_Option(getString(R.string.Name), "Group03", R.drawable.icon_person_profile));
+        arr_profileOption.add(new Profile_Option(getString(R.string.Password), "********", R.drawable.icon_lock));
+        arr_profileOption.add(new Profile_Option(getString(R.string.Switch_Account), "group03@gmail.com", R.drawable.icon_switch));
+        arr_profileOption.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
 
         ProfileAdapter profileAdapter = new ProfileAdapter(
                 Profile.this,

@@ -26,7 +26,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_datetime"
-                    android:text="Datetime"
+                    android:text="@string/Datetime"
                     android:fontFamily="@font/sf_pro_text_medium"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_note"
-                    android:text="Note"
+                    android:text="@string/Note"
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="12sp"
                     app:layout_constraintTop_toBottomOf="@+id/textview_datetime"
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_expense"
-                    android:text="Expense"
+                    android:text="@string/Expense"
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="12sp"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
@@ -67,7 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/textview_category"
-                    android:text="Category"
+                    android:text="@string/Category"
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="12sp"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
@@ -94,7 +94,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/btn_datetime_detail"
-                    android:text="Monday, 26/08/2023"
+                    android:text="@string/Monday_26_08_2023"
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="12sp"
                     android:textColor="@color/black_blue"
@@ -284,12 +284,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageButton
+                <Button
                     android:id="@+id/btn_save"
-                    android:layout_width="80dp"
-                    android:layout_height="30dp"
-                    android:padding="60dp"
-                    android:background="@drawable/btn_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:fontFamily="@font/sf_pro_text_regular"
+                    android:text="@string/Save"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    style="@style/ButtonStyle"
                     android:contentDescription="Button to save changes"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/btn_cancel"
@@ -297,35 +300,39 @@
                     app:layout_constraintStart_toEndOf="@+id/btn_delete"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.454"
-                    tools:ignore="TouchTargetSizeCheck"></ImageButton>
-                <ImageButton
+                    tools:ignore="TouchTargetSizeCheck"></Button>
+                <Button
                     android:id="@+id/btn_cancel"
-                    android:layout_width="80dp"
-                    android:layout_height="30dp"
-                    android:padding="60dp"
-                    android:background="@drawable/btn_cancel"
-                    android:contentDescription="Button to save changes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:text="@string/Cancel"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    style="@style/ButtonStyle"
+                    android:contentDescription="Button to cancel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.498"
                     app:layout_constraintStart_toEndOf="@id/btn_save"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.454"
-                    tools:ignore="TouchTargetSizeCheck"></ImageButton>
-                <ImageButton
+                    tools:ignore="TouchTargetSizeCheck"></Button>
+                <Button
                     android:id="@+id/btn_delete"
-                    android:layout_width="80dp"
-                    android:layout_height="30dp"
-                    android:padding="60dp"
-                    android:background="@drawable/btn_delete"
-                    android:contentDescription="Button to save changes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:text="@string/Delete"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    style="@style/ButtonStyle"
+                    android:contentDescription="Button to delete"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btn_save"
                     app:layout_constraintHorizontal_bias="0.498"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.454"
-                    tools:ignore="TouchTargetSizeCheck"></ImageButton>
+                    tools:ignore="TouchTargetSizeCheck"></Button>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </LinearLayout>

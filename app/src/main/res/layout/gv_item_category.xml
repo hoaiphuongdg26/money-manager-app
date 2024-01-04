@@ -41,7 +41,7 @@
             android:fontFamily="@font/sf_pro_text_medium"
             android:gravity="center"
             android:layout_marginBottom="20dp"
-            android:text="Food"
+            android:text="@string/Food"
             android:textColor="@color/white"
             android:textSize="50sp"
             />

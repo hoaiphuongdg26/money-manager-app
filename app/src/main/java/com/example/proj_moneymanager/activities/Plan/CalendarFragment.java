@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -25,9 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import androidx.annotation.NonNull;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,7 +42,6 @@ import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
 import com.example.proj_moneymanager.databinding.DialogBillEditBinding;
 import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -409,16 +407,15 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
     public void dialogEditBill(final History_Option billItem, int position) {
         final Dialog dialog = new Dialog(getContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // Cấu hình Dialog để hiển thị full screen
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            //window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
         @NonNull DialogBillEditBinding bindingDialogEdit = DialogBillEditBinding.inflate(getLayoutInflater());
         View viewDialogEdit = bindingDialogEdit.getRoot();
         dialog.setContentView(viewDialogEdit);
-
-        // Thiết lập kích thước cho Dialog
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT); // Có thể thay đổi kích thước ở đây
-        }
 
         // Set thông tin của bill vào dialog để chỉnh sửa
         bindingDialogEdit.edittextNote.setText(billItem.getLabelInfo());
