@@ -23,7 +23,6 @@
     <string name="English_EN"> English - EN</string>
     <string name="Vietnamese_VIE"> Vietnamese - VIE</string>
     <string name="CALENDAR">CALENDAR</string>
-    <string name="September_2023">September 2023</string>
     <string name="SUN">SUN</string>
     <string name="MON">MON</string>
     <string name="TUE">TUE</string>
@@ -41,7 +40,6 @@
     <string name="Color">Color</string>
     <string name="Import">Import</string>
     <string name="EXPENSE">EXPENSE</string>
-    <string name="Monday_26_08_2023">Monday, 26/08/2023</string>
     <string name="HEADER">HEADER</string>
     <string name="HI_USER">HI USER</string>
     <string name="Income_Rate">Income Rate</string>
