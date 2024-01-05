@@ -21,8 +21,8 @@
     <string name="Cancel">Huỷ bỏ</string>
     <string name="Delete">Xoá</string>
     <string name="Change_language">Thay đổi ngôn ngữ</string>
-    <string name="English_EN"> Tiếng Anh</string>
-    <string name="Vietnamese_VIE"> Tiếng Việt</string>
+    <string name="English_EN">  Tiếng Anh</string>
+    <string name="Vietnamese_VIE">  Tiếng Việt</string>
     <string name="CALENDAR">LỊCH</string>
     <string name="September_2023">September 2023</string>
     <string name="SUN">CN</string>
@@ -74,7 +74,7 @@
     <string name="Text_Formatting">Định dạng</string>
     <string name="Category_name_already_exists">Danh mục đã tồn tại</string>
     <string name="Please_enter_all_fields">Vui lòng nhập đủ các thông tin</string>
-    <string name="Switch_Account">Thay đổi tài khoản</string>
+    <string name="Email">Email</string>
     <string name="Notification">Thông báo</string>
     <string name="Home">Trang chủ</string>
     <string name="Chart">Biểu đồ</string>
@@ -94,4 +94,10 @@
     <string name="Enter_your_username">Nhập tên tài khoản</string>
     <string name="Enter_your_password">Nhập mật khẩu</string>
     <string name="Enter_your_name">Nhập tên</string>
+    <string name="Change_name">Đổi tên</string>
+    <string name="Change_password">Đổi mật khẩu</string>
+    <string name="Enter_new_name">Nhập tên mới </string>
+    <string name="Old_password">Nhập mật khẩu hiện tại</string>
+    <string name="New_password">Nhập mật khẩu mới</string>
+    <string name="Confirm_password">Nhập lại mật khẩu mới   </string>
 </resources>

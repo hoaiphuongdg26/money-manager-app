@@ -1,16 +1,22 @@
 package com.example.proj_moneymanager.activities.Profile;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.proj_moneymanager.Object.UserInformation;
@@ -19,6 +25,8 @@ import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
+import com.example.proj_moneymanager.databinding.DialogChangeNameBinding;
+import com.example.proj_moneymanager.databinding.DialogChangePasswordBinding;
 import com.example.proj_moneymanager.databinding.FragmentProfileBinding;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
@@ -72,7 +80,7 @@ public class ProfileFragment extends Fragment {
             // Thêm vào danh sách
             arr_profileOption.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
             arr_profileOption.add(new Profile_Option(getString(R.string.Password), hiddenPasswd, R.drawable.icon_lock));
-            arr_profileOption.add(new Profile_Option(getString(R.string.Switch_Account), email, R.drawable.icon_switch));
+            arr_profileOption.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
             arr_profileOption.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
         }
 
@@ -98,6 +106,24 @@ public class ProfileFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        binding.lvOptProfile.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Profile_Option selectedOption = (Profile_Option) profileAdapter.getItem(position);
+                    dialogChangeName(selectedOption, position);
+                }
+                else if(position == 1) {
+                    Profile_Option selectedOption = (Profile_Option) profileAdapter.getItem(position);
+                    dialogChangePassword(selectedOption, position);
+                }
+                else if(position == 2) {
+
+                } else {
+
+                }
+            }
+        });
 //        textViewLogout.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -120,5 +146,84 @@ public class ProfileFragment extends Fragment {
 //        });
 
         return view;
+    }
+    public void dialogChangeName(final Profile_Option item, int position) {
+        final Dialog dialog = new Dialog(getContext());
+        // Gán layout cho Dialog
+        @NonNull DialogChangeNameBinding bindingChangeName = DialogChangeNameBinding.inflate(getLayoutInflater());
+        View viewChangeName = bindingChangeName.getRoot();
+        dialog.setContentView(viewChangeName);
+        // Cấu hình kích thước Dialog
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            // Lấy kích thước màn hình
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            window.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            //int dialogWidth = (int) (displayMetrics.widthPixels * 0.8);
+            //int dialogHeight = (int) (displayMetrics.heightPixels * 0.35);
+            // Đặt kích thước cho Dialog
+            layoutParams.copyFrom(window.getAttributes());
+            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+            layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+            window.setAttributes(layoutParams);
+        }
+        bindingChangeName.btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        bindingChangeName.buttonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Xử lý đổi tên
+
+
+
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+    public void dialogChangePassword(final Profile_Option item, int position) {
+        final Dialog dialog = new Dialog(getContext());
+        // Gán layout cho Dialog
+        @NonNull DialogChangePasswordBinding bindingChangePassword = DialogChangePasswordBinding.inflate(getLayoutInflater());
+        View viewChangePassword = bindingChangePassword.getRoot();
+        dialog.setContentView(viewChangePassword);
+        // Cấu hình kích thước Dialog
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            // Lấy kích thước màn hình
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            window.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            //int dialogWidth = (int) (displayMetrics.widthPixels * 0.8);
+            //int dialogHeight = (int) (displayMetrics.heightPixels * 0.35);
+            // Đặt kích thước cho Dialog
+            layoutParams.copyFrom(window.getAttributes());
+            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+            layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+            window.setAttributes(layoutParams);
+        }
+        bindingChangePassword.btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        bindingChangePassword.buttonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Xử lý đổi mật khẩu
+
+
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 }
