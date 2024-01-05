@@ -347,7 +347,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     }
     private String monthYearFromDate(LocalDate date)
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy").withLocale(Locale.US);
         return date.format(formatter);
     }
     public void previousMonthAction(View view) {
