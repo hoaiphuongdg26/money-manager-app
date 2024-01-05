@@ -58,8 +58,9 @@ public class BillAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(myContext).inflate(R.layout.lv_item_history, parent, false);
         }
         //get item
-        Bill bill =  arrayListBill.get(position);
-
+        //Bill bill =  arrayListBill.get(position);
+        //get item
+        Bill bill = (Bill) getItem(position);
         //get view
         TextView txt_Note = (TextView) convertView.findViewById(R.id.textview_noteForEachCategory);
         txt_Note.setText(arrayListBill.get(position).getNote());

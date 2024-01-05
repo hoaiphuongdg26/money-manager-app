@@ -78,6 +78,10 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(DROP_TABLE_CATEGORY);
         onCreate(db);
     }
+    public Cursor getUserInformation(long userID, SQLiteDatabase database) {
+        String query = "SELECT *" +" FROM " + UserInformationEntry.TABLE_NAME + " WHERE " + UserInformationEntry._ID +"="+ userID;
+        return database.rawQuery(query, null);
+    }
     public void insertUserToLocalDatabase(String userID, String fullName, String userName, String password, String email, String phoneNumber, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(UserInformationEntry._ID, userID);
@@ -320,7 +324,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 category = new Category(categoryId, userid, name, icon, color, syncStatus);
             }
         }
-
         cursor.close();
         return category;
     }

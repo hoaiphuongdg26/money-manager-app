@@ -2,6 +2,8 @@ package com.example.proj_moneymanager.activities.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +13,12 @@ import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.app.AppConfig;
+import com.example.proj_moneymanager.database.DbContract;
+import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.databinding.FragmentProfileBinding;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
@@ -21,14 +26,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
     private static Context context;
+    UserInformation userInformation;
     private AppConfig appConfig;
 //    private Identity.SignInClient oneTapClient;
     private ListView lv_profileOption;
@@ -36,37 +38,9 @@ public class ProfileFragment extends Fragment {
     private Button buttonLogout;
     private SignInClient oneTapClient;
     private GoogleSignInClient googleSignInClient;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     public ProfileFragment(Context context) {
         // Required empty public constructor
         this.context = context;
-    }
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment(context);
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        appConfig = new AppConfig(requireContext());
-//        googleSignInClient = GoogleSignIn.getClient(requireContext());
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,14 +48,33 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+        appConfig = new AppConfig(getContext());
+        DbHelper dbHelper = new DbHelper(getContext());
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        userInformation = new UserInformation();
+        userInformation.setUserID(getArguments().getLong("UserID", 0));
+        Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
+        if(cursor.moveToFirst()){
+            int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
+            int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
+            int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
+            int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
 
-        lv_profileOption = view.findViewById(R.id.lv_optProfile);
-        arr_profileOption = new ArrayList<>();
+            String fullName = cursor.getString(columnIndexUserFullname);
+            String userName = cursor.getString(columnIndexUserName);
+            String password = cursor.getString(columnIndexUserPassword);
+            String email = cursor.getString(columnIndexEmail);
 
-        arr_profileOption.add(new Profile_Option(getString(R.string.Name), "Group03", R.drawable.icon_person_profile));
-        arr_profileOption.add(new Profile_Option(getString(R.string.Password), "********", R.drawable.icon_lock));
-        arr_profileOption.add(new Profile_Option(getString(R.string.Switch_Account), "group03@gmail.com", R.drawable.icon_switch));
-        arr_profileOption.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
+            lv_profileOption = view.findViewById(R.id.lv_optProfile);
+            arr_profileOption = new ArrayList<Profile_Option>();
+            String hiddenPasswd = "";
+            for(int i = 0; i<password.length();i++) hiddenPasswd+="*";
+            // Thêm vào danh sách
+            arr_profileOption.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
+            arr_profileOption.add(new Profile_Option(getString(R.string.Password), hiddenPasswd, R.drawable.icon_lock));
+            arr_profileOption.add(new Profile_Option(getString(R.string.Switch_Account), email, R.drawable.icon_switch));
+            arr_profileOption.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
+        }
 
         ProfileAdapter profileAdapter = new ProfileAdapter(
                 requireActivity(),

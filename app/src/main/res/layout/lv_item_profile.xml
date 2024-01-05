@@ -43,16 +43,4 @@
         app:layout_constraintBottom_toBottomOf="@id/imgv_personal"
         >
     </TextView>
-    <ImageView
-        android:id="@+id/imgv_rightForward"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/icon_right_forward"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/imgv_personal"
-        app:layout_constraintBottom_toBottomOf="@id/imgv_personal"
-        android:layout_marginRight="15dp"
-        >
-    </ImageView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,7 +40,6 @@ import com.example.proj_moneymanager.AsyncTasks.readCategoryFromLocalStorage;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.Object.Category;
-import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -96,7 +95,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         tv_total = binding.textviewTotal;
 
         //Xử lý History Adapter cho listview
-        lv_historyOption = view.findViewById(R.id.lv_optHistory);
+        lv_historyOption = binding.lvOptHistory;
         arrayListBill = new ArrayList<Bill>();
         eachday_arrayListBill = new ArrayList<Bill>();
 
@@ -104,6 +103,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         initWidgets(view);
         selectedDate = LocalDate.now();
         setMonthView();
+
+        //readFromLocalStorage();
+        callReadFromStorageTaskByMonth();
 
         btnPreviousMonth = binding.btnPreviousMonth;
         btnPreviousMonth.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +132,16 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 callReadFromStorageTaskByMonth();
             }
         });
-
+        lv_historyOption.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Lấy ra mục được chọn từ Adapter
+                //Bill selectedBill = billAdapter.getArrHistoryOption().get(position);
+                Bill selectedOption = (Bill) billAdapter.getItem(position);
+                Toast.makeText(getContext(),"selected",Toast.LENGTH_SHORT).show();
+                //dialogEditBill(selectedBill, position);
+            }
+        });
         //Xử lý chọn tháng nhanh
         initDatePicker(view);
 //        monthYearText = view.findViewById(R.id.btn_datetime_detail);
@@ -140,13 +151,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         tv_expense = binding.textviewExpense;
         tv_total = binding.textviewTotal;
 
-        //Xử lý History Adapter cho listview
-        lv_historyOption = view.findViewById(R.id.lv_optHistory);
-        arrayListBill = new ArrayList<>();
-        eachday_arrayListBill = new ArrayList<>();
-
-        //readFromLocalStorage();
-        callReadFromStorageTaskByMonth();
 
         readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(),arryListCategory);
         readCategoryFromLocalStorage.execute();
@@ -161,14 +165,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 callReadFromStorageTaskByMonth();
             }
         };
-        lv_historyOption.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Lấy ra mục được chọn từ Adapter
-                Bill selectedBill = billAdapter.getArrHistoryOption().get(position);
-                dialogEditBill(selectedBill, position);
-            }
-        });
         return view;
     }
     class readFromLocalStorageTask extends AsyncTask<Integer, Void, ArrayList<Bill>> {

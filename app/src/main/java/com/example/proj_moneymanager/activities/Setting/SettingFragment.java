@@ -28,7 +28,6 @@ import com.example.proj_moneymanager.databinding.FragmentSettingBinding;
 import java.util.ArrayList;
 
 public class SettingFragment extends Fragment {
-    FragmentSettingBinding binding;
     private AppConfig appConfig;
     ListView lv_settingOption;
     ArrayList<Setting_Option> arr_settingOption;
