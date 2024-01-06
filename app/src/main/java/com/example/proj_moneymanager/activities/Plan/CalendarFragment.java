@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -39,6 +38,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.Object.Category;
+import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -61,7 +61,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener {
+public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener, BillAdapter.OnBillItemClickListener {
 
     private Button monthYearText;
     private RecyclerView calendarRecyclerView;
@@ -155,16 +155,15 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 callReadFromStorageTaskByMonth();
             }
         };
-        lv_historyOption.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Lấy ra mục được chọn từ Adapter
-                Bill selectedBill = billAdapter.getArrHistoryOption().get(position);
-                dialogEditBill(selectedBill, position);
-            }
-        });
+
         return view;
     }
+
+    @Override
+    public void onBillItemClick(Bill bill, int position) {
+        dialogEditBill(bill, position);
+    }
+
     class readFromLocalStorageTask extends AsyncTask<Integer, Void, ArrayList<Bill>> {
         public readFromLocalStorageTask(CalendarFragment calendarFragment) {}
 
@@ -176,6 +175,12 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                         requireActivity(),
                         arrayListBill
                 );
+                billAdapter.setOnBillItemClickListener(new BillAdapter.OnBillItemClickListener() {
+                    @Override
+                    public void onBillItemClick(Bill bill, int position) {
+                        dialogEditBill(bill, position);
+                    }
+                });
                 lv_historyOption.setAdapter(billAdapter);
                 billAdapter.notifyDataSetChanged();
             }
@@ -459,15 +464,10 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
     public void dialogEditBill(final Bill billItem, int position) {
         final Dialog dialog = new Dialog(getContext());
-        // Cấu hình Dialog để hiển thị full screen
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-            //window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        }
+        dialog.setTitle(getString(R.string.Edit_bill));
+
         @NonNull DialogBillEditBinding bindingDialogEdit = DialogBillEditBinding.inflate(getLayoutInflater());
         View viewDialogEdit = bindingDialogEdit.getRoot();
-        dialog.setContentView(viewDialogEdit);
 
         // Set thông tin của bill vào dialog để chỉnh sửa
         bindingDialogEdit.edittextNote.setText(billItem.getNote());
@@ -476,8 +476,21 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(billItem.getDatetime());
         String datetimeString = billItem.getDatetime().getDate() + " " + makeDateString(billItem.getDatetime().getDate(),
-                billItem.getDatetime().getMonth()+1,calendar.get(Calendar.YEAR));
+                billItem.getDatetime().getMonth()+1, calendar.get(Calendar.YEAR));
         bindingDialogEdit.btnDatetimeDetail.setText(datetimeString);
+
+        dialog.setContentView(viewDialogEdit);
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            // Cấu hình Dialog để hiển thị full screen và mờ đằng sau
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.dimAmount = 0.7f; // Giả sử bạn muốn mức độ dim là 70%
+            window.setAttributes(params);
+        }
+
         bindingDialogEdit.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

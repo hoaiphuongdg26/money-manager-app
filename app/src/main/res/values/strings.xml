@@ -93,4 +93,7 @@
     <string name="Enter_your_username">Enter your username</string>
     <string name="Enter_your_password">Enter your password</string>
     <string name="Enter_your_name">Enter your name</string>
+    <string name="Instruction">Instruction</string>
+    <string name="Feedback_Contact">Feedback/Contact</string>
+    <string name="Edit_bill">Edit bill</string>
 </resources>

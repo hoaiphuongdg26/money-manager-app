@@ -36,8 +36,8 @@ public class MoreFragment extends Fragment {
         lv_moreOption = binding.lvOptMore;
         arr_moreOption = new ArrayList<>();
 
-        arr_moreOption.add(new Setting_Option("Instruction", R.drawable.ic_book));
-        arr_moreOption.add(new Setting_Option("Feedback/Contact", R.drawable.ic_contact));
+        arr_moreOption.add(new Setting_Option(getString(R.string.Instruction), R.drawable.ic_book));
+        arr_moreOption.add(new Setting_Option(getString(R.string.Feedback_Contact), R.drawable.ic_contact));
 
         SettingAdapter settingAdapter = new SettingAdapter(
                 getActivity(),
@@ -52,10 +52,10 @@ public class MoreFragment extends Fragment {
                 Setting_Option selectedOption = arr_moreOption.get(position);
 
                 // Xử lý sự kiện tùy thuộc vào mục được chọn
-                if (selectedOption.getLabel().equals("Feedback/Contact")) {
+                if (selectedOption.getLabel().equals(getString(R.string.Feedback_Contact))) {
                     // Mở dialog tương ứng với mục "Feedback/Contact"
                     new FeedbackTask(MoreFragment.this, "").execute();
-                } else if (selectedOption.getLabel().equals("Instruction")) {
+                } else if (selectedOption.getLabel().equals(getString(R.string.Instruction))) {
                     // Handle Instruction click
                 }
                 // Thêm các điều kiện khác nếu cần thiết
@@ -72,8 +72,7 @@ public class MoreFragment extends Fragment {
 
         // Build the AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setView(dialogView)
-                .setTitle("Feedback/Contact");
+        builder.setView(dialogView).setTitle("Feedback/Contact");
 
         CardView cardView1 = dialogView.findViewById(R.id.cardView1);
         CardView cardView2 = dialogView.findViewById(R.id.cardView2);

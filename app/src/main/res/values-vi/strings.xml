@@ -94,4 +94,8 @@
     <string name="Enter_your_username">Nhập tên tài khoản</string>
     <string name="Enter_your_password">Nhập mật khẩu</string>
     <string name="Enter_your_name">Nhập tên</string>
+    <string name="Instruction">Hướng dẫn sử dụng</string>
+    <string name="Feedback_Contact">Đóng góp ý kiến/Liên hệ</string>
+    <string name="Edit_bill">Chỉnh sửa hoá đơn</string>
+
 </resources>

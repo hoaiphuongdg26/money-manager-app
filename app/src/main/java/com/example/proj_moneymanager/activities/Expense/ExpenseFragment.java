@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,6 +27,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.AsyncTasks.readBillFromLocalStorage;
 import com.example.proj_moneymanager.AsyncTasks.readCategoryFromLocalStorage;
 import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.Object.Category;
@@ -334,54 +334,14 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getContext());
     }
-    private void readBillFromLocalStorage() {
-        arrayListBill.clear();
-        DbHelper dbHelper = new DbHelper(getContext());
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
-
-        int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_ID);
-        int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
-        int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
-        int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
-        int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
-        int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
-        int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
-
-        while (cursor.moveToNext()) {
-            // Check if the column indices are valid before accessing the values
-            if (columnIndexBillID != -1 && columnIndexUserID != -1 &&
-                    columnIndexCategoryID != -1 && columnIndexMoney != -1 &&
-                    columnIndexSyncStatus != -1) {
-
-                String billID = cursor.getString(columnIndexBillID);
-                int userID = cursor.getInt(columnIndexUserID);
-                String categoryID = cursor.getString(columnIndexCategoryID);
-                String note = cursor.getString(columnIndexNote);
-                Date timeCreate = new Date();
-                if (columnIndexDatetime != -1) {
-                    long datetimeInMillis = cursor.getLong(columnIndexDatetime);
-                    timeCreate = new Date(datetimeInMillis);
-                }
-                double money = cursor.getDouble(columnIndexMoney);
-                int syncStatus = cursor.getInt(columnIndexSyncStatus);
-
-//                 Create a new Bill object with all required parameters
-                Bill bill = new Bill(billID, userID, categoryID, note, timeCreate, money, syncStatus);
-                arrayListBill.add(bill);
-            } else {
-                // Handle the case where the column indices are not found
-                // You may log an error, throw an exception, or handle it in some way
-            }
-        }
-        cursor.close();
-        dbHelper.close();
-    }
     private String insertBillToLocalDatabaseFromApp(long userID, String categoryId, String note, Date timecreate, double expense, int synstatus){
         DbHelper dbHelper = new DbHelper(getContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         String billID = dbHelper.insertBillToLocalDatabaseFromApp(userID, categoryId, note, timecreate, expense, synstatus, database);
-        readBillFromLocalStorage();
+
+        readBillFromLocalStorage readBillFromLocalStorage = new readBillFromLocalStorage(getContext(),arrayListBill);
+        readBillFromLocalStorage.execute();
+
         dbHelper.close();
         return billID;
     }

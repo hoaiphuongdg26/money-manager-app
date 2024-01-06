@@ -331,6 +331,7 @@
                 android:id="@+id/lv_optHistory"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clickable="true"
                 tools:listitem="@layout/lv_item_history"></ListView>
         </LinearLayout>
     </LinearLayout>
