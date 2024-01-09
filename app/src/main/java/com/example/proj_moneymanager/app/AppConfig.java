@@ -1,9 +1,13 @@
 package com.example.proj_moneymanager.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 
 import com.example.proj_moneymanager.R;
+
+import java.util.Locale;
 
 public class AppConfig {
     private Context context;
@@ -51,5 +55,22 @@ public class AppConfig {
     }
     public boolean isRememberLoginChecked(){
         return sharedPreferences.getBoolean(context.getString(R.string.pref_is_remember_login_clicked),false);
+    }
+    public void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+        //save dataa vo shared preferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Language Setting", Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putString("Language", lang);
+        edit.commit();
+    }
+    public void loadLocale() {
+        SharedPreferences preferences = context.getSharedPreferences("Language Setting", Activity.MODE_PRIVATE);
+        String language = preferences.getString("Language", "");
+        setLocale(language);
     }
 }

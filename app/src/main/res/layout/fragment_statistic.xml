@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="95"
-            android:text="STATISTIC"
+            android:text="@string/STATISTIC"
             android:gravity="start"
             android:fontFamily="@font/sf_pro_text_medium"
             android:textSize="20sp"
@@ -67,7 +67,7 @@
                 android:layout_weight="35"
                 app:layout_constraintWidth_percent="0.8"
                 android:gravity="center"
-                android:text="September 2023"
+                android:text="September_2023"
                 android:fontFamily="@font/sf_pro_text_medium"
                 android:textColor="@color/black_blue"
                 style="?android:spinnerStyle"
@@ -94,7 +94,7 @@
                         android:textColor="@color/blue"
                         android:textSize="15sp"
                         android:fontFamily="@font/sf_pro_text_medium"
-                        android:text="Income" />
+                        android:text="@string/Income" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -103,7 +103,7 @@
                         android:gravity="center"
                         android:textColor="@color/blue"
                         android:textSize="15sp"
-                        android:text="Expense"
+                        android:text="@string/Expense"
                         android:fontFamily="@font/sf_pro_text_medium"
                         />
 
@@ -114,7 +114,7 @@
                         android:gravity="center"
                         android:textColor="@color/blue"
                         android:textSize="15sp"
-                        android:text="Total"
+                        android:text="@string/Total"
                         android:fontFamily="@font/sf_pro_text_medium"
                         />
 
@@ -180,7 +180,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     style="@style/ButtonStyle"
-                    android:text="This Week"
+                    android:text="@string/This_Week"
                     android:layout_margin="15dp"
                     />
                 <Button
@@ -189,7 +189,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     style="@style/ButtonStyle"
-                    android:text="This Month"
+                    android:text="@string/This_Month"
                     android:layout_margin="15dp"
                     />
                 <Button
@@ -198,7 +198,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     style="@style/ButtonStyle"
-                    android:text="This Year"
+                    android:text="@string/This_Year"
                     android:layout_margin="15dp"
                     />
             </TableRow>
@@ -220,7 +220,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/sf_pro_text_medium"
-                android:text="Transaction"
+                android:text="@string/Transaction"
                 android:textSize="20sp"
                 android:layout_marginHorizontal="25dp"
                 android:layout_marginVertical="10dp"/>

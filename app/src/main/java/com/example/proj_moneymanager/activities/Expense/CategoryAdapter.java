@@ -64,7 +64,7 @@ public class CategoryAdapter extends BaseAdapter {
             viewHolder.nameTextView = convertView.findViewById(R.id.textview_nameCategory);
             viewHolder.iconImageButton = convertView.findViewById(R.id.imagebutton_iconCategory);
             viewHolder.borderLinearLayout = convertView.findViewById(R.id.linearlayout_border);
-            viewHolder.colorframeLayout = convertView.findViewById(R.id.framelayout_color);
+            viewHolder.colorframeLayout = convertView.findViewById(R.id.framelayout_colorCategory);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();

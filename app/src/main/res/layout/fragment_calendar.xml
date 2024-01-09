@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="95"
-            android:text="CALENDAR"
+            android:text="@string/CALENDAR"
             android:gravity="start"
             android:fontFamily="@font/sf_pro_text_medium"
             android:textSize="20sp"
@@ -84,14 +84,14 @@
                 android:layout_weight="2"
                 android:gravity="center"
                 android:id="@+id/btn_datetime_detail"
-                android:text="September 2023"
+                android:text="September_2023"
                 android:fontFamily="@font/sf_pro_text_medium"
                 android:textSize="16sp"
                 android:textColor="@color/black_blue"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/left_forward"
-                app:layout_constraintBottom_toBottomOf="@id/left_forward"
+                app:layout_constraintTop_toTopOf="@id/btnPreviousDay"
+                app:layout_constraintBottom_toBottomOf="@id/btnPreviousDay"
                 style="?android:spinnerStyle"
                 android:onClick="openDatePicker"
                 android:background="@drawable/no_arrow"
@@ -126,7 +126,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="SUN"
+                    android:text="@string/SUN"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
                     android:textSize="15sp"
@@ -136,7 +136,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="MON"
+                    android:text="@string/MON"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
                     android:textSize="15sp"
@@ -146,7 +146,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="TUE"
+                    android:text="@string/TUE"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
                     android:textSize="15sp"
@@ -156,7 +156,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="WED"
+                    android:text="@string/WED"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
                     android:textSize="15sp"
@@ -166,7 +166,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="THUR"
+                    android:text="@string/THUR"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
                     android:textSize="15sp"
@@ -176,7 +176,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="FRI"
+                    android:text="@string/FRI"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
                     android:textSize="15sp"
@@ -186,7 +186,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="SAT"
+                    android:text="@string/SAT"
                     android:textAlignment="center"
                     android:textColor="@color/blue"
                     android:textSize="15sp"
@@ -218,7 +218,7 @@
                         android:fontFamily="@font/sf_pro_text_medium"
                         android:textColor="@color/blue"
                         android:textSize="15sp"
-                        android:text="Income" />
+                        android:text="@string/Income" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -228,7 +228,7 @@
                         android:fontFamily="@font/sf_pro_text_medium"
                         android:textColor="@color/blue"
                         android:textSize="15sp"
-                        android:text="Expense" />
+                        android:text="@string/Expense" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -238,7 +238,7 @@
                         android:fontFamily="@font/sf_pro_text_medium"
                         android:textColor="@color/blue"
                         android:textSize="15sp"
-                        android:text="Total" />
+                        android:text="@string/Total" />
 
                 </TableRow>
                 <!-- Dòng 2 -->
@@ -301,7 +301,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
-                    android:text="Friday, 26/08/2023"
+                    android:text="Friday_26_08_2023"
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textColor="@color/blue"
                     android:textSize="15sp"
@@ -331,6 +331,7 @@
                 android:id="@+id/lv_optHistory"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clickable="true"
                 tools:listitem="@layout/lv_item_history"></ListView>
         </LinearLayout>
     </LinearLayout>

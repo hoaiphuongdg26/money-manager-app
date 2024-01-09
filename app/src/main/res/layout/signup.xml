@@ -61,7 +61,7 @@
 
                 <TextView
                     android:id="@+id/textview_yourname"
-                    android:text="Yourname"
+                    android:text="@string/Yourname"
                     android:fontFamily="@font/sf_pro_text_regular"
                     android:textSize="15dp"
                     android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
                     android:background="@drawable/edittext_background"
                     android:ems="10"
                     android:fontFamily="@font/sf_pro_text_regular"
-                    android:hint="Enter your name"
+                    android:hint="@string/Enter_your_name"
                     android:padding="16dp"
                     android:textColor="#5c5f72"
                     android:textSize="16dp"
@@ -98,7 +98,7 @@
 
                 <TextView
                     android:id="@+id/textview_username"
-                    android:text="Username"
+                    android:text="@string/Username"
                     android:fontFamily="@font/sf_pro_text_regular"
                     android:textSize="15dp"
                     android:layout_width="wrap_content"
@@ -120,7 +120,7 @@
                     android:background="@drawable/edittext_background"
                     android:ems="10"
                     android:fontFamily="@font/sf_pro_text_regular"
-                    android:hint="Enter your username"
+                    android:hint="@string/Enter_your_username"
                     android:padding="16dp"
                     android:textColor="#5c5f72"
                     android:textSize="16dp"
@@ -135,7 +135,7 @@
 
                 <TextView
                     android:id="@+id/textview_password"
-                    android:text="Password"
+                    android:text="@string/Password"
                     android:fontFamily="@font/sf_pro_text_regular"
                     android:textSize="15dp"
                     android:layout_width="wrap_content"
@@ -158,7 +158,7 @@
                     android:textSize="16dp"
                     android:textColor="#5c5f72"
                     android:ems="10"
-                    android:hint="Enter your password"
+                    android:hint="@string/Enter_your_password"
                     android:inputType="textPassword"
                     android:fontFamily="@font/sf_pro_text_regular"
                     app:layout_constraintTop_toBottomOf="@+id/textview_password"
@@ -198,7 +198,7 @@
                     android:id="@+id/textview_moveToLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Already have an account? Login"
+                    android:text="@string/Already_have_an_account_Login"
                     android:fontFamily="@font/sf_pro_text_regular"
                     android:textSize="12dp"
                     android:layout_marginTop="10dp"
