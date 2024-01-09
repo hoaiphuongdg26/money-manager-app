@@ -3,6 +3,7 @@ package com.example.proj_moneymanager.activities.Statistic;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,25 +11,25 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.proj_moneymanager.AsyncTasks.readBillFromLocalStorage;
 import com.example.proj_moneymanager.Object.Bill;
+import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
-import com.example.proj_moneymanager.activities.Plan.BillAdapter;
 import com.example.proj_moneymanager.databinding.FragmentStatisticBinding;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -39,10 +40,13 @@ public class StatisticFragment extends Fragment {
     private Button monthYearText, Btn_cal_week, Btn_cal_month, Btn_cal_year;
     private DatePickerDialog datePickerDialog;
     long UserID;
-
+    LocalDate Day;
+    int maxDayofMonth, firstWeekday, lastWeekDay;
     ListView lv_historyOption;
-    ArrayList<Bill> arrayListBill;
-    private List<String> xValues = Arrays.asList("Maths", "Science","English","IT");
+    ArrayList<Bill> arrBill_All;
+    ArrayList<ContentValues> arrMonths, arrYears, arrMonth, arrWeek;
+    private List<String> xValues;
+    BarChart MPbarChart;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +54,7 @@ public class StatisticFragment extends Fragment {
 
         binding = FragmentStatisticBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+        MPbarChart = binding.barChart;
         UserID = getArguments().getLong("UserID", 0);
 
         // Xử lý chọn tháng nhanh
@@ -79,65 +84,54 @@ public class StatisticFragment extends Fragment {
                 calculate(true,false);
             }
         });
-        // Xử lý BarChart: https://www.youtube.com/watch?v=WdsmQ3Zyn84
-        UtilsBarChart();
 
         //Xử lý History Adapter cho listview
         lv_historyOption = binding.lvHistory;
-        arrayListBill = new ArrayList<Bill>();
-        //Chỗ này sau này sẽ lấy từ db ra đổ vào array
-        //arr_historyOption.add(new History_Option("Procery Shoppping", "15 November, 2023", R.drawable.btn_food,"-230.000",1));
-        //arr_historyOption.add(new History_Option("Rental Income", "15 November, 2023", R.drawable.btn_food,"+866.00",1));
-        BillAdapter billAdapter = new BillAdapter(
-                requireActivity(),
-                arrayListBill
-        );
-        lv_historyOption.setAdapter(billAdapter);
+
+//        BillAdapter billAdapter = new BillAdapter(
+//                requireActivity(),
+//                arrBill_Years
+//        );
+//        lv_historyOption.setAdapter(billAdapter);
         return view;
     }
-    private void UtilsBarChart(){
-        BarChart barChart = binding.barChart;
-        barChart.getAxisRight().setDrawLabels(false);
+    private void getDataset(int day, int month, int year, String calBy){
+        arrBill_All = new ArrayList<Bill>();
+        //Lấy tất cả các bill của user
+        readBillFromLocalStorage readBillFromLocalStorage = new readBillFromLocalStorage(getContext(), arrBill_All);
+        readBillFromLocalStorage.execute(-1,-1,-1);
 
-        customizeBarChart(barChart);
-        populateChartData(barChart);
+        //Ngày trong tháng
+        if(calBy == "Month"){
+            arrMonth = new ArrayList<>();
+            for(int i = 0; i < maxDayofMonth; i++){
+                ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,i + 1,month,year,"Day",getContext());
+                arrMonth.add(contentValues);
+            }
+        }
+        //Ngày trong tuần
+        if(calBy == "Week"){
+            arrWeek = new ArrayList<>();
+            for(int i = 0; i <7; i++){
+                ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,Day.plusDays(i).getDayOfMonth(),month,year,"Day",getContext());
+                arrWeek.add(contentValues);
+            }
+        }
+        //Tháng trong năm
+        arrMonths = new ArrayList<>();
+        for(int i = 0; i < 12; i++) {
+            ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,day,i,year,"Month",getContext());
+            arrMonths.add(contentValues);
+        }
+        //Tất cả các năm
+        arrYears = new ArrayList<>();
+        int first = arrBill_All.get(0).getDatetime().getYear();
+        int last = arrBill_All.get(arrBill_All.size()-1).getDatetime().getYear();
+        for(int i = first;i <= last;i++){
+            ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,day,month,i,"Year",getContext());
+            arrYears.add(contentValues);
+        }
     }
-    private void customizeBarChart(BarChart barChart) {
-        // Customize BarChart appearance
-        barChart.setDrawBarShadow(false);
-        barChart.setDrawValueAboveBar(true);
-        barChart.setMaxVisibleValueCount(50);
-        barChart.setPinchZoom(false);
-        barChart.setDrawGridBackground(false);
-        barChart.getDescription().setEnabled(false);
-
-        // Add any additional customization based on your needs
-    }
-
-    private void populateChartData(BarChart barChart) {
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0, 45f));
-        entries.add(new BarEntry(1, 80f));
-        entries.add(new BarEntry(2, 68f));
-        entries.add(new BarEntry(3, 38f));
-
-        BarDataSet dataSet = new BarDataSet(entries, "Subjects");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        dataSet.setDrawValues(true); // Enable/disable values on top of bars
-
-        BarData barData = new BarData(dataSet);
-        barData.setBarWidth(0.9f);
-
-        barChart.setData(barData);
-        barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xValues));
-        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        barChart.getXAxis().setGranularity(1f);
-        barChart.getXAxis().setGranularityEnabled(true);
-
-        // Notify the chart that the data has changed
-        barChart.invalidate();
-    }
-
     private void initDatePicker(View view)
     {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener()
@@ -227,13 +221,95 @@ public class StatisticFragment extends Fragment {
             else {
                 calBy = "Year";
             }
+            Day = LocalDate.of(DateTime.getYear() + 1, Month.of(month+1),day);
+            maxDayofMonth = Day.lengthOfMonth();
+            int firstDayOfWeek;
+            switch(Day.getDayOfWeek()){
+                case MONDAY:
+                    firstDayOfWeek = 1;
+                    break;
+                case TUESDAY:
+                    firstDayOfWeek = 2;
+                    break;
+                case WEDNESDAY:
+                    firstDayOfWeek = 3;
+                    break;
+                case THURSDAY:
+                    firstDayOfWeek = 4;
+                    break;
+                case FRIDAY:
+                    firstDayOfWeek = 5;
+                    break;
+                case SATURDAY:
+                    firstDayOfWeek = 6;
+                    break;
+                default:
+                    firstDayOfWeek = 0;
+                    break;
+            }
+            Day = Day.minusDays(firstDayOfWeek);
             ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID, day,
                     month, DateTime.getYear(), calBy, getContext());
+            getDataset(day, month,DateTime.getYear(),calBy);
             binding.textviewIncome.setText(String.valueOf(contentValues.get("Income")));
             binding.textviewExpense.setText(String.valueOf(contentValues.get("Expense")));
             binding.textviewTotal.setText(String.valueOf(contentValues.get("Total")));
+            DrawChartIncomeExpense(calBy);
         }catch (ParseException e){
 
         }
+    }
+    //Xử lí Chart (Bar dọc)
+    //3 Dataset theo Income và Expense: week, month, months
+    //Hàm calculate sẽ gọi tới nó
+    private ArrayList<BarEntry> barEntriesIncome(String calBy){
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        if(calBy == "Year"){
+            for (ContentValues c : arrMonths) {
+                barEntries.add(new BarEntry(arrMonths.indexOf(c)+1,Float.parseFloat(String.valueOf(c.get("Income")))));
+            }
+        }
+        if(calBy == "Month"){
+            for (ContentValues c : arrMonth) {
+                barEntries.add(new BarEntry(arrMonth.indexOf(c) + 1,Float.parseFloat(String.valueOf( c.get("Income")))));
+            }
+        }
+        if(calBy == "Week"){
+            for (ContentValues c : arrWeek) {
+                barEntries.add(new BarEntry(arrWeek.indexOf(c)+1,Float.parseFloat(String.valueOf( c.get("Income")))));
+            }
+        }
+        return barEntries;
+    }
+    private ArrayList<BarEntry> barEntriesExpense(String calBy){
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        if(calBy == "Year"){
+            for (ContentValues c : arrMonths) {
+                barEntries.add(new BarEntry(arrMonths.indexOf(c)+1,-1*Float.parseFloat(String.valueOf(c.get("Expense")))));
+            }
+        }
+        if(calBy == "Month"){
+            for (ContentValues c : arrMonth) {
+                barEntries.add(new BarEntry(arrMonth.indexOf(c) + 1,-1*Float.parseFloat(String.valueOf( c.get("Expense")))));
+            }
+        }
+        if(calBy == "Week"){
+            for (ContentValues c : arrWeek) {
+                barEntries.add(new BarEntry(arrWeek.indexOf(c),-1*Float.parseFloat(String.valueOf( c.get("Expense")))));
+            }
+        }
+        return barEntries;
+    }
+    private void DrawChartIncomeExpense(String calBy){
+        BarDataSet income = new BarDataSet(barEntriesIncome(calBy),"Income");
+        BarDataSet expense = new BarDataSet(barEntriesExpense(calBy), "Expense");
+        income.setColor(R.color.teal_700);
+        expense.setColor(R.color.orange);
+        BarData barData = new BarData(income,expense);
+        MPbarChart.setData(barData);
+        //Định dạng bar cho đẹp
+        MPbarChart.setDragEnabled(true);
+        MPbarChart.groupBars(0,0.44f,0.08f);
+        MPbarChart.invalidate();
     }
 }

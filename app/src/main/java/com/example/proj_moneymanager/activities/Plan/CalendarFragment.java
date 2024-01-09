@@ -210,7 +210,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                     if (columnIndexNote != -1 && columnIndexMoney != -1) {
                         Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
                         billID = cursor.getString(columnIndexBillID);
-                        userID = cursor.getInt(columnIndexUserID);
+                        userID = cursor.getLong(columnIndexUserID);
                         String categoryID = cursor.getString(columnIndexCategoryID);
                         long money = cursor.getLong(columnIndexMoney);
                         String note = cursor.getString(columnIndexNote);
@@ -229,25 +229,19 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                                             }
                                         } else {
                                             //Tính theo tháng
-                                            // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
                                             Bill bill = new Bill(billID, userID,categoryID, note,  DateTime, money, sync);
-                                            // Thêm vào danh sách
                                             arrayListBill.add(bill);
                                         }
                                     }
                                 } else{
                                     //Tính theo năm
-                                    // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
                                     Bill bill = new Bill(billID, userID,categoryID, note,  DateTime, money, sync);
-                                    // Thêm vào danh sách
                                     arrayListBill.add(bill);
                                 }
                             }
                         } else {
                             //lấy tất cả
-                            // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
                             Bill bill = new Bill(billID, userID,categoryID, note,  DateTime, money, sync);
-                            // Thêm vào danh sách
                             arrayListBill.add(bill);
                         }
                     } else {

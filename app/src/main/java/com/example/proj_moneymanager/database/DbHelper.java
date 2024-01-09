@@ -101,7 +101,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 BillEntry.COLUMN_TIMECREATE + ", " +
                 BillEntry.COLUMN_EXPENSE + ", " +
                 BillEntry.COLUMN_SYNC_STATUS +
-                " FROM " + BillEntry.TABLE_NAME;
+                " FROM " + BillEntry.TABLE_NAME +
+                " ORDER BY " + BillEntry.COLUMN_TIMECREATE + " ASC";
 
         return database.rawQuery(query, null);
     }
