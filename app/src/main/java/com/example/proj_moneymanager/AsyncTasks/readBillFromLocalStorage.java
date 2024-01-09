@@ -13,7 +13,7 @@ import com.example.proj_moneymanager.database.DbHelper;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class readBillFromLocalStorage extends AsyncTask<Void, Void, String> {
+public class readBillFromLocalStorage extends AsyncTask<Integer, Void, ArrayList<Bill>> {
     private ArrayList<Bill> arrayListBill;
     private Context context;
     // Constructor nhận danh sách category từ bên ngoài
@@ -22,9 +22,9 @@ public class readBillFromLocalStorage extends AsyncTask<Void, Void, String> {
         this.arrayListBill = arrayListBill;
     }
     @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-        Toast.makeText(context, "Read data completely", Toast.LENGTH_LONG).show();
+    protected void onPostExecute(ArrayList<Bill> arrResult) {
+        arrResult = arrayListBill;
+        super.onPostExecute(arrResult);
     }
     @Override
     protected void onProgressUpdate(Void... values) {
@@ -32,9 +32,11 @@ public class readBillFromLocalStorage extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Void... voids) {
+    protected ArrayList<Bill> doInBackground(Integer... params) {
         arrayListBill.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
 
+        String billID;
+        long userID;
         DbHelper dbHelper = new DbHelper(context); // Sửa lỗi: sử dụng requireContext() thay vì this
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
@@ -50,25 +52,49 @@ public class readBillFromLocalStorage extends AsyncTask<Void, Void, String> {
         while (cursor.moveToNext()) {
             // Check if the column indices are valid before accessing the values
             if (columnIndexNote != -1 && columnIndexMoney != -1) {
-                String billID = cursor.getString(columnIndexBillID);
                 Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-                long userID = cursor.getLong(columnIndexUserID);
+                billID = cursor.getString(columnIndexBillID);
+                userID = cursor.getLong(    columnIndexUserID);
                 String categoryID = cursor.getString(columnIndexCategoryID);
-                double money = cursor.getDouble(columnIndexMoney);
+                long money = cursor.getLong(columnIndexMoney);
                 String note = cursor.getString(columnIndexNote);
                 int sync = cursor.getInt(columnIndexSyncStatus);
-
-                // Tạo đối tượng History_Option từ dữ liệu cơ sở dữ liệu
-                Bill bill = new Bill(billID, userID, categoryID, note,DateTime, money, sync);
-                // Thêm vào danh sách
-                arrayListBill.add(bill);
+                if(params[0]!=-1){
+                    if(DateTime.getYear() == params[0]){
+                        if(params[1]!=-1){
+                            if(DateTime.getMonth() == params[1]){
+                                if(params[2]!=-1){
+                                    if(DateTime.getDate()==params[2]){
+                                        //Tính theo ngày
+                                        // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
+                                        Bill bill = new Bill(billID, userID,categoryID, note,  DateTime, money, sync);
+                                        // Thêm vào danh sách
+                                        arrayListBill.add(bill);
+                                    }
+                                } else {
+                                    //Tính theo tháng
+                                    Bill bill = new Bill(billID, userID,categoryID, note,  DateTime, money, sync);
+                                    arrayListBill.add(bill);
+                                }
+                            }
+                        } else{
+                            //Tính theo năm
+                            Bill bill = new Bill(billID, userID,categoryID, note,  DateTime, money, sync);
+                            arrayListBill.add(bill);
+                        }
+                    }
+                } else {
+                    //lấy tất cả
+                    Bill bill = new Bill(billID, userID,categoryID, note,  DateTime, money, sync);
+                    arrayListBill.add(bill);
+                }
             } else {
                 // Handle the case where the column indices are not found
             }
         }
         cursor.close();
         dbHelper.close();
-        return null;
+        return arrayListBill;
     }
 }
 

@@ -6,6 +6,7 @@ public class DbContract {
     public static final int SYNC_STATUS_OK = 0;
     public static final int SYNC_STATUS_FAILED = 1;
     public static final int SYNC_STATUS_PENDING = -1;
+
     public static final String SERVER_URL_SYNCBILL = "http://172.16.2.76/money_management/sync_bill.php/";
     public static final String SERVER_URL_SYNCCATEGORY = "http://172.16.2.76/money_management/sync_category.php/";
     public static final String SERVER_URL_SYNCPROFILE = "http://172.16.2.76/money_management/sync_profile.php/";
