@@ -1,12 +1,15 @@
 package com.example.proj_moneymanager.activities.Profile;
 
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +18,24 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
+import com.example.proj_moneymanager.database.MySingleton;
+import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.DialogChangeNameBinding;
 import com.example.proj_moneymanager.databinding.DialogChangePasswordBinding;
 import com.example.proj_moneymanager.databinding.FragmentProfileBinding;
@@ -32,7 +43,12 @@ import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ProfileFragment extends Fragment {
@@ -57,32 +73,9 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         appConfig = new AppConfig(getContext());
-        DbHelper dbHelper = new DbHelper(getContext());
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        userInformation = new UserInformation();
-        userInformation.setUserID(getArguments().getLong("UserID", 0));
-        Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
-        if(cursor.moveToFirst()){
-            int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
-            int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
-            int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
-            int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
 
-            String fullName = cursor.getString(columnIndexUserFullname);
-            String userName = cursor.getString(columnIndexUserName);
-            String password = cursor.getString(columnIndexUserPassword);
-            String email = cursor.getString(columnIndexEmail);
+        lv_profileOption = view.findViewById(R.id.lv_optProfile);
 
-            lv_profileOption = view.findViewById(R.id.lv_optProfile);
-            arr_profileOption = new ArrayList<Profile_Option>();
-            String hiddenPasswd = "";
-            for(int i = 0; i<password.length();i++) hiddenPasswd+="*";
-            // Thêm vào danh sách
-            arr_profileOption.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
-            arr_profileOption.add(new Profile_Option(getString(R.string.Password), hiddenPasswd, R.drawable.icon_lock));
-            arr_profileOption.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
-            arr_profileOption.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
-        }
 
         ProfileAdapter profileAdapter = new ProfileAdapter(
                 requireActivity(),
@@ -219,11 +212,110 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 //Xử lý đổi mật khẩu
 
+                 //Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
+                //readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
+//                readFromLocalStorageTask.execute(billItem.getDateTime().getYear(),billItem.getDateTime().getMonth(),billItem.getDateTime().getDate());
+                //callReadFromStorageTaskByDay();
+                //fetch data mới lên remote db
+                DbHelper dbHelper = new DbHelper(getContext());
+                SQLiteDatabase database = dbHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put("_password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                String whereClause = DbContract.UserInformationEntry._ID + "=?";
+                String[] whereArgs = new String[]{
+                        String.valueOf(item.getLabelInfo())
+                };
+                // Thực hiện cập nhật dữ liệu vào local db
+                database.update(DbContract.UserInformationEntry.TABLE_NAME, values, whereClause, whereArgs);
+                userInformation = new UserInformation();
+                userInformation.setUserID(getArguments().getLong("UserID", 0));
+                Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
+                if(cursor.moveToFirst()){
+                    int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
+                    int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
+                    int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
+                    int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
 
-                dialog.dismiss();
+                    String fullName = cursor.getString(columnIndexUserFullname);
+                    String userName = cursor.getString(columnIndexUserName);
+                    String password = cursor.getString(columnIndexUserPassword);
+                    String email = cursor.getString(columnIndexEmail);
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCPROFILE,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response);
+                                        String serverResponse = jsonObject.getString("response");
+                                        if (serverResponse.equals("OK")) {
+                                            Toast.makeText(getContext(), "UPDATE COMPLETELY", Toast.LENGTH_LONG).show();
+                                        }
+                                        else{
+                                            //neu server tra về "fail"
+                                            Toast.makeText(getContext(),serverResponse,Toast.LENGTH_LONG).show();
+                                            Log.d("Update response error",serverResponse);
+                                            //khong lam gì cả
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // Handle error appropriately (e.g., log or notify the user)
+                            Toast.makeText(getContext(), "Fail to sync data", Toast.LENGTH_LONG);
+                        }
+                    }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("_password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                            return params;
+                        }
+                    };
+                    MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+                    dialog.dismiss();
+                }
             }
         });
 
         dialog.show();
+    }
+    class readUserDataFromLocal extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            DbHelper dbHelper = new DbHelper(getContext());
+            SQLiteDatabase database = dbHelper.getWritableDatabase();
+            userInformation = new UserInformation();
+            userInformation.setUserID(getArguments().getLong("UserID", 0));
+            Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
+            if(cursor.moveToFirst()){
+                int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
+                int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
+                int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
+                int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
+
+                String fullName = cursor.getString(columnIndexUserFullname);
+                String userName = cursor.getString(columnIndexUserName);
+                String password = cursor.getString(columnIndexUserPassword);
+                String email = cursor.getString(columnIndexEmail);
+
+
+                arr_profileOption = new ArrayList<Profile_Option>();
+                String hiddenPasswd = "";
+                for(int i = 0; i<password.length();i++) hiddenPasswd+="*";
+                // Thêm vào danh sách
+                arr_profileOption.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
+                arr_profileOption.add(new Profile_Option(getString(R.string.Password), hiddenPasswd, R.drawable.icon_lock));
+                arr_profileOption.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
+                arr_profileOption.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
+            }
+            return null;
+        }
+    }
+    private boolean checkNetworkConnection() {
+        return NetworkMonitor.checkNetworkConnection(getContext());
     }
 }
