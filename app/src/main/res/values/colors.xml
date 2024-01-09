@@ -18,4 +18,6 @@
     <color name="red">#FF0000</color>
     <color name="light_gray2">#DDDDDD</color>
     <color name="sky_blue">#87CEFA</color>
+    <color name="NavyBlue">#000080</color>
+    <color name="MidnightBlue">#191970</color>
 </resources>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/main_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Phần tiêu đề "Change language" -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:padding="10dp"
+            android:background="@drawable/main_background">
+
+            <TextView
+                android:id="@+id/textview_changeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sf_pro_text_medium"
+                android:text="@string/Change_name"
+                android:textSize="20dp"
+                android:textColor="@color/MidnightBlue"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:gravity="center"
+                >
+            </TextView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Phần chọn ngôn ngữ sử dụng Checkbox -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textview_enterNewName"
+                        android:text="@string/Enter_new_name"
+                        android:fontFamily="@font/sf_pro_text_medium"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/edittext_enterNewName"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/MidnightBlue"
+                        android:layout_marginLeft="10dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/edittext_enterNewName"
+                        app:layout_constraintEnd_toStartOf="@+id/edittext_enterNewName"
+                        >
+                    </TextView>
+                    <EditText
+                        android:id="@+id/edittext_enterNewName"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/edittext_income"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/textview_enterNewName"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:textColor="@color/black_blue"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        >
+                    </EditText>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <Button
+                        android:id="@+id/button_Save"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:fontFamily="@font/sf_pro_text_regular"
+                        android:text="@string/Save"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        style="@style/ButtonStyle"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@+id/btn_cancel"
+                        android:layout_marginRight="10dp"
+                        >
+                    </Button>
+                    <Button
+                        android:id="@+id/btn_cancel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:text="@string/Cancel"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        style="@style/ButtonStyle"
+                        app:layout_constraintTop_toTopOf="@+id/button_Save"
+                        app:layout_constraintBottom_toBottomOf="@+id/button_Save"
+                        app:layout_constraintEnd_toStartOf="@id/button_Save"
+                        android:layout_marginRight="10dp"
+                        android:contentDescription="Button to cancel"
+                        tools:ignore="TouchTargetSizeCheck">
+                    </Button>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+</FrameLayout>

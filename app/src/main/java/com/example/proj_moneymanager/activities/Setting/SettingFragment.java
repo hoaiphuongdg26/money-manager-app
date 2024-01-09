@@ -28,7 +28,6 @@ import com.example.proj_moneymanager.databinding.FragmentSettingBinding;
 import java.util.ArrayList;
 
 public class SettingFragment extends Fragment {
-    FragmentSettingBinding binding;
     private AppConfig appConfig;
     ListView lv_settingOption;
     ArrayList<Setting_Option> arr_settingOption;
@@ -89,6 +88,13 @@ public class SettingFragment extends Fragment {
         @NonNull DialogLanguageSettingBinding bindingLanguageSetting = DialogLanguageSettingBinding.inflate(getLayoutInflater());
         View viewLanguageSetting = bindingLanguageSetting.getRoot();
         dialog.setContentView(viewLanguageSetting);
+        //set checkbox
+        if(appConfig.getCurrentLanguage().equals("vi")) {
+            bindingLanguageSetting.checkboxVieLanguage.setChecked(true);
+        }
+        else {
+            bindingLanguageSetting.checkboxEngLanguage.setChecked(true);
+        }
         // Cấu hình kích thước Dialog
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         Window window = dialog.getWindow();
@@ -96,14 +102,20 @@ public class SettingFragment extends Fragment {
             // Lấy kích thước màn hình
             DisplayMetrics displayMetrics = new DisplayMetrics();
             window.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            int dialogWidth = (int) (displayMetrics.widthPixels * 0.8);
-            int dialogHeight = (int) (displayMetrics.heightPixels * 0.35);
+            //int dialogWidth = (int) (displayMetrics.widthPixels * 0.8);
+            //int dialogHeight = (int) (displayMetrics.heightPixels * 0.35);
             // Đặt kích thước cho Dialog
             layoutParams.copyFrom(window.getAttributes());
-            layoutParams.width = dialogWidth;
-            layoutParams.height = dialogHeight;
+            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+            layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
             window.setAttributes(layoutParams);
         }
+        bindingLanguageSetting.btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
         bindingLanguageSetting.checkboxEngLanguage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -134,7 +146,6 @@ public class SettingFragment extends Fragment {
                 dialog.dismiss();
             }
         });
-
         dialog.show();
     }
 

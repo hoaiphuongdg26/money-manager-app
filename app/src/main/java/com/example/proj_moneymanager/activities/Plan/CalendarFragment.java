@@ -38,7 +38,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.Object.Category;
-import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -104,6 +103,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         selectedDate = LocalDate.now();
         setMonthView();
 
+        //readFromLocalStorage();
+        callReadFromStorageTaskByMonth();
+
         btnPreviousMonth = binding.btnPreviousMonth;
         btnPreviousMonth.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +131,16 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 callReadFromStorageTaskByMonth();
             }
         });
-
+        lv_historyOption.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Lấy ra mục được chọn từ Adapter
+                //Bill selectedBill = billAdapter.getArrHistoryOption().get(position);
+                Bill selectedOption = (Bill) billAdapter.getItem(position);
+                Toast.makeText(getContext(),"selected",Toast.LENGTH_SHORT).show();
+                //dialogEditBill(selectedBill, position);
+            }
+        });
         //Xử lý chọn tháng nhanh
         initDatePicker(view);
 //        monthYearText = view.findViewById(R.id.btn_datetime_detail);
@@ -155,7 +166,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 callReadFromStorageTaskByMonth();
             }
         };
-
         return view;
     }
 
