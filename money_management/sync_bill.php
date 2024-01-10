@@ -13,11 +13,12 @@ if (!$con) {
 // Check if data is sent from the client
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Check if the variables are set
+    $billID = isset($_POST['billID']) ? mysqli_real_escape_string($con, $_POST['billID']) : '';
+    $userID = isset($_POST['userID']) ? intval($_POST['userID']) : 0;
+    $categoryID = isset($_POST['categoryID']) ? mysqli_real_escape_string($con, $_POST['categoryID']) : '';
     $note = isset($_POST['note']) ? mysqli_real_escape_string($con, $_POST['note']) : '';
     $timecreateString = isset($_POST['timecreate']) ? $_POST['timecreate'] : '';
     $expense = isset($_POST['expense']) ? $_POST['expense'] : '';
-    $categoryID = isset($_POST['categoryID']) ? $_POST['categoryID'] : '';
-    $userID = isset($_POST['userID']) ? $_POST['userID'] : '';
     $method = isset($_POST['method'])? $_POST['method'] : '';
 
         //1: co du lieu -> Insert vo db
@@ -35,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $formattedDatetime = $timecreate->format('Y-m-d H:i:s');
         if($method == 'INSERT'){
             // Insert data into the database
-            $sql = "INSERT INTO bill (Note, TimeCreate, Expense, CategoryID, UserID) 
-                    VALUES ('$note', '$formattedDatetime', '$expense', '$categoryID', '$userID')";
+                   $sql = "INSERT INTO bill (ID, UserID, CategoryID, Note, TimeCreate, Expense)
+                           VALUES ('$billID', '$userID', '$categoryID', '$note', '$formattedDatetime', '$expense')";
             if (mysqli_query($con, $sql)) {
                 $status = 'OK';
                 $query = "SELECT * FROM bill";
