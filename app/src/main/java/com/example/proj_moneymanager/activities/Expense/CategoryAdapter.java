@@ -141,5 +141,10 @@ public class CategoryAdapter extends BaseAdapter {
         this.categoryClickListener = categoryClickListener;
         arrCategory = categoryOptions;
     }
-
+    public CategoryAdapter(EditCategoryFragment context, OnCategoryClickListener categoryClickListener, ArrayList<Category> categoryOptions) {
+        this.context = context.requireContext();
+        this.myContext = context.requireActivity();
+        this.categoryClickListener = categoryClickListener;
+        arrCategory = categoryOptions;
+    }
 }

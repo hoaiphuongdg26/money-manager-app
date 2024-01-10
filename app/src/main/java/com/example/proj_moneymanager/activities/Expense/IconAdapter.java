@@ -29,7 +29,7 @@ public class IconAdapter extends BaseAdapter {
             // ... Thêm các icon khác
     };
     private int selectedPosition = -1;
-    public IconAdapter(EditCategoryFragment context) {
+    public IconAdapter(NewCategoryFragment context) {
         this.context = context.requireContext();
     }
     @Override
@@ -107,7 +107,7 @@ public class IconAdapter extends BaseAdapter {
     }
 
     private IconAdapter.OnIconClickListener iconClickListener;
-    public IconAdapter(EditCategoryFragment context, IconAdapter.OnIconClickListener iconClickListener) {
+    public IconAdapter(NewCategoryFragment context, IconAdapter.OnIconClickListener iconClickListener) {
         this.context = context.requireContext();
         this.iconClickListener = iconClickListener;
     }

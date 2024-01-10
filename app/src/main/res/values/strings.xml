@@ -34,7 +34,9 @@
     <string name="Expense">Expense</string>
     <string name="Total">Total</string>
     <string name="EDIT_CATEGORY">EDIT CATEGORY</string>
+    <string name="ListCategory">List Category</string>
     <string name="ADD_NEW_CATEGORY">ADD NEW CATEGORY</string>
+    <string name="NEW_CATEGORY">New Category</string>
     <string name="Name">Name</string>
     <string name="Icon">Icon</string>
     <string name="Color">Color</string>
@@ -106,4 +108,6 @@
     <string name="Send">Send</string>
     <string name="No_network_connection">No network connection</string>
     <string name="No_offline_login_info">There are no offline credentials that match the local database</string>
+    <string name="Arrange">Arrange</string>
+
 </resources>

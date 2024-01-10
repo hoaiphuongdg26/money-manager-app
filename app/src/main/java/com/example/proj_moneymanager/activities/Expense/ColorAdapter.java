@@ -30,7 +30,7 @@ public class ColorAdapter extends BaseAdapter {
             // ... Thêm các màu khác
     };
     private int selectedPosition = -1;
-    public ColorAdapter(EditCategoryFragment context) {
+    public ColorAdapter(NewCategoryFragment context) {
         this.context = context.requireContext();
     }
     @Override
@@ -108,7 +108,7 @@ public class ColorAdapter extends BaseAdapter {
     }
 
     private OnColorClickListener colorClickListener;
-    public ColorAdapter(EditCategoryFragment context, OnColorClickListener colorClickListener) {
+    public ColorAdapter(NewCategoryFragment context, OnColorClickListener colorClickListener) {
         this.context = context.requireContext();
         this.colorClickListener = colorClickListener;
     }

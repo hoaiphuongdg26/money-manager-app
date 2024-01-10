@@ -35,7 +35,9 @@
     <string name="Expense">Tiền chi</string>
     <string name="Total">Tổng</string>
     <string name="EDIT_CATEGORY">Chỉnh sửa danh mục</string>
+    <string name="ListCategory">Danh sách danh mục</string>
     <string name="ADD_NEW_CATEGORY">Thêm danh mục mới</string>
+    <string name="NEW_CATEGORY">New Category</string>
     <string name="Name">Tên</string>
     <string name="Icon">Biểu tượng</string>
     <string name="Color">Màu sắc</string>
@@ -107,4 +109,5 @@
     <string name="Send">Gửi</string>
     <string name="No_network_connection">Không có kết nối mạng</string>
     <string name="No_offline_login_info">Không có thông tin đăng nhập offline khớp với cơ sở dữ liệu local</string>
+    <string name="Arrange">Sắp xếp</string>
 </resources>

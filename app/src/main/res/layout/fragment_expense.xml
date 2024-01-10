@@ -273,19 +273,32 @@
                     android:textColor="@color/black_blue"
                     >
                 </TextView>
+
                 <ImageButton
                     android:id="@+id/imagebutton_editCategory"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    style="@style/ButtonStyle"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:background="@drawable/icon_pencil"
                     android:scaleType="fitCenter"
-                    app:layout_constraintRight_toRightOf="@id/btnNextDay"
-                    app:layout_constraintTop_toTopOf="@id/textview_category"
-                    app:layout_constraintBottom_toBottomOf="@id/textview_category"
-                    app:layout_constraintLeft_toLeftOf="@id/btnNextDay"
+                    app:layout_constraintRight_toLeftOf="@id/imagebutton_newCategory"
+
+                    app:layout_constraintTop_toBottomOf="@id/textview_VND"
+                    />
+                <ImageButton
+                    android:id="@+id/imagebutton_newCategory"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/icon_plus"
+                    android:scaleType="fitCenter"
+                    android:layout_marginRight="25dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textview_VND"
                     android:contentDescription="Button pencil"
                     style="@style/ButtonStyle"
-                    android:onClick="onEditCategoryButtonClick"
                     />
                 <GridView
                     android:id="@+id/gridview_category"
@@ -306,7 +319,7 @@
                 <Button
                     android:id="@+id/btn_import"
                     android:layout_width="140dp"
-                    android:layout_height="30dp"
+                    android:layout_height="35dp"
                     style="@style/ButtonStyle"
                     android:text="@string/Import"
                     android:textSize="20sp"
