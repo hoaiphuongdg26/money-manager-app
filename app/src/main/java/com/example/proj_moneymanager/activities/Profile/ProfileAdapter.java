@@ -50,7 +50,12 @@ public class ProfileAdapter  extends BaseAdapter {
         txt_Label.setText(arrProfileOption.get(position).getLabel());
 
         TextView txt_labelInfo = (TextView) convertView.findViewById(R.id.textview_Name_Profile);
-        txt_labelInfo.setText(arrProfileOption.get(position).getLabelInfo());
+        if(position==1){
+            String hiddenPasswd = "";
+            for(int i = 0;i<arrProfileOption.get(position).getLabelInfo().length();i++) hiddenPasswd= hiddenPasswd+"*";
+            txt_labelInfo.setText(hiddenPasswd);
+        }
+        else txt_labelInfo.setText(arrProfileOption.get(position).getLabelInfo());
 
         ImageView img_iconOption = (ImageView) convertView.findViewById(R.id.imgv_personal);
         img_iconOption.setImageResource(arrProfileOption.get(position).getImageOption());
