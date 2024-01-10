@@ -644,6 +644,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     //public static -> các activity khác có thẻ dùng lại. vd biểu đồ
     public static ContentValues MoneyCalculate(long userid, int day, int month, int year, String calBy, Context context){
         ContentValues contentValues = new ContentValues();
+        //Toast.makeText(context.getApplicationContext(), year + " " + Month.of(month+1)+ " "+day,Toast.LENGTH_SHORT).show();
         LocalDate FirstDayOfWeek = LocalDate.of(year + 1, Month.of(month+1),day);
         int firstDayOfWeek;
         switch(FirstDayOfWeek.getDayOfWeek()){
@@ -670,7 +671,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 break;
         }
         FirstDayOfWeek = FirstDayOfWeek.minusDays(firstDayOfWeek);
-        //Toast.makeText(context,String.valueOf(FirstDayOfWeek.getDayOfMonth())+" - " +String.valueOf(FirstDayOfWeek.plusDays(6).getDayOfMonth()),Toast.LENGTH_LONG).show();
+        //Toast.makeText(context,String.valueOf(FirstDayOfWeek.getDayOfMonth())+" - " +String.valueOf(FirstDayOfWeek.getMonthValue())+ " - " + FirstDayOfWeek.getYear(),Toast.LENGTH_LONG).show();
 
         double Income = 0, Expense = 0, Total;
         DbHelper dbHelper = new DbHelper(context); // Sửa lỗi: sử dụng requireContext() thay vì this
@@ -683,36 +684,43 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
         while (cursor.moveToNext()){
             //if (columnIndexMoney != -1) {
-                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-                int userID = cursor.getInt(columnIndexUserID);
-                double money = cursor.getDouble(columnIndexMoney);
-                if(userID == userid && year == DateTime.getYear()){
-                    if(calBy!="Year"){
-                        if(month == DateTime.getMonth()){
-                            if(calBy!="Month"){
-                                if(calBy == "Week"){
-                                    if(isDateInWeek(DateTime.getDate(),FirstDayOfWeek.getDayOfMonth(),FirstDayOfWeek.plusDays(6).getDayOfMonth())){
-                                        if(money < 0) Expense += money;
+            Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+            int userID = cursor.getInt(columnIndexUserID);
+            double money = cursor.getDouble(columnIndexMoney);
+            if(userID == userid)
+            {
+                if(calBy!="Week"){
+                    if(year == DateTime.getYear()){
+                        if(calBy!="Year"){
+                            if(month == DateTime.getMonth()){
+                                if(calBy!="Month"){
+                                    if(day == DateTime.getDate())
+                                        //Xét theo ngày
+                                        if (money < 0) Expense += money;
                                         else Income += money;
-                                    }
                                 }
                                 else{
-                                    if(day==DateTime.getDate()){
-                                        if(money < 0) Expense += money;
-                                        else Income += money;
-                                    }
+                                    //Xét theo tháng
+                                    if (money < 0) Expense += money;
+                                    else Income += money;
                                 }
-                            }else {
-                                if(money < 0) Expense += money;
-                                else Income += money;
                             }
                         }
+                        else{
+                            //Xét theo năm
+                            if (money < 0) Expense += money;
+                            else Income += money;
+                        }
                     }
-                    else {
-                        if(money < 0) Expense += money;
+                }
+                else{
+                    //Xét theo tuần
+                    if(isDateInWeek(DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),FirstDayOfWeek)){
+                        if (money < 0) Expense += money;
                         else Income += money;
                     }
                 }
+            }
             //}
         }
         Total = Income + Expense;
@@ -721,14 +729,28 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         contentValues.put("Total", Total);
         return contentValues;
     }
-    public static boolean isDateInWeek(int day, int weekFirst,int weekLast){
-        if(weekFirst<weekLast){
-            if(weekFirst<=day && day <= weekLast) return true;
+    public static boolean isDateInWeek(int day, int month, int year, LocalDate weekFirst){
+        LocalDate weekLast = weekFirst.plusDays(6);
+        if(weekLast.getDayOfMonth() > weekFirst.getDayOfMonth()){
+            if((year + 1) == weekFirst.getYear() && (month+1) == weekFirst.getMonthValue()
+                    && weekFirst.getDayOfMonth()<=day && day <=weekLast.getDayOfMonth()){
+                return true;
+            }
             else return false;
         }
         else{
-            if(day<weekFirst && day < weekLast) return true;
-            return false;
+            if(weekFirst.getYear() == (year + 1) && weekFirst.getMonthValue() == (month+1)
+            && weekFirst.getDayOfMonth()<=day)
+            {
+                return true;
+            }
+            else {
+                if(weekLast.getYear() == (year + 1) && weekLast.getMonthValue() == (month+1)
+                        && weekLast.getDayOfMonth()>=day){
+                    return true;
+                }
+                else return false;
+            }
         }
     }
 }

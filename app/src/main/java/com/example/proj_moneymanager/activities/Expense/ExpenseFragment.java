@@ -340,7 +340,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         String billID = dbHelper.insertBillToLocalDatabaseFromApp(userID, categoryId, note, timecreate, expense, synstatus, database);
 
         readBillFromLocalStorage readBillFromLocalStorage = new readBillFromLocalStorage(getContext(),arrayListBill);
-        readBillFromLocalStorage.execute();
+        readBillFromLocalStorage.execute(-1,-1,-1);
 
         dbHelper.close();
         return billID;

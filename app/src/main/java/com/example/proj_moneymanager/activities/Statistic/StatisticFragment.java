@@ -21,27 +21,31 @@ import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
 import com.example.proj_moneymanager.databinding.FragmentStatisticBinding;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class StatisticFragment extends Fragment {
     FragmentStatisticBinding binding;
     private Button monthYearText, Btn_cal_week, Btn_cal_month, Btn_cal_year;
     private DatePickerDialog datePickerDialog;
     long UserID;
-    LocalDate Day;
-    int maxDayofMonth, firstWeekday, lastWeekDay;
+    LocalDate Day, firstWeekDay;
+    int maxDayofMonth, lastWeekDay;
     ListView lv_historyOption;
     ArrayList<Bill> arrBill_All;
     ArrayList<ContentValues> arrMonths, arrYears, arrMonth, arrWeek;
@@ -65,7 +69,7 @@ public class StatisticFragment extends Fragment {
         Btn_cal_week = binding.btnCalWeek;
         Btn_cal_month = binding.btnCalMonth;
         Btn_cal_year = binding.btnCalYear;
-        calculate(false,false);
+        calculate(false,true);
         Btn_cal_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,24 +107,28 @@ public class StatisticFragment extends Fragment {
 
         //Ngày trong tháng
         if(calBy == "Month"){
+            LocalDate localDate = LocalDate.of(year+1,month+1,1);
             arrMonth = new ArrayList<>();
-            for(int i = 0; i < maxDayofMonth; i++){
-                ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,i + 1,month,year,"Day",getContext());
-                arrMonth.add(contentValues);
+            for(int i = 0; i < localDate.lengthOfMonth(); i++){
+                if(i <= localDate.lengthOfMonth()){
+                    ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,i + 1,month,year,"Day",getContext());
+                    arrMonth.add(contentValues);
+                }
             }
         }
         //Ngày trong tuần
         if(calBy == "Week"){
             arrWeek = new ArrayList<>();
             for(int i = 0; i <7; i++){
-                ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,Day.plusDays(i).getDayOfMonth(),month,year,"Day",getContext());
+                ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,firstWeekDay.plusDays(i).getDayOfMonth(),
+                        firstWeekDay.plusDays(i).getMonthValue()-1,firstWeekDay.plusDays(i).getYear()-1,"Day",getContext());
                 arrWeek.add(contentValues);
             }
         }
         //Tháng trong năm
         arrMonths = new ArrayList<>();
         for(int i = 0; i < 12; i++) {
-            ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,day,i,year,"Month",getContext());
+            ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,i,year,"Month",getContext());
             arrMonths.add(contentValues);
         }
         //Tất cả các năm
@@ -208,7 +216,7 @@ public class StatisticFragment extends Fragment {
     }
     private void calculate(boolean byYear, boolean byWeek){
         String datetimeString = monthYearText.getText().toString();
-        String calBy = "Month";
+        String calBy;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
         try {
             Date DateTime = dateFormat.parse(datetimeString);
@@ -221,8 +229,7 @@ public class StatisticFragment extends Fragment {
             else {
                 calBy = "Year";
             }
-            Day = LocalDate.of(DateTime.getYear() + 1, Month.of(month+1),day);
-            maxDayofMonth = Day.lengthOfMonth();
+            Day = LocalDate.of(DateTime.getYear() + 1, Month.of(month +1),day);
             int firstDayOfWeek;
             switch(Day.getDayOfWeek()){
                 case MONDAY:
@@ -247,7 +254,7 @@ public class StatisticFragment extends Fragment {
                     firstDayOfWeek = 0;
                     break;
             }
-            Day = Day.minusDays(firstDayOfWeek);
+            firstWeekDay = Day.minusDays(firstDayOfWeek);
             ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID, day,
                     month, DateTime.getYear(), calBy, getContext());
             getDataset(day, month,DateTime.getYear(),calBy);
@@ -283,17 +290,17 @@ public class StatisticFragment extends Fragment {
     }
     private ArrayList<BarEntry> barEntriesExpense(String calBy){
         ArrayList<BarEntry> barEntries = new ArrayList<>();
-        if(calBy == "Year"){
+        if(Objects.equals(calBy, "Year")){
             for (ContentValues c : arrMonths) {
                 barEntries.add(new BarEntry(arrMonths.indexOf(c)+1,-1*Float.parseFloat(String.valueOf(c.get("Expense")))));
             }
         }
-        if(calBy == "Month"){
+        if(Objects.equals(calBy, "Month")){
             for (ContentValues c : arrMonth) {
                 barEntries.add(new BarEntry(arrMonth.indexOf(c) + 1,-1*Float.parseFloat(String.valueOf( c.get("Expense")))));
             }
         }
-        if(calBy == "Week"){
+        if(Objects.equals(calBy, "Week")){
             for (ContentValues c : arrWeek) {
                 barEntries.add(new BarEntry(arrWeek.indexOf(c),-1*Float.parseFloat(String.valueOf( c.get("Expense")))));
             }
@@ -306,10 +313,49 @@ public class StatisticFragment extends Fragment {
         income.setColor(R.color.teal_700);
         expense.setColor(R.color.orange);
         BarData barData = new BarData(income,expense);
+//        MPbarChart = new BarChart(getContext());
+        MPbarChart.clear();
         MPbarChart.setData(barData);
+        //Lấy data cho tung độ, hoành độ
+        String[] timeLabel = new String[]{};
+        float visibleRangeMaximum = 5;
+        if(Objects.equals(calBy, "Month")){
+            visibleRangeMaximum = 7;
+            timeLabel = null;
+            timeLabel = new String[31];
+            for(int i=0;i<arrMonth.size();i++) timeLabel[i] = String.valueOf(i+1);
+        }
+        if(Objects.equals(calBy, "Year")) {
+            visibleRangeMaximum = 4;
+            timeLabel = null;
+            timeLabel = new String[12];
+            for (int i = 0; i < 12; i++) timeLabel[i] = getMonthFormat(i + 1);
+        }
+        if(Objects.equals(calBy, "Week")){
+            visibleRangeMaximum = 21;
+            timeLabel = null;
+            timeLabel = new String[] {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+        }
         //Định dạng bar cho đẹp
+        //Định dạng hoành độ
+        XAxis xAxis = MPbarChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(timeLabel));
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1);
+        xAxis.setGranularityEnabled(true);
+
         MPbarChart.setDragEnabled(true);
-        MPbarChart.groupBars(0,0.44f,0.08f);
+        MPbarChart.setVisibleXRangeMaximum(visibleRangeMaximum);
+        float barSpace = 0.10f;
+        float groupSpace = 0.20f;
+        barData.setBarWidth(0.30f);
+
+        MPbarChart.getXAxis().setAxisMinimum(0);
+        MPbarChart.getXAxis().setAxisMaximum(0 + MPbarChart.getBarData().getGroupWidth(groupSpace,barSpace)*timeLabel.length);
+        MPbarChart.getAxisLeft().setAxisMinimum(0);
+        MPbarChart.groupBars(0,groupSpace,barSpace);
+        MPbarChart.setDoubleTapToZoomEnabled(false);
         MPbarChart.invalidate();
     }
 }
