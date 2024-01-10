@@ -19,7 +19,26 @@ if($con){
         if(mysqli_query($con,$sql)){
             $status = "ok";
             $result_code = 1;
-            echo json_encode(array('status'=>$status,'result_code'=>$result_code));
+
+            // Get the user ID of the newly inserted user
+            $user_id = mysqli_insert_id($con);
+            // Insert default category for the user
+            $sql_insert_category1 = "INSERT INTO category (ID, UserID, Name, Icon, Color) VALUES ('0001','$user_id', 'Electricity bill','ic_power','colorbutton_0')";
+            $sql_insert_category2 = "INSERT INTO category (ID, UserID, Name, Icon, Color) VALUES ('0002','$user_id', 'Food','ic_food','colorbutton_1')";
+            $sql_insert_category3 = "INSERT INTO category (ID, UserID, Name, Icon, Color) VALUES ('0003','$user_id', 'Wifi','ic_wifi','colorbutton_2')";
+            $sql_insert_category4 = "INSERT INTO category (ID, UserID, Name, Icon, Color) VALUES ('0004','$user_id', 'Game','ic_game','colorbutton_3')";
+            $sql_insert_category5 = "INSERT INTO category (ID, UserID, Name, Icon, Color) VALUES ('0005','$user_id', 'Shopping','ic_shopping_cart','colorbutton_4')";
+            if(mysqli_query($con, $sql_insert_category1) &&
+                mysqli_query($con, $sql_insert_category2) &&
+                mysqli_query($con, $sql_insert_category3) &&
+                mysqli_query($con, $sql_insert_category4) &&
+                mysqli_query($con, $sql_insert_category5)){
+                echo json_encode(array('status'=>$status,'result_code'=>$result_code));
+            }
+            else{
+                $status = "failed";
+                echo json_encode(array('status'=>$status), JSON_FORCE_OBJECT);
+            }
         }
         else{
             $status = "failed";
