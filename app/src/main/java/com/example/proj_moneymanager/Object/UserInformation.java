@@ -9,17 +9,15 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 
-import java.io.Serializable;
-
-public class UserInformation implements Serializable {
-    int UserID;
+public class UserInformation {
+    long UserID;
     String FullName, UserName, PassWord, Email, PhoneNumber;
 
     public UserInformation() {
         // Constructor mặc định
     }
 
-    public UserInformation(int userID, String fullName, String userName, String passWord, String email, String phoneNumber) {
+    public UserInformation(long userID, String fullName, String userName, String passWord, String email, String phoneNumber) {
         UserID = userID;
         FullName = fullName;
         UserName = userName;
@@ -28,11 +26,18 @@ public class UserInformation implements Serializable {
         PhoneNumber = phoneNumber;
     }
 
-    public int getUserID() {
+    public String getFullName() {
+        return FullName;
+    }
+    public String getPassWord() {
+        return PassWord;
+    }
+
+    public long getUserID() {
         return UserID;
     }
 
-    public void setUserID(int userID) {
+    public void setUserID(long userID) {
         UserID = userID;
     }
 

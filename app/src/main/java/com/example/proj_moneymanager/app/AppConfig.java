@@ -73,4 +73,8 @@ public class AppConfig {
         String language = preferences.getString("Language", "");
         setLocale(language);
     }
+    public String getCurrentLanguage(){
+        SharedPreferences preferences = context.getSharedPreferences("Language Setting", Activity.MODE_PRIVATE);
+        return preferences.getString("Language","");
+    }
 }

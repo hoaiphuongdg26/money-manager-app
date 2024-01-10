@@ -20,8 +20,8 @@
     <string name="Cancel">Cancel</string>
     <string name="Delete">Delete</string>
     <string name="Change_language">Change language</string>
-    <string name="English_EN"> English - EN</string>
-    <string name="Vietnamese_VIE"> Vietnamese - VIE</string>
+    <string name="English_EN">  English - EN</string>
+    <string name="Vietnamese_VIE">  Vietnamese - VIE</string>
     <string name="CALENDAR">CALENDAR</string>
     <string name="SUN">SUN</string>
     <string name="MON">MON</string>
@@ -71,7 +71,7 @@
     <string name="Text_Formatting">Text Formatting</string>
     <string name="Category_name_already_exists">Category name already exists</string>
     <string name="Please_enter_all_fields">Please enter all fields</string>
-    <string name="Switch_Account">Switch Account</string>
+    <string name="Email">Email</string>
     <string name="Notification">Notification</string>
     <string name="Home">Home</string>
     <string name="Chart">Chart</string>
@@ -94,4 +94,10 @@
     <string name="Instruction">Instruction</string>
     <string name="Feedback_Contact">Feedback/Contact</string>
     <string name="Edit_bill">Edit bill</string>
+    <string name="Change_name">Change Name</string>
+    <string name="Change_password">Change password</string>
+    <string name="Enter_new_name">Enter new name </string>
+    <string name="Old_password">Old password</string>
+    <string name="New_password">New password</string>
+    <string name="Confirm_password">Confirm password</string>
 </resources>

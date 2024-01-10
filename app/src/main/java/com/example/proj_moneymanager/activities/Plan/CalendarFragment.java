@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -104,6 +105,9 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         selectedDate = LocalDate.now();
         setMonthView();
 
+        //readFromLocalStorage();
+        callReadFromStorageTaskByMonth();
+
         btnPreviousMonth = binding.btnPreviousMonth;
         btnPreviousMonth.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +133,16 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 callReadFromStorageTaskByMonth();
             }
         });
-
+        lv_historyOption.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Lấy ra mục được chọn từ Adapter
+                //Bill selectedBill = billAdapter.getArrHistoryOption().get(position);
+                Bill selectedOption = (Bill) billAdapter.getItem(position);
+                Toast.makeText(getContext(),"selected",Toast.LENGTH_SHORT).show();
+                //dialogEditBill(selectedBill, position);
+            }
+        });
         //Xử lý chọn tháng nhanh
         initDatePicker(view);
 //        monthYearText = view.findViewById(R.id.btn_datetime_detail);
@@ -155,7 +168,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 callReadFromStorageTaskByMonth();
             }
         };
-
         return view;
     }
 
