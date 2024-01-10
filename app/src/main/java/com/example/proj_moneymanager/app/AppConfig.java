@@ -77,4 +77,5 @@ public class AppConfig {
         SharedPreferences preferences = context.getSharedPreferences("Language Setting", Activity.MODE_PRIVATE);
         return preferences.getString("Language","");
     }
+
 }

@@ -61,6 +61,7 @@ public class ProfileFragment extends Fragment {
     private Button buttonLogout;
     private SignInClient oneTapClient;
     private GoogleSignInClient googleSignInClient;
+    boolean isCurrentPwdCorrect = false;
     public ProfileFragment(Context context) {
         // Required empty public constructor
         this.context = context;
@@ -171,7 +172,83 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //Xử lý đổi tên
+                if(bindingChangeName.edittextEnterNewName.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(),getString(R.string.Please_enter_new_name), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                //fetch data mới lên remote db
+                DbHelper dbHelper = new DbHelper(getContext());
+                SQLiteDatabase database = dbHelper.getWritableDatabase();
+                userInformation = new UserInformation();
+                userInformation.setUserID(getArguments().getLong("UserID", 0));
+                ContentValues values = new ContentValues();
+                values.put("Fullname", String.valueOf(bindingChangeName.edittextEnterNewName.getText().toString()));
+                String whereClause = DbContract.UserInformationEntry._ID + "=?";
+                String[] whereArgs = new String[]{
+                        String.valueOf(userInformation.getUserID())
+                };
+                // Thực hiện cập nhật dữ liệu vào local db
+                database.update(DbContract.UserInformationEntry.TABLE_NAME, values, whereClause, whereArgs);
+                //Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
+                readUserDataFromLocalStorageTask readUserDataFromLocalStorageTask = new readUserDataFromLocalStorageTask(context, arr_profileOption);
+                readUserDataFromLocalStorageTask.execute();
+                ProfileAdapter profileAdapter = new ProfileAdapter(
+                        requireActivity(),
+                        arr_profileOption
+                );
+                lv_profileOption.setAdapter(profileAdapter);
 
+                Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
+                if(cursor.moveToFirst()) {
+                    int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
+                    int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
+                    int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
+                    int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
+
+                    String fullName = cursor.getString(columnIndexUserFullname);
+                    String userName = cursor.getString(columnIndexUserName);
+                    String password = cursor.getString(columnIndexUserPassword);
+                    String email = cursor.getString(columnIndexEmail);
+
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCPROFILE,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response);
+                                        String serverResponse = jsonObject.getString("response");
+                                        if (serverResponse.equals("OK")) {
+                                            Toast.makeText(getContext(), getString(R.string.Fullname_change_successfully), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            //neu server tra về "fail"
+                                            Toast.makeText(getContext(), serverResponse, Toast.LENGTH_LONG).show();
+                                            Log.d("Update response error", serverResponse);
+                                            //khong lam gì cả
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // Handle error appropriately (e.g., log or notify the user)
+                            Toast.makeText(getContext(), "Fail to sync data", Toast.LENGTH_LONG);
+                        }
+                    }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("_password", password);
+                            params.put("userID", String.valueOf(userInformation.getUserID()));
+                            params.put("fullName", String.valueOf(bindingChangeName.edittextEnterNewName.getText().toString()));
+                            params.put("userName", userName);
+                            //params.put("email", email);
+                            return params;
+                        }
+                    };
+                    MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+                }
 
 
                 dialog.dismiss();
@@ -207,85 +284,129 @@ public class ProfileFragment extends Fragment {
                 dialog.dismiss();
             }
         });
+        bindingChangePassword.edittextEnterOldPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                String currentPasswrd = arr_profileOption.get(1).getLabelInfo();
+                if(!hasFocus) {
+                if(!bindingChangePassword.edittextEnterOldPassword.getText().toString().equals(currentPasswrd)) {
+                    bindingChangePassword.textviewLabelErrorOldPasswd.setText(getString(R.string.Wrong_Password));
+                    isCurrentPwdCorrect = false;
+                    bindingChangePassword.buttonSave.setEnabled(false);
+                }
+                else {
+                    bindingChangePassword.textviewLabelErrorOldPasswd.setText(null);
+                    isCurrentPwdCorrect = true;
+                    bindingChangePassword.buttonSave.setEnabled(true);
+                    }
+                }
+                else {
+                    bindingChangePassword.textviewLabelErrorOldPasswd.setText(null);
+                    if(!bindingChangePassword.edittextEnterOldPassword.getText().toString().equals(currentPasswrd)) {
+                        bindingChangePassword.edittextEnterOldPassword.setText(null);
+                    }
+                }
+            }
+        });
+        bindingChangePassword.edittextEnterNewPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus) {
+                    bindingChangePassword.textviewLabelErrorConfirmPasswd.setText(null);
+                }
+            }
+        });
         bindingChangePassword.buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Xử lý đổi mật khẩu
-                //fetch data mới lên remote db
-                DbHelper dbHelper = new DbHelper(getContext());
-                SQLiteDatabase database = dbHelper.getWritableDatabase();
-                userInformation = new UserInformation();
-                userInformation.setUserID(getArguments().getLong("UserID", 0));
-                ContentValues values = new ContentValues();
-                values.put("Password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
-                String whereClause = DbContract.UserInformationEntry._ID + "=?";
-                String[] whereArgs = new String[]{
-                        String.valueOf(userInformation.getUserID())
-                };
-                // Thực hiện cập nhật dữ liệu vào local db
-                database.update(DbContract.UserInformationEntry.TABLE_NAME, values, whereClause, whereArgs);
-                //Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
-                readUserDataFromLocalStorageTask readUserDataFromLocalStorageTask = new readUserDataFromLocalStorageTask(context, arr_profileOption);
-                readUserDataFromLocalStorageTask.execute();
-                ProfileAdapter profileAdapter = new ProfileAdapter(
-                        requireActivity(),
-                        arr_profileOption
-                );
-                lv_profileOption.setAdapter(profileAdapter);
-
-
-                Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
-                if(cursor.moveToFirst()){
-                    int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
-                    int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
-                    int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
-                    int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
-
-                    String fullName = cursor.getString(columnIndexUserFullname);
-                    String userName = cursor.getString(columnIndexUserName);
-                    String password = cursor.getString(columnIndexUserPassword);
-                    String email = cursor.getString(columnIndexEmail);
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCPROFILE,
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-                                    try {
-                                        JSONObject jsonObject = new JSONObject(response);
-                                        String serverResponse = jsonObject.getString("response");
-                                        if (serverResponse.equals("OK")) {
-                                            Toast.makeText(getContext(), "UPDATE COMPLETELY", Toast.LENGTH_LONG).show();
-                                        }
-                                        else{
-                                            //neu server tra về "fail"
-                                            Toast.makeText(getContext(),serverResponse,Toast.LENGTH_LONG).show();
-                                            Log.d("Update response error",serverResponse);
-                                            //khong lam gì cả
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            // Handle error appropriately (e.g., log or notify the user)
-                            Toast.makeText(getContext(), "Fail to sync data", Toast.LENGTH_LONG);
-                        }
-                    }) {
-                        @Override
-                        protected Map<String, String> getParams() throws AuthFailureError {
-                            Map<String, String> params = new HashMap<>();
-                            params.put("_password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
-                            params.put("userID", String.valueOf(userInformation.getUserID()));
-                            params.put("fullName", fullName);
-                            params.put("userName", userName);
-                            //params.put("email", email);
-                            return params;
-                        }
-                    };
-                    MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
-                    dialog.dismiss();
+                if(bindingChangePassword.edittextEnterOldPassword.getText().toString().isEmpty()|| bindingChangePassword.edittextEnterNewPassword.getText().toString().isEmpty() || bindingChangePassword.edittextConfirmPassword.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), getString(R.string.Please_enter_all_fields), Toast.LENGTH_LONG).show();
+                    return;
                 }
+                if (bindingChangePassword.edittextConfirmPassword.getText().toString().equals(bindingChangePassword.edittextEnterNewPassword.getText().toString())) {
+                    //Xử lý đổi mật khẩu
+                    //fetch data mới lên remote db
+                    DbHelper dbHelper = new DbHelper(getContext());
+                    SQLiteDatabase database = dbHelper.getWritableDatabase();
+                    userInformation = new UserInformation();
+                    userInformation.setUserID(getArguments().getLong("UserID", 0));
+                    ContentValues values = new ContentValues();
+                    values.put("Password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                    String whereClause = DbContract.UserInformationEntry._ID + "=?";
+                    String[] whereArgs = new String[]{
+                            String.valueOf(userInformation.getUserID())
+                    };
+                    // Thực hiện cập nhật dữ liệu vào local db
+                    database.update(DbContract.UserInformationEntry.TABLE_NAME, values, whereClause, whereArgs);
+                    //Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
+                    readUserDataFromLocalStorageTask readUserDataFromLocalStorageTask = new readUserDataFromLocalStorageTask(context, arr_profileOption);
+                    readUserDataFromLocalStorageTask.execute();
+                    ProfileAdapter profileAdapter = new ProfileAdapter(
+                            requireActivity(),
+                            arr_profileOption
+                    );
+                    lv_profileOption.setAdapter(profileAdapter);
+
+                    Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
+                    if(cursor.moveToFirst()) {
+                        int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
+                        int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
+                        int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
+                        int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
+
+                        String fullName = cursor.getString(columnIndexUserFullname);
+                        String userName = cursor.getString(columnIndexUserName);
+                        String password = cursor.getString(columnIndexUserPassword);
+                        String email = cursor.getString(columnIndexEmail);
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCPROFILE,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(response);
+                                            String serverResponse = jsonObject.getString("response");
+                                            if (serverResponse.equals("OK")) {
+                                                Toast.makeText(getContext(), getString(R.string.Password_change_successfully), Toast.LENGTH_LONG).show();
+                                                appConfig.saveUserPassword(bindingChangePassword.edittextConfirmPassword.getText().toString());
+                                            } else {
+                                                //neu server tra về "fail"
+                                                Toast.makeText(getContext(), serverResponse, Toast.LENGTH_LONG).show();
+                                                Log.d("Update response error", serverResponse);
+                                                //khong lam gì cả
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // Handle error appropriately (e.g., log or notify the user)
+                                Toast.makeText(getContext(), "Fail to sync data", Toast.LENGTH_LONG);
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() throws AuthFailureError {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("_password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                                params.put("userID", String.valueOf(userInformation.getUserID()));
+                                params.put("fullName", fullName);
+                                params.put("userName", userName);
+                                //params.put("email", email);
+                                return params;
+                            }
+                        };
+                        MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+                    }
+                }
+                else {
+                    bindingChangePassword.textviewLabelErrorConfirmPasswd.setText(getString(R.string.Password_confirm_not_match));
+                    bindingChangePassword.edittextEnterNewPassword.setText(null);
+                    bindingChangePassword.edittextConfirmPassword.setText(null);
+                    return;
+                }
+                dialog.dismiss();
             }
         });
 
@@ -328,11 +449,9 @@ public class ProfileFragment extends Fragment {
                 String email = cursor.getString(columnIndexEmail);
 
                 //arr_profileOption = new ArrayList<Profile_Option>();
-                String hiddenPasswd = "";
-                for(int i = 0; i<password.length();i++) hiddenPasswd+="*";
                 // Thêm vào danh sách
                 arrayListUser.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
-                arrayListUser.add(new Profile_Option(getString(R.string.Password), hiddenPasswd, R.drawable.icon_lock));
+                arrayListUser.add(new Profile_Option(getString(R.string.Password), password, R.drawable.icon_lock));
                 arrayListUser.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
                 arrayListUser.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
             }

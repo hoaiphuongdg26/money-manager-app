@@ -101,4 +101,9 @@
     <string name="Old_password">Nhập mật khẩu hiện tại</string>
     <string name="New_password">Nhập mật khẩu mới</string>
     <string name="Confirm_password">Nhập lại mật khẩu mới   </string>
+    <string name="Wrong_Password">Sai mật khẩu!</string>
+    <string name="Password_change_successfully">Đổi mật khẩu thành công</string>
+    <string name="Fullname_change_successfully">Đổi tên thành công</string>
+    <string name="Password_confirm_not_match">Mật khẩu xác nhận\nkhông trùng khớp.</string>
+    <string name="Please_enter_new_name">Vui lòng nhập tên mới</string>
 </resources>
