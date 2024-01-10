@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 
-public class UserInformation {
+import java.io.Serializable;
+
+public class UserInformation implements Serializable {
     long UserID;
     String FullName, UserName, PassWord, Email, PhoneNumber;
 

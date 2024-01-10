@@ -82,6 +82,18 @@ public class DbHelper extends SQLiteOpenHelper {
         String query = "SELECT *" +" FROM " + UserInformationEntry.TABLE_NAME + " WHERE " + UserInformationEntry._ID +"="+ userID;
         return database.rawQuery(query, null);
     }
+    // Hàm xóa tất cả các bảng trong cơ sở dữ liệu
+    public void clearAllTables(SQLiteDatabase db) {
+        try {
+            db.execSQL(DROP_TABLE_USERINFORMATION);
+            db.execSQL(DROP_TABLE_BILL);
+            db.execSQL(DROP_TABLE_CATEGORY);
+            // Tạo lại các bảng sau khi xóa
+            onCreate(db);
+        } catch (SQLException e) {
+            Log.e("DbHelper", "Error clearing all tables: " + e.getMessage());
+        }
+    }
     public void insertUserToLocalDatabase(String userID, String fullName, String userName, String password, String email, String phoneNumber, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(UserInformationEntry._ID, userID);
@@ -93,6 +105,75 @@ public class DbHelper extends SQLiteOpenHelper {
 
         values.put(UserInformationEntry.COLUMN_SYNC_STATUS, synstatus);
         database.insertWithOnConflict(UserInformationEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+    //TABLE USER INFORMATION
+    // Hàm truy vấn người dùng từ cơ sở dữ liệu local
+    public Cursor getUserFromLocalDatabase(String userName, String password, SQLiteDatabase database) {
+        String[] columns = {UserInformationEntry._ID, UserInformationEntry.COLUMN_FULL_NAME, UserInformationEntry.COLUMN_EMAIL, UserInformationEntry.COLUMN_PHONE_NUMBER};
+        String selection = UserInformationEntry.COLUMN_USERNAME + " = ? AND " + UserInformationEntry.COLUMN_PASSWORD + " = ?";
+        String[] selectionArgs = {userName, password};
+
+        // Thực hiện truy vấn
+        return database.query(UserInformationEntry.TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+    }
+
+    public int getUserID() {
+        SQLiteDatabase db = null;
+        int userID = -1;
+
+        try {
+            // Mở cơ sở dữ liệu
+            db = this.getReadableDatabase();
+
+            // Nếu có ít nhất một dòng trong bảng
+            if (getRowCount(db) > 0 && getRowCount(db) < 2) {
+                // Thực hiện truy vấn để lấy userID của dòng đầu tiên
+                String query = "SELECT " + UserInformationEntry._ID +
+                        " FROM " + UserInformationEntry.TABLE_NAME +
+                        " LIMIT 1"; // Giới hạn kết quả lấy ra chỉ 1 dòng
+                Cursor cursor = db.rawQuery(query, null);
+                int columnIndexUserID = cursor.getColumnIndex(UserInformationEntry._ID);
+                // Di chuyển con trỏ đến dòng đầu tiên
+                if (cursor.moveToFirst()) {
+                    // Lấy giá trị userID từ cột _ID
+                    userID = cursor.getInt(columnIndexUserID);
+                }
+
+                // Đóng con trỏ cursor
+                cursor.close();
+            }
+            else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Đóng kết nối đến cơ sở dữ liệu
+            if (db != null && db.isOpen()) {
+                db.close();
+            }
+        }
+        return userID;
+    }
+
+    private int getRowCount(SQLiteDatabase db) {
+        int count = 0;
+
+        try {
+            // Thực hiện truy vấn để lấy số lượng dòng trong bảng
+            String countQuery = "SELECT * FROM " + UserInformationEntry.TABLE_NAME;
+            Cursor cursor = db.rawQuery(countQuery, null);
+
+            // Đếm số lượng dòng
+            count = cursor.getCount();
+
+            // Đóng con trỏ cursor
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return count;
     }
 
     // TABLE BILL
@@ -166,28 +247,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 projection,
                 whereClause,
                 whereArgs,
-                null,
-                null,
-                null
-        );
-    }
-    public Cursor getBillById(long billID, SQLiteDatabase database) {
-        String[] projection = {
-                BillEntry.COLUMN_NOTE,
-                BillEntry.COLUMN_TIMECREATE,
-                BillEntry.COLUMN_EXPENSE,
-                BillEntry.COLUMN_CATEGORY_ID,
-                BillEntry.COLUMN_USER_ID
-        };
-
-        String selection = BillEntry.COLUMN_ID + " = ?";
-        String[] selectionArgs = {String.valueOf(billID)};
-
-        return database.query(
-                BillEntry.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
                 null,
                 null,
                 null
