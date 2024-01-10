@@ -306,7 +306,7 @@
                 <Button
                     android:id="@+id/btn_import"
                     android:layout_width="140dp"
-                    android:layout_height="35dp"
+                    android:layout_height="30dp"
                     style="@style/ButtonStyle"
                     android:text="@string/Import"
                     android:textSize="20sp"
