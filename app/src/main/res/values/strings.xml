@@ -94,4 +94,10 @@
     <string name="Instruction">Instruction</string>
     <string name="Feedback_Contact">Feedback/Contact</string>
     <string name="Edit_bill">Edit bill</string>
+    <string name="To">To</string>
+    <string name="Subject">Subject</string>
+    <string name="Message">Message</string>
+    <string name="Send">Send</string>
+    <string name="No_network_connection">No network connection</string>
+    <string name="No_offline_login_info">There are no offline credentials that match the local database</string>
 </resources>

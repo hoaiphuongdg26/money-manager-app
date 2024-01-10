@@ -1,6 +1,10 @@
 package com.example.proj_moneymanager;
 
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements
     NetworkMonitor networkMonitor;
     DbHelper database = Login.database;
     long UserID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +95,10 @@ public class MainActivity extends AppCompatActivity implements
         Toast.makeText(getApplicationContext(), UserInformation.getFullName(getBaseContext(), UserID), Toast.LENGTH_LONG).show();
         networkMonitor = new NetworkMonitor();
         registerNetworkBroadcastForNougat();
+
+        scheduleAlarm();
+        createNotificationChannel();
+
     }
     private void registerNetworkBroadcastForNougat() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -162,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         if(networkMonitor == null) networkMonitor = new NetworkMonitor();
         //registerNetworkBroadcastForNougat();
+        MyReceiver.saveLastAccessTime(this, System.currentTimeMillis());
     }
 
     @Override
@@ -216,5 +226,32 @@ public class MainActivity extends AppCompatActivity implements
         // Thay thế fragment khi mục được chọn trong NavBar
         replaceFragment(statisticFragment);
         selectTab(R.id.menu_chart);
+    }
+    private void scheduleAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        // Intent để gửi tới BroadcastReceiver
+        Intent intent = new Intent(this, MyReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        // Lên lịch kiểm tra sau 24 giờ
+        long interval = 60 * 1000; // 24 giờ
+//        long interval = 24 * 60 * 60 * 1000; // 24 giờ
+        long startTime = System.currentTimeMillis() + interval;
+
+        // Lên lịch kiểm tra với thời gian bắt đầu và khoảng thời gian lặp
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, startTime, interval, pendingIntent);
+    }
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Channel Name";
+            String description = "Channel Description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("channel_id", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,10 +24,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.proj_moneymanager.AsyncTasks.GetServerData;
+import com.example.proj_moneymanager.MD5Hasher;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.app.AppConfig;
+import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.models.ApiResponse;
@@ -84,14 +87,20 @@ public class Login extends AppCompatActivity {
 
         isRememberLogin = appConfig.isRememberLoginChecked();
         if(appConfig.isUserLogin()){
-            if(appConfig.isLoginUsingGmail())
-            {
-                //Google Login
-                performGoogleLogin();
-            } else {
+            if (checkNetworkConnection()) {
+                if (appConfig.isLoginUsingGmail()) {
+                    //Google Login
+                    performGoogleLogin();
+                } else {
+                    UserName = appConfig.getUserName();
+                    Password = appConfig.getUserPassword();
+                    performLogin();
+                }
+            }
+            else {
                 UserName = appConfig.getUserName();
-                Password = appConfig.getUserPassword();
-                performLogin();
+                Password = MD5Hasher.hashString(appConfig.getUserPassword());
+                performLoginOffline();
             }
         }
         else{
@@ -118,14 +127,19 @@ public class Login extends AppCompatActivity {
             btnLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    UserName = editTextUserName.getText().toString();
-                    Password = editTextPassword.getText().toString();
-                    if(!UserName.equals("")&&!Password.equals("")){
-                        //Start ProgressBar first (set visibility VISIBLE)
-                        performLogin();
+                    if (checkNetworkConnection()){
+                        UserName = editTextUserName.getText().toString();
+                        Password = editTextPassword.getText().toString();
+                        if(!UserName.equals("")&&!Password.equals("")){
+                            //Start ProgressBar first (set visibility VISIBLE)
+                            performLogin();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), getString(R.string.Please_enter_Login_information), Toast.LENGTH_SHORT).show();
+                        }
                     }
                     else {
-                        Toast.makeText(getApplicationContext(), getString(R.string.Please_enter_Login_information), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),getString(R.string.No_network_connection),Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -236,8 +250,6 @@ public class Login extends AppCompatActivity {
                                 getServerData.execute(UserID);
                                 //add class vo day
 
-
-
                                 dbHelper.close();
                                 appConfig.loadLocale();
                                 //CreateSqliteDb();
@@ -267,6 +279,35 @@ public class Login extends AppCompatActivity {
                 }
             });
     }
+    private void performLoginOffline() {
+        // Lấy thông tin đăng nhập từ cơ sở dữ liệu local
+        DbHelper dbHelper = new DbHelper(getApplicationContext());
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = dbHelper.getUserFromLocalDatabase(UserName, Password, database);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            try {
+                int columnIndexUserID = cursor.getColumnIndex(DbContract.UserInformationEntry._ID);
+                long userID = cursor.getLong(columnIndexUserID);
+
+                // Đóng cursor và database khi đã sử dụng xong
+                cursor.close();
+                dbHelper.close();
+
+                // Chuyển đến màn hình chính và truyền UserID qua Intent
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("UserID", userID);
+                startActivity(intent);
+                finish();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Không có thông tin đăng nhập offline khớp với cơ sở dữ liệu local
+            Toast.makeText(getApplicationContext(), getString(R.string.No_offline_login_info), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private boolean checkNetworkConnection() {
         return NetworkMonitor.checkNetworkConnection(getApplicationContext());
     }

@@ -95,5 +95,10 @@
     <string name="Instruction">Hướng dẫn sử dụng</string>
     <string name="Feedback_Contact">Đóng góp ý kiến/Liên hệ</string>
     <string name="Edit_bill">Chỉnh sửa hoá đơn</string>
-
+    <string name="To">Gửi đến</string>
+    <string name="Subject">Tiêu đề</string>
+    <string name="Message">Lời nhắn</string>
+    <string name="Send">Gửi</string>
+    <string name="No_network_connection">Không có kết nối mạng</string>
+    <string name="No_offline_login_info">Không có thông tin đăng nhập offline khớp với cơ sở dữ liệu local</string>
 </resources>

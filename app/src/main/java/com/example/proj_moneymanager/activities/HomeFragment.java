@@ -124,21 +124,21 @@ public class HomeFragment extends Fragment {
             if (context instanceof OnCalendarButtonClickListener) {
                 calendarButtonClickListener = (OnCalendarButtonClickListener) context;
             } else {
-                throw new ClassCastException(context.toString() + " phải triển khai OnCalendarButtonClickListener");
+                throw new ClassCastException(context.toString() + " must deploy OnCalendarButtonClickListener");
             }
 
             if (context instanceof OnExpenseButtonClickListener) {
                 expenseButtonClickListener = (OnExpenseButtonClickListener) context;
             } else {
-                throw new ClassCastException(context.toString() + " phải triển khai OnExpenseButtonClickListener");
+                throw new ClassCastException(context.toString() + " must deploy OnExpenseButtonClickListener");
             }
             if (context instanceof OnStatisticButtonClickListener) {
                 statisticButtonClickListener = (OnStatisticButtonClickListener) context;
             } else {
-                throw new ClassCastException(context.toString() + " phải triển khai OnStatisticButtonClickListener");
+                throw new ClassCastException(context.toString() + " must deploy OnStatisticButtonClickListener");
             }
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " phải triển khai OnCalendarButtonClickListener, OnExpenseButtonClickListener, OnStatisticButtonClickListener");
+            throw new ClassCastException(context.toString() + " must deploy OnCalendarButtonClickListener, OnExpenseButtonClickListener, OnStatisticButtonClickListener");
         }
     }
 }

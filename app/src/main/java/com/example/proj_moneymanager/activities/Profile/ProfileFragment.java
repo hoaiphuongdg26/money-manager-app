@@ -2,18 +2,21 @@ package com.example.proj_moneymanager.activities.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Login;
 import com.example.proj_moneymanager.app.AppConfig;
+import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.databinding.FragmentProfileBinding;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
@@ -99,6 +102,14 @@ public class ProfileFragment extends Fragment {
                 if(appConfig.isLoginUsingGmail()){
                     oneTapClient.signOut();
                     appConfig.saveLoginUsingGmail(false);
+                }
+                try {
+                    DbHelper dbHelper = new DbHelper(context);
+                    SQLiteDatabase database = dbHelper.getReadableDatabase();
+                    dbHelper.clearAllTables(database);
+                    dbHelper.close();
+                } catch (Exception e){
+                    Toast.makeText(context,"Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 //Move to login activity
                 Intent intent = new Intent(context, Login.class);
