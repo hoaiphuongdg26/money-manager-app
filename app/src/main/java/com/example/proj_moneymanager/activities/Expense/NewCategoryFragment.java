@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColorClickListener, IconAdapter.OnIconClickListener{
+public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColorClickListener, IconAdapter.OnIconClickListener {
     FragmentNewCategoryBinding binding;
     ArrayList<Category> arrayListCategory = new ArrayList<Category>();
     TextView nameCategory;

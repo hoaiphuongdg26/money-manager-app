@@ -48,15 +48,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class EditCategoryFragment extends Fragment implements CategoryAdapter.OnCategoryClickListener {
+public class EditCategoryFragment extends Fragment implements ColorAdapter.OnColorClickListener, IconAdapter.OnIconClickListener {
     FragmentEditCategoryBinding binding;
     private CategoryAdapter categoryAdapter;
     private BroadcastReceiver broadcastReceiver;
     ArrayList<Category> arrayListCategory = new ArrayList<Category>();
-
     long  UserID;
-    String CategoryID;
-    String color, icon;
+    String CategoryID, CategoryName, Color, Icon;
     public EditCategoryFragment(){}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,8 +79,8 @@ public class EditCategoryFragment extends Fragment implements CategoryAdapter.On
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Category clickedCategory = arrayListCategory.get(position);
-                showEditDialog(clickedCategory, position);
+                Category CategoryItem = arrayListCategory.get(position);
+                showEditDialog(CategoryItem, position);
             }
         });
         return view;
@@ -95,9 +93,13 @@ public class EditCategoryFragment extends Fragment implements CategoryAdapter.On
         View viewDialogEdit = binding.getRoot();
 
         // Set thông tin của bill vào dialog để chỉnh sửa
+        CategoryID = categoryItem.getID();
+        CategoryName = categoryItem.getName();
+        Icon = categoryItem.getIcon();
+        Color = categoryItem.getColor();
         binding.edittextNameCategory.setText(categoryItem.getName());
-        binding.gridviewIcon.setSelection(categoryItem.getIcon());
-        binding.gridviewColor.setSelection(categoryItem.getColor());
+        binding.gridviewIcon.setSelection(IconAdapter.getPositionByResourceName(categoryItem.getIcon()));
+        binding.gridviewColor.setSelection(ColorAdapter.getPositionByResourceName(categoryItem.getColor()));
 
         dialog.setContentView(viewDialogEdit);
 
@@ -120,33 +122,37 @@ public class EditCategoryFragment extends Fragment implements CategoryAdapter.On
         binding.btnSaveCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Your code for updating the category
-                String newName = binding.edittextNameCategory.getText().toString();
-                int newIcon = binding.gridviewIcon.getSelectedItemPosition(); // Assuming you get the selected position for the icon
-                int newColor = binding.gridviewColor.getSelectedItemPosition(); // Assuming you get the selected position for the color
-
-                // Update the category in your local database
-                updateCategoryInLocalDatabase(categoryItem.getID(), newName, newIcon, newColor);
-
-                // Dismiss the dialog
-                dialog.dismiss();
-
-                // Notify the adapter that the data has changed
-                categoryAdapter.notifyDataSetChanged();
+//                ContentValues values = new ContentValues();
+//                // Your code for updating the category
+//                String newName = binding.edittextNameCategory.getText().toString();
+//                String newIcon = iconAdapter.getResourceName(iconDrawables[newIconPosition]);
+//                int newColor = binding.gridviewColor.getSelectedItemPosition(); // Assuming you get the selected position for the color
+//
+//                values.put("name", newName);
+//                values.put("icon", newIcon);
+//                values.put("color", newColor);
+//                // Update the category in your local database
+//                updateCategoryInLocalDatabase(categoryItem.getID(), newName, newIcon, newColor);
+//
+//                // Dismiss the dialog
+//                dialog.dismiss();
+//
+//                // Notify the adapter that the data has changed
+//                categoryAdapter.notifyDataSetChanged();
             }});
         binding.btnDeleteCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteCategory(categoryItem.getID());
-
-                // Dismiss the dialog
-                dialog.dismiss();
-
-                // Notify the adapter that the data has changed
-                categoryAdapter.notifyDataSetChanged();
-        })
-        dialog.show();
+//                deleteCategory(categoryItem.getID());
+//
+//                // Dismiss the dialog
+//                dialog.dismiss();
+//
+//                // Notify the adapter that the data has changed
+//                categoryAdapter.notifyDataSetChanged();
+            };
         });
+        dialog.show();
     }
     void updateCategoryInLocalDatabase(String categoryID, String name, String icon, String color, int syncstatus){
         DbHelper dbHelper = new DbHelper(getContext());
@@ -155,5 +161,15 @@ public class EditCategoryFragment extends Fragment implements CategoryAdapter.On
         readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(),arrayListCategory);
         readCategoryFromLocalStorage.execute();
         dbHelper.close();
+    }
+
+    @Override
+    public void onColorClick(String colorDescription) {
+        Color = colorDescription;
+    }
+
+    @Override
+    public void onIconClick(String iconDescription) {
+        Icon = iconDescription;
     }
 }

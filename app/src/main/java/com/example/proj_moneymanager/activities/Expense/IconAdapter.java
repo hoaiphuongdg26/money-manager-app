@@ -11,10 +11,10 @@ import android.widget.ImageButton;
 import com.example.proj_moneymanager.R;
 
 public class IconAdapter extends BaseAdapter {
-    private Context context;
+    private static Context context;
 
     // Danh sách các màu 30dpx30dp
-    private int[] iconDrawables = {
+    private static int[] iconDrawables = {
             R.drawable.ic_car,
             R.drawable.ic_card,
             R.drawable.ic_flight_takeoff,
@@ -74,7 +74,7 @@ public class IconAdapter extends BaseAdapter {
 
         return gridViewItem;
     }
-    String getResourceName(int iconDrawableId) {
+    static String getResourceName(int iconDrawableId) {
         try {
             return context.getResources().getResourceEntryName(iconDrawableId);
         } catch (Resources.NotFoundException e) {
@@ -83,6 +83,17 @@ public class IconAdapter extends BaseAdapter {
             return null;
         }
     }
+    public static int getPositionByResourceName(String resourceName) {
+        for (int i = 0; i < iconDrawables.length; i++) {
+            int iconDrawableId = iconDrawables[i];
+            String currentResourceName = getResourceName(iconDrawableId);
+            if (currentResourceName != null && currentResourceName.equals(resourceName)) {
+                return i; // Trả về vị trí của resource tìm thấy
+            }
+        }
+        return -1; // Nếu không tìm thấy resource, trả về -1
+    }
+
     public void setSelectedPosition(int position) {
         if (position >= 0 && position < iconDrawables.length) {
             selectedPosition = position;
