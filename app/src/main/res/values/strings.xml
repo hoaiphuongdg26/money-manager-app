@@ -100,18 +100,15 @@
     <string name="Old_password">Old password</string>
     <string name="New_password">New password</string>
     <string name="Confirm_password">Confirm password</string>
-<<<<<<< HEAD
     <string name="To">To</string>
     <string name="Subject">Subject</string>
     <string name="Message">Message</string>
     <string name="Send">Send</string>
     <string name="No_network_connection">No network connection</string>
     <string name="No_offline_login_info">There are no offline credentials that match the local database</string>
-=======
     <string name="Wrong_Password">Wrong Password!</string>
     <string name="Password_change_successfully">Your password has been changed successfully</string>
     <string name="Fullname_change_successfully">Your name has been changed successfully</string>
     <string name="Password_confirm_not_match">The password confirmation\ndoes not match.</string>
     <string name="Please_enter_new_name">Please enter new name</string>
->>>>>>> Profile
 </resources>
