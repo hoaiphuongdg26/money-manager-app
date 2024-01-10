@@ -57,7 +57,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/main_background"
+            android:background="@drawable/rounded_background"
             android:orientation="horizontal"
             android:weightSum="4"
             android:layout_weight="1"
@@ -93,29 +93,40 @@
                         android:weightSum="2"
                         android:elevation="50dp"
                         >
-                        <ImageButton
+                        <Button
                             android:id="@+id/imgbtn_expense"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:src="@drawable/button_expense"
                             android:layout_margin="5dp"
-                            android:scaleType="centerInside"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:elevation="100dp"
-                            android:contentDescription="Button to view expense"
+                            android:drawablePadding="10dp"
+                            android:text="@string/Expense"
+                            android:textAllCaps="true"
+                            android:autoSizeTextType="uniform"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/sf_pro_text_medium"
+                            android:background="@drawable/custom_button_background_expense"
+                            android:drawableStart="@drawable/ic_subtract"
+                            android:gravity = "start|center_vertical|center_horizontal"
+                            android:padding="10dp"
                             />
-                        <ImageButton
+                        <Button
                             android:id="@+id/imgbtn_income"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:src="@drawable/button_income_gray"
                             android:layout_margin="5dp"
-                            android:scaleType="centerInside"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:elevation="100dp"
-                            android:contentDescription="Button to view income"/>
+                            android:drawablePadding="10dp"
+                            android:text="@string/Income"
+                            android:textAllCaps="true"
+                            android:autoSizeTextType="uniform"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/sf_pro_text_medium"
+                            android:background="@drawable/custom_button_background_income"
+                            android:drawableStart="@drawable/ic_add"
+                            android:gravity = "start|center_vertical|center_horizontal"
+                            android:padding="10dp"
+                            />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -145,7 +156,7 @@
                 </TextView>
 
                 <ImageButton
-                    android:id="@+id/left_forward"
+                    android:id="@+id/btnPreviousDay"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@drawable/icon_left_forward"
@@ -160,26 +171,26 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/btn_datetime_detail"
-                    android:text="@string/Monday_26_08_2023"
+                    android:text="Monday_26_08_2023"
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="16sp"
                     android:textColor="@color/black_blue"
-                    app:layout_constraintLeft_toRightOf="@id/left_forward"
-                    app:layout_constraintRight_toLeftOf="@id/right_forward"
-                    app:layout_constraintTop_toTopOf="@id/left_forward"
-                    app:layout_constraintBottom_toBottomOf="@id/left_forward"
+                    app:layout_constraintLeft_toRightOf="@id/btnPreviousDay"
+                    app:layout_constraintRight_toLeftOf="@id/btnNextDay"
+                    app:layout_constraintTop_toTopOf="@id/btnPreviousDay"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviousDay"
                     android:textAllCaps="false"
                     android:background="@drawable/bg_transparent"
                     />
                 <ImageButton
-                    android:id="@+id/right_forward"
+                    android:id="@+id/btnNextDay"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@drawable/icon_right_forward"
                     android:scaleType="fitCenter"
-                    app:layout_constraintTop_toTopOf="@id/left_forward"
+                    app:layout_constraintTop_toTopOf="@id/btnPreviousDay"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintBottom_toBottomOf="@id/left_forward"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviousDay"
                     android:layout_marginRight="25dp"
                     android:contentDescription="Button right forward"
                     />
@@ -201,10 +212,10 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/edittext_income"
-                    app:layout_constraintLeft_toLeftOf="@id/left_forward"
+                    app:layout_constraintLeft_toLeftOf="@id/btnPreviousDay"
                     app:layout_constraintTop_toTopOf="@+id/textview_note"
                     app:layout_constraintBottom_toBottomOf="@id/textview_note"
-                    app:layout_constraintRight_toRightOf="@id/right_forward"
+                    app:layout_constraintRight_toRightOf="@id/btnNextDay"
                     android:textColor="@color/black_blue"
                     >
                 </EditText>
@@ -228,7 +239,7 @@
                     android:background="@drawable/edittext_income"
                     app:layout_constraintTop_toTopOf="@id/textview_typeofbill"
                     app:layout_constraintBottom_toBottomOf="@id/textview_typeofbill"
-                    app:layout_constraintLeft_toLeftOf="@id/left_forward"
+                    app:layout_constraintLeft_toLeftOf="@id/btnPreviousDay"
                     app:layout_constraintRight_toLeftOf="@id/textview_VND"
                     android:layout_marginRight="5dp"
                     android:inputType="number"
@@ -243,7 +254,7 @@
                     android:textColor="@color/blue"
                     android:text="VNĐ"
                     android:textSize="16sp"
-                    app:layout_constraintRight_toRightOf="@+id/right_forward"
+                    app:layout_constraintRight_toRightOf="@+id/btnNextDay"
                     app:layout_constraintTop_toTopOf="@id/textview_typeofbill"
                     app:layout_constraintBottom_toBottomOf="@id/textview_typeofbill"
                     >
@@ -268,10 +279,10 @@
                     android:layout_height="30dp"
                     android:background="@drawable/icon_pencil"
                     android:scaleType="fitCenter"
-                    app:layout_constraintRight_toRightOf="@id/right_forward"
+                    app:layout_constraintRight_toRightOf="@id/btnNextDay"
                     app:layout_constraintTop_toTopOf="@id/textview_category"
                     app:layout_constraintBottom_toBottomOf="@id/textview_category"
-                    app:layout_constraintLeft_toLeftOf="@id/right_forward"
+                    app:layout_constraintLeft_toLeftOf="@id/btnNextDay"
                     android:contentDescription="Button pencil"
                     style="@style/ButtonStyle"
                     android:onClick="onEditCategoryButtonClick"
@@ -295,7 +306,7 @@
                 <Button
                     android:id="@+id/btn_import"
                     android:layout_width="140dp"
-                    android:layout_height="40dp"
+                    android:layout_height="35dp"
                     style="@style/ButtonStyle"
                     android:text="@string/Import"
                     android:textSize="20sp"

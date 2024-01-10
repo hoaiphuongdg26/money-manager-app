@@ -107,7 +107,25 @@ public class BillAdapter extends BaseAdapter {
 
         ImageView img_dotOffline = convertView.findViewById(R.id.imageview_dotOffline);
         if (arrayListBill.get(position).getSyncStatus() == 1 ) img_dotOffline.setVisibility(View.VISIBLE);
+
+        // Set sự kiện click cho mỗi item trong danh sách
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onBillItemClickListener != null) {
+                    onBillItemClickListener.onBillItemClick(arrayListBill.get(position), position);
+                }
+            }
+        });
         return convertView;
+    }
+    public interface OnBillItemClickListener {
+        void onBillItemClick(Bill bill, int position);
+    }
+    private OnBillItemClickListener onBillItemClickListener;
+
+    public void setOnBillItemClickListener(OnBillItemClickListener listener) {
+        this.onBillItemClickListener = listener;
     }
     private int getResourceId(Context context, String resourceName) {
         return context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());

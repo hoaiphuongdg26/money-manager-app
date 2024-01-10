@@ -56,7 +56,6 @@ android:gravity="center"
                 android:gravity="center"
                 android:textColor="@color/MidnightBlue"
                 android:layout_marginBottom="8dp"/>
-
             <CheckBox
                 android:id="@+id/checkbox_vieLanguage"
                 android:layout_width="wrap_content"
@@ -110,7 +109,6 @@ android:gravity="center"
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </LinearLayout>
-
 
     </LinearLayout>
     </FrameLayout>

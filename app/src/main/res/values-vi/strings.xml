@@ -24,7 +24,6 @@
     <string name="English_EN">  Tiếng Anh</string>
     <string name="Vietnamese_VIE">  Tiếng Việt</string>
     <string name="CALENDAR">LỊCH</string>
-    <string name="September_2023">September 2023</string>
     <string name="SUN">CN</string>
     <string name="MON">T2</string>
     <string name="TUE">T3</string>
@@ -42,7 +41,6 @@
     <string name="Color">Màu sắc</string>
     <string name="Import">Thêm</string>
     <string name="EXPENSE">CHI TIÊU</string>
-    <string name="Monday_26_08_2023">Monday, 26/08/2023</string>
     <string name="HEADER">TRANG CHỦ</string>
     <string name="HI_USER">XIN CHÀO</string>
     <string name="Income_Rate">Tỷ lệ thu</string>
@@ -94,6 +92,9 @@
     <string name="Enter_your_username">Nhập tên tài khoản</string>
     <string name="Enter_your_password">Nhập mật khẩu</string>
     <string name="Enter_your_name">Nhập tên</string>
+    <string name="Instruction">Hướng dẫn sử dụng</string>
+    <string name="Feedback_Contact">Đóng góp ý kiến/Liên hệ</string>
+    <string name="Edit_bill">Chỉnh sửa hoá đơn</string>
     <string name="Change_name">Đổi tên</string>
     <string name="Change_password">Đổi mật khẩu</string>
     <string name="Enter_new_name">Nhập tên mới </string>

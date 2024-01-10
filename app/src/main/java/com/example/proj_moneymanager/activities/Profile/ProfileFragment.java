@@ -35,7 +35,6 @@ import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
-import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.DialogChangeNameBinding;
 import com.example.proj_moneymanager.databinding.DialogChangePasswordBinding;
 import com.example.proj_moneymanager.databinding.FragmentProfileBinding;
@@ -72,10 +71,12 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
-        appConfig = new AppConfig(getContext());
-
         lv_profileOption = view.findViewById(R.id.lv_optProfile);
+        appConfig = new AppConfig(getContext());
+        arr_profileOption=new ArrayList<>();
 
+        readUserDataFromLocalStorageTask readUserDataFromLocalStorageTask = new readUserDataFromLocalStorageTask(context, arr_profileOption);
+        readUserDataFromLocalStorageTask.execute();
 
         ProfileAdapter profileAdapter = new ProfileAdapter(
                 requireActivity(),
@@ -137,7 +138,6 @@ public class ProfileFragment extends Fragment {
 //                    }
 //            }
 //        });
-
         return view;
     }
     public void dialogChangeName(final Profile_Option item, int position) {
@@ -211,24 +211,29 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //Xử lý đổi mật khẩu
-
-                 //Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
-                //readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
-//                readFromLocalStorageTask.execute(billItem.getDateTime().getYear(),billItem.getDateTime().getMonth(),billItem.getDateTime().getDate());
-                //callReadFromStorageTaskByDay();
                 //fetch data mới lên remote db
                 DbHelper dbHelper = new DbHelper(getContext());
                 SQLiteDatabase database = dbHelper.getWritableDatabase();
+                userInformation = new UserInformation();
+                userInformation.setUserID(getArguments().getLong("UserID", 0));
                 ContentValues values = new ContentValues();
-                values.put("_password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                values.put("Password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
                 String whereClause = DbContract.UserInformationEntry._ID + "=?";
                 String[] whereArgs = new String[]{
-                        String.valueOf(item.getLabelInfo())
+                        String.valueOf(userInformation.getUserID())
                 };
                 // Thực hiện cập nhật dữ liệu vào local db
                 database.update(DbContract.UserInformationEntry.TABLE_NAME, values, whereClause, whereArgs);
-                userInformation = new UserInformation();
-                userInformation.setUserID(getArguments().getLong("UserID", 0));
+                //Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
+                readUserDataFromLocalStorageTask readUserDataFromLocalStorageTask = new readUserDataFromLocalStorageTask(context, arr_profileOption);
+                readUserDataFromLocalStorageTask.execute();
+                ProfileAdapter profileAdapter = new ProfileAdapter(
+                        requireActivity(),
+                        arr_profileOption
+                );
+                lv_profileOption.setAdapter(profileAdapter);
+
+
                 Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
                 if(cursor.moveToFirst()){
                     int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
@@ -271,6 +276,10 @@ public class ProfileFragment extends Fragment {
                         protected Map<String, String> getParams() throws AuthFailureError {
                             Map<String, String> params = new HashMap<>();
                             params.put("_password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                            params.put("userID", String.valueOf(userInformation.getUserID()));
+                            params.put("fullName", fullName);
+                            params.put("userName", userName);
+                            //params.put("email", email);
                             return params;
                         }
                     };
@@ -282,10 +291,26 @@ public class ProfileFragment extends Fragment {
 
         dialog.show();
     }
-    class readUserDataFromLocal extends AsyncTask<Void, Void, String> {
+    class readUserDataFromLocalStorageTask extends AsyncTask<Void, Void, ArrayList<Profile_Option>> {
+
+        private final ArrayList<Profile_Option> arrayListUser;
+        private Context context;
+        readUserDataFromLocalStorageTask(Context context, ArrayList<Profile_Option> arrayListUser) {
+            this.context = context;
+            this.arrayListUser = arrayListUser;
+        }
+        @Override
+        protected void onPostExecute(ArrayList<Profile_Option> arrResult) {
+            arrResult = arrayListUser;
+            super.onPostExecute(arrResult);
+        }
 
         @Override
-        protected String doInBackground(Void... voids) {
+        protected ArrayList<Profile_Option> doInBackground(Void ... voids) {
+            //arr_profileOption = new ArrayList<Profile_Option>();
+            //if(arrayListUser != null) {arrayListUser.clear();} // Xoá dữ liệu hiện tại để ập nhật lại từ đầu
+            arrayListUser.clear();
+
             DbHelper dbHelper = new DbHelper(getContext());
             SQLiteDatabase database = dbHelper.getWritableDatabase();
             userInformation = new UserInformation();
@@ -302,20 +327,18 @@ public class ProfileFragment extends Fragment {
                 String password = cursor.getString(columnIndexUserPassword);
                 String email = cursor.getString(columnIndexEmail);
 
-
-                arr_profileOption = new ArrayList<Profile_Option>();
+                //arr_profileOption = new ArrayList<Profile_Option>();
                 String hiddenPasswd = "";
                 for(int i = 0; i<password.length();i++) hiddenPasswd+="*";
                 // Thêm vào danh sách
-                arr_profileOption.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
-                arr_profileOption.add(new Profile_Option(getString(R.string.Password), hiddenPasswd, R.drawable.icon_lock));
-                arr_profileOption.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
-                arr_profileOption.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
+                arrayListUser.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
+                arrayListUser.add(new Profile_Option(getString(R.string.Password), hiddenPasswd, R.drawable.icon_lock));
+                arrayListUser.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
+                arrayListUser.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
             }
-            return null;
+            cursor.close();
+            dbHelper.close();
+            return arrayListUser;
         }
-    }
-    private boolean checkNetworkConnection() {
-        return NetworkMonitor.checkNetworkConnection(getContext());
     }
 }

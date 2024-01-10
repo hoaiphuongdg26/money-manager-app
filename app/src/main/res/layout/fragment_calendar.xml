@@ -84,14 +84,14 @@
                 android:layout_weight="2"
                 android:gravity="center"
                 android:id="@+id/btn_datetime_detail"
-                android:text="@string/September_2023"
+                android:text="September_2023"
                 android:fontFamily="@font/sf_pro_text_medium"
                 android:textSize="16sp"
                 android:textColor="@color/black_blue"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/left_forward"
-                app:layout_constraintBottom_toBottomOf="@id/left_forward"
+                app:layout_constraintTop_toTopOf="@id/btnPreviousDay"
+                app:layout_constraintBottom_toBottomOf="@id/btnPreviousDay"
                 style="?android:spinnerStyle"
                 android:onClick="openDatePicker"
                 android:background="@drawable/no_arrow"
@@ -331,6 +331,7 @@
                 android:id="@+id/lv_optHistory"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clickable="true"
                 tools:listitem="@layout/lv_item_history"></ListView>
         </LinearLayout>
     </LinearLayout>

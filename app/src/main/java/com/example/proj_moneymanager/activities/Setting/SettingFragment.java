@@ -43,7 +43,7 @@ public class SettingFragment extends Fragment {
         appConfig = new AppConfig(getContext());
         //appConfig.loadLocale();
 
-        FragmentSettingBinding binding = FragmentSettingBinding.inflate(inflater, container, false);
+        @NonNull FragmentSettingBinding binding = FragmentSettingBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         //Xử lý Setting Adapter cho listview
