@@ -273,7 +273,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
         try {
             Date mDateTime = dateFormat.parse(datetimeString);
-            ContentValues contentValues = MoneyCalculate(UserID,mDateTime.getDate(),mDateTime.getMonth(),mDateTime.getYear(),"Month",getContext());
+            ContentValues contentValues = MoneyCalculate(UserID,mDateTime.getDate(),mDateTime.getMonth(),mDateTime.getYear(),"Month","All",getContext());
             tv_income.setText(MainActivity.formatCurrency((double)contentValues.get("Income")));
             tv_expense.setText(MainActivity.formatCurrency((double)contentValues.get("Expense")));
             tv_total.setText(MainActivity.formatCurrency((double)contentValues.get("Total")));
@@ -289,7 +289,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
         try {
             Date mDateTime = dateFormat.parse(datetimeString);
-            ContentValues contentValues = MoneyCalculate(UserID,mDateTime.getDate(),mDateTime.getMonth(),mDateTime.getYear(),"Day",getContext());
+            ContentValues contentValues = MoneyCalculate(UserID,mDateTime.getDate(),mDateTime.getMonth(),mDateTime.getYear(),"Day", "All",getContext());
             tv_income.setText(MainActivity.formatCurrency((double)contentValues.get("Income")));
             tv_expense.setText(MainActivity.formatCurrency((double)contentValues.get("Expense")));
             tv_total.setText(MainActivity.formatCurrency((double)contentValues.get("Total")));
@@ -654,7 +654,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     }
     //Hàm thống kê income, expense total
     //public static -> các activity khác có thẻ dùng lại. vd biểu đồ
-    public static ContentValues MoneyCalculate(long userid, int day, int month, int year, String calBy, Context context){
+    public static ContentValues MoneyCalculate(long userid, int day, int month, int year, String calBy, String cat, Context context){
         ContentValues contentValues = new ContentValues();
         //Toast.makeText(context.getApplicationContext(), year + " " + Month.of(month+1)+ " "+day,Toast.LENGTH_SHORT).show();
         LocalDate FirstDayOfWeek = LocalDate.of(year + 1, Month.of(month+1),day);
@@ -693,12 +693,13 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
         int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
         int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
-
+        int columnIndexCategoryId = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
         while (cursor.moveToNext()){
             //if (columnIndexMoney != -1) {
             Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
             int userID = cursor.getInt(columnIndexUserID);
             double money = cursor.getDouble(columnIndexMoney);
+            String categoryId = cursor.getString(columnIndexCategoryId);
             if(userID == userid)
             {
                 if(calBy!="Week"){
@@ -708,28 +709,36 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                                 if(calBy!="Month"){
                                     if(day == DateTime.getDate())
                                         //Xét theo ngày
-                                        if (money < 0) Expense += money;
-                                        else Income += money;
+                                        if (cat.equals("All")||categoryId.equals(cat)) {
+                                            if (money < 0) Expense += money;
+                                            else Income += money;
+                                        }
                                 }
                                 else{
                                     //Xét theo tháng
-                                    if (money < 0) Expense += money;
-                                    else Income += money;
+                                    if (cat.equals("All")||categoryId.equals(cat)) {
+                                        if (money < 0) Expense += money;
+                                        else Income += money;
+                                    }
                                 }
                             }
                         }
                         else{
                             //Xét theo năm
-                            if (money < 0) Expense += money;
-                            else Income += money;
+                            if (cat.equals("All")||categoryId.equals(cat)) {
+                                if (money < 0) Expense += money;
+                                else Income += money;
+                            }
                         }
                     }
                 }
                 else{
                     //Xét theo tuần
                     if(isDateInWeek(DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),FirstDayOfWeek)){
-                        if (money < 0) Expense += money;
-                        else Income += money;
+                        if (cat.equals("All") || categoryId.equals(cat)) {
+                            if (money < 0) Expense += money;
+                            else Income += money;
+                        }
                     }
                 }
             }
