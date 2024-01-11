@@ -155,7 +155,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        app:layout_constraintGuide_end="205dp" />
+                        app:layout_constraintGuide_percent="0.50121653" />
 
                     <TextView
                         android:id="@+id/textview_rateMid"
@@ -206,7 +206,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:fontFamily="@font/sf_pro_text_medium"
-                            android:text="@string/Recent_transactions"
+                            android:text="@string/Today_transactions"
                             android:textColor="@color/blue"
                             android:textSize="16dp"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -228,7 +228,30 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="5.5"></LinearLayout>
+                    android:layout_weight="5.5"
+                    android:orientation="vertical">
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <TextView
+                            android:id="@+id/tv_NoTransactionFound"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20dp"
+                            android:visibility="gone"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:text="You haven't made any transaction yet">
+                        </TextView>
+                        <ListView
+                            android:id="@+id/lv_Today_transactions"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                        </ListView>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

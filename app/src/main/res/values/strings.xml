@@ -43,7 +43,7 @@
     <string name="HEADER">HEADER</string>
     <string name="HI_USER">HI USER</string>
     <string name="Income_Rate">Income Rate</string>
-    <string name="Recent_transactions">Recent transactions</string>
+    <string name="Today_transactions">Today transactions</string>
     <string name="Historical_documentation">Historical documentation</string>
     <string name="Operation">Operation</string>
     <string name="Income_Expanse">Income/Expanse</string>

@@ -2,16 +2,27 @@ package com.example.proj_moneymanager.activities.Statistic;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -22,18 +33,29 @@ import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.Object.Category;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
+import com.example.proj_moneymanager.databinding.DialogBillEditBinding;
+import com.example.proj_moneymanager.databinding.DialogCategoryLinechartBinding;
 import com.example.proj_moneymanager.databinding.FragmentStatisticBinding;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.ChartTouchListener;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,19 +77,47 @@ public class StatisticFragment extends Fragment {
     ArrayList<Bill> arrBill_All;
     ArrayList<Category> categories;
     ArrayList<ContentValues> arrMonths, arrYears, arrMonth, arrWeek, arrCategory;
+    ArrayList<ArrayList<ContentValues>> arrCategoryWeek, arrCategoryYear, arrCategoryMonth;
     BarChart MPbarChart;
     PieChart MPPieChart1, MPPieChart2;
-
+    ContentValues contentValues = new ContentValues();
     int[] CategoryColorArray;
+    BroadcastReceiver receiver;
+    IntentFilter intentFilter = new IntentFilter();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         binding = FragmentStatisticBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+
+        intentFilter.addAction("CALCULATE_COMPLETE");
+        getActivity().registerReceiver(receiver,intentFilter);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String calBy = intent.getExtras().getString("CalBy");
+                if((double)contentValues.get("Income")!=0 || (double)contentValues.get("Expense")!=0){
+                    DrawBarChartIncomeExpense(calBy);
+                    DrawPieChart1(calBy,(double)contentValues.get("Income"),(double)contentValues.get("Expense"));
+                    DrawPieChart2(calBy);
+                }else {
+                    MPbarChart.clear();
+                    MPPieChart1.clear();
+                    MPPieChart2.clear();
+                    MPPieChart1.setNoDataText("No bill data for this "+ calBy);
+                    MPPieChart2.setNoDataText("No bill data for this "+ calBy);
+                    MPbarChart.setNoDataText("No bill data for this "+ calBy);
+                }
+            }
+        };
         MPbarChart = binding.barChart;
         MPPieChart1 = binding.IncomeExpensePieChart;
         MPPieChart2 = binding.CategoryPieChart;
+        MPPieChart1.setNoDataText("Loading data");
+        MPPieChart2.setNoDataText("Loading data");
+        MPbarChart.setNoDataText("Loading data");
+        MPbarChart.getAxisRight().setEnabled(false);
         UserID = getArguments().getLong("UserID", 0);
 
         // Xử lý chọn tháng nhanh
@@ -85,34 +135,35 @@ public class StatisticFragment extends Fragment {
         readCategoryFromLocalStorage.execute();
         CategoryColorArray = new int[]{
                 ContextCompat.getColor(getContext(), R.color.MidnightBlue),ContextCompat.getColor(getContext(), R.color.light_gray2),
-                ContextCompat.getColor(getContext(), R.color.blue), ContextCompat.getColor(getContext(), R.color.NavyBlue),
+                ContextCompat.getColor(getContext(), R.color.red),ContextCompat.getColor(getContext(), R.color.blue),
+                 ContextCompat.getColor(getContext(), R.color.NavyBlue),ContextCompat.getColor(getContext(), R.color.light_silver),
                 ContextCompat.getColor(getContext(), R.color.black_blue), ContextCompat.getColor(getContext(), R.color.teal_200),
                 ContextCompat.getColor(getContext(), R.color.light_blue), ContextCompat.getColor(getContext(), R.color.purple_200),
                 ContextCompat.getColor(getContext(), R.color.light_gray), ContextCompat.getColor(getContext(), R.color.purple_700),
-                ContextCompat.getColor(getContext(), R.color.white), ContextCompat.getColor(getContext(), R.color.red),
-                ContextCompat.getColor(getContext(), R.color.light_silver),
-        };
-        //Lấy tất cả các bill của user
-//        readBillFromLocalStorage readBillFromLocalStorage = new readBillFromLocalStorage(getContext(), arrBill_All);
-//        readBillFromLocalStorage.execute(-1,-1,-1);
+                ContextCompat.getColor(getContext(), R.color.white),
 
-        calculate(false,true);
+        };
+        calculate cal = new calculate(getContext());
+        cal.execute(false,false);
         Btn_cal_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calculate(false,true);
+                calculate cal = new calculate(getContext());
+                cal.execute(false,true);
             }
         });
         Btn_cal_month.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calculate(false,false);
+                calculate cal = new calculate(getContext());
+                cal.execute(false,false);
             }
         });
         Btn_cal_year.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calculate(true,false);
+                calculate cal = new calculate(getContext());
+                cal.execute(true,false);
             }
         });
 
@@ -136,6 +187,15 @@ public class StatisticFragment extends Fragment {
                     CategoryContentvalue.put(c.getName(),(double)contentValues.get("Total"));
                     arrCategory.add(CategoryContentvalue);
                 }
+                arrCategoryMonth = new ArrayList<>();
+                for(int i = 0; i < localDate.lengthOfMonth(); i++){
+                    ArrayList<ContentValues> dayIndex = new ArrayList<>();
+                    for(Category c:categories){
+                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,i + 1,month,year,"Day",c.getID(),getContext());
+                        dayIndex.add(contentValues);
+                    }
+                    arrCategoryMonth.add(dayIndex);
+                }
             }
             //Ngày trong tuần
             if(Objects.equals(calBy, "Week")){
@@ -153,6 +213,16 @@ public class StatisticFragment extends Fragment {
                     CategoryContentvalue.put(c.getName(),(double)contentValues.get("Total"));
                     arrCategory.add(CategoryContentvalue);
                 }
+                arrCategoryWeek = new ArrayList<>();
+                for(int i = 0; i<7;i++){
+                    ArrayList<ContentValues> dayIndex = new ArrayList<>();
+                    for(Category c:categories){
+                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,firstWeekDay.plusDays(i).getDayOfMonth(),
+                                firstWeekDay.plusDays(i).getMonthValue()-1,firstWeekDay.plusDays(i).getYear()-1,"Day",c.getID(),getContext());
+                        dayIndex.add(contentValues);
+                    }
+                    arrCategoryWeek.add(dayIndex);
+                }
             }
             if(calBy.equals("Year")){
                 //Tháng trong năm
@@ -168,8 +238,16 @@ public class StatisticFragment extends Fragment {
                     CategoryContentvalue.put(c.getName(),(double)contentValues.get("Total"));
                     arrCategory.add(CategoryContentvalue);
                 }
+                arrCategoryYear = new ArrayList<>();
+                for(int i = 0; i < 12; i++) {
+                    ArrayList<ContentValues> monthIndex = new ArrayList<>();
+                    for(Category c:categories){
+                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,i,year,"Month",c.getID(),getContext());
+                        monthIndex.add(contentValues);
+                    }
+                    arrCategoryYear.add(monthIndex);
+                }
             }
-
             //Tất cả các năm
         if (arrBill_All.size() > 0) {
 
@@ -256,86 +334,85 @@ public class StatisticFragment extends Fragment {
         //default should never happen
         return "JAN";
     }
-    private void calculate(boolean byYear, boolean byWeek){
-        String datetimeString = monthYearText.getText().toString();
+    private class calculate extends AsyncTask<Boolean,Void,String>{
+        Context context;
         String calBy;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
-        try {
-            Date DateTime = dateFormat.parse(datetimeString);
-            int month = DateTime.getMonth(), day = DateTime.getDate();
-            if(!byYear) {
-                if(byWeek)
-                    calBy = "Week";
-                else calBy = "Month";
-            }
-            else {
-                calBy = "Year";
-            }
-            Day = LocalDate.of(DateTime.getYear() + 1, Month.of(month +1),day);
-            int firstDayOfWeek;
-            switch(Day.getDayOfWeek()){
-                case MONDAY:
-                    firstDayOfWeek = 1;
-                    break;
-                case TUESDAY:
-                    firstDayOfWeek = 2;
-                    break;
-                case WEDNESDAY:
-                    firstDayOfWeek = 3;
-                    break;
-                case THURSDAY:
-                    firstDayOfWeek = 4;
-                    break;
-                case FRIDAY:
-                    firstDayOfWeek = 5;
-                    break;
-                case SATURDAY:
-                    firstDayOfWeek = 6;
-                    break;
-                default:
-                    firstDayOfWeek = 0;
-                    break;
-            }
-            firstWeekDay = Day.minusDays(firstDayOfWeek);
-            ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID, day,
-                    month, DateTime.getYear(), calBy, "All",getContext());
-            getDataset(day, month,DateTime.getYear(),calBy);
-            binding.textviewIncome.setText(MainActivity.formatCurrency((double)contentValues.get("Income")));
-            binding.textviewExpense.setText(MainActivity.formatCurrency((double)contentValues.get("Expense")));
-            binding.textviewTotal.setText(MainActivity.formatCurrency((double)contentValues.get("Total")));
-
-            if((double)contentValues.get("Income")!=0|| (double)contentValues.get("Expense")!=0){
-                DrawBarChartIncomeExpense(calBy);
-                DrawPieChart1(calBy,(double)contentValues.get("Income"),(double)contentValues.get("Expense"));
-                DrawPieChart2(calBy);
-            }else {
-                MPbarChart.clear();
-                MPPieChart1.clear();
-                MPPieChart2.clear();
-                MPPieChart1.setNoDataText("No bill data for this "+ calBy);
-                MPPieChart2.setNoDataText("No bill data for this "+ calBy);
-                MPbarChart.setNoDataText("No bill data for this "+ calBy);
-            }
-        }catch (ParseException e){
-
+        public calculate(Context context){
+            this.context = context;
+        }
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Intent intent = new Intent();
+            intent.setAction("CALCULATE_COMPLETE");
+            intent.putExtra("CalBy",calBy);
+            context.sendBroadcast(intent);
+        }
+        @Override
+        protected String doInBackground(Boolean... booleans) {
+            boolean byYear = booleans[0],byWeek = booleans[1];
+            String datetimeString = monthYearText.getText().toString();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
+            try {
+                Date DateTime = dateFormat.parse(datetimeString);
+                int month = DateTime.getMonth(), day = DateTime.getDate();
+                if(!byYear) {
+                    if(byWeek)
+                        calBy = "Week";
+                    else calBy = "Month";
+                }
+                else {
+                    calBy = "Year";
+                }
+                Day = LocalDate.of(DateTime.getYear() + 1, Month.of(month +1),day);
+                int firstDayOfWeek;
+                switch(Day.getDayOfWeek()){
+                    case MONDAY:
+                        firstDayOfWeek = 1;
+                        break;
+                    case TUESDAY:
+                        firstDayOfWeek = 2;
+                        break;
+                    case WEDNESDAY:
+                        firstDayOfWeek = 3;
+                        break;
+                    case THURSDAY:
+                        firstDayOfWeek = 4;
+                        break;
+                    case FRIDAY:
+                        firstDayOfWeek = 5;
+                        break;
+                    case SATURDAY:
+                        firstDayOfWeek = 6;
+                        break;
+                    default:
+                        firstDayOfWeek = 0;
+                        break;
+                }
+                firstWeekDay = Day.minusDays(firstDayOfWeek);
+                contentValues = CalendarFragment.MoneyCalculate(UserID, day,
+                        month, DateTime.getYear(), calBy, "All",getContext());
+                getDataset(day, month,DateTime.getYear(),calBy);
+                binding.textviewIncome.setText(MainActivity.formatCurrency((double)contentValues.get("Income")));
+                binding.textviewExpense.setText(MainActivity.formatCurrency((double)contentValues.get("Expense")));
+                binding.textviewTotal.setText(MainActivity.formatCurrency((double)contentValues.get("Total")));
+            }catch (ParseException e){}
+            return null;
         }
     }
-    //Xử lí Chart (Bar dọc)
-    //3 Dataset theo Income và Expense: week, month, months
-    //Hàm calculate sẽ gọi tới nó
     private ArrayList<BarEntry> barEntriesIncome(String calBy){
         ArrayList<BarEntry> barEntries = new ArrayList<>();
-        if(calBy == "Year"){
+        if(calBy.equals("Year")){
             for (ContentValues c : arrMonths) {
                 barEntries.add(new BarEntry(arrMonths.indexOf(c)+1,Float.parseFloat(String.valueOf(c.get("Income")))));
             }
         }
-        if(calBy == "Month"){
+        if(calBy.equals("Month")){
             for (ContentValues c : arrMonth) {
                 barEntries.add(new BarEntry(arrMonth.indexOf(c) + 1,Float.parseFloat(String.valueOf( c.get("Income")))));
             }
         }
-        if(calBy == "Week"){
+        if(calBy.equals("Week")){
             for (ContentValues c : arrWeek) {
                 barEntries.add(new BarEntry(arrWeek.indexOf(c)+1,Float.parseFloat(String.valueOf( c.get("Income")))));
             }
@@ -374,13 +451,13 @@ public class StatisticFragment extends Fragment {
         String[] timeLabel = new String[]{};
         float visibleRangeMaximum = 5;
         if(Objects.equals(calBy, "Month")){
-            visibleRangeMaximum = 7;
+            visibleRangeMaximum = 15;
             timeLabel = null;
             timeLabel = new String[31];
             for(int i=0;i<arrMonth.size();i++) timeLabel[i] = String.valueOf(i+1);
         }
         if(Objects.equals(calBy, "Year")) {
-            visibleRangeMaximum = 4;
+            visibleRangeMaximum = 6;
             timeLabel = null;
             timeLabel = new String[12];
             for (int i = 0; i < 12; i++) timeLabel[i] = getMonthFormat(i + 1);
@@ -396,13 +473,15 @@ public class StatisticFragment extends Fragment {
         xAxis.setValueFormatter(new IndexAxisValueFormatter(timeLabel));
         xAxis.setCenterAxisLabels(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1);
+        xAxis.setGranularity(1f);
         xAxis.setGranularityEnabled(true);
+        if(!calBy.equals("Month")) xAxis.setLabelRotationAngle(-35);
+        else xAxis.setLabelRotationAngle(0);
 
         MPbarChart.setDragEnabled(true);
         //MPbarChart.setVisibleXRangeMaximum(visibleRangeMaximum);
         MPbarChart.setVisibleXRange(4,visibleRangeMaximum);
-        MPbarChart.setAutoScaleMinMaxEnabled(true);
+        MPbarChart.setAutoScaleMinMaxEnabled(false);
         float barSpace = 0.10f;
         float groupSpace = 0.10f;
         barData.setBarWidth(0.35f);
@@ -418,6 +497,7 @@ public class StatisticFragment extends Fragment {
         MPbarChart.getAxisLeft().setAxisMinimum(0);
         MPbarChart.groupBars(0,groupSpace,barSpace);
         MPbarChart.setDoubleTapToZoomEnabled(false);
+        MPbarChart.animateXY(450,450);
         MPbarChart.invalidate();
     }
     private ArrayList<PieEntry> pieEntriesExpense(double Income,double Expense){
@@ -439,13 +519,27 @@ public class StatisticFragment extends Fragment {
         MPPieChart1.setUsePercentValues(true);
         MPPieChart1.setCenterText("This "+ calBy);
         MPPieChart1.setCenterTextColor(Color.BLUE);
+        Description description = new Description();
+        description.setText("");
+        MPPieChart1.setDescription(description);
+        MPPieChart1.animateXY(600,700);
         MPPieChart1.invalidate();
+        MPPieChart1.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                PieEntry pe = (PieEntry) e;
+                MPPieChart1.setCenterText(pe.getLabel() + ":\n"+ e.getY());
+                dialogCategoryLineChart(pe.getLabel(),calBy);
+            }
+            @Override
+            public void onNothingSelected() {
+            }
+        });
     }
     private ArrayList<PieEntry> pieEntryCategory(ArrayList<ContentValues> contentValues){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
         for(int i = 0;i<contentValues.size();i++){
             double total =  (double)contentValues.get(i).get(categories.get(i).getName());
-            Toast.makeText(getContext(),total+ "",Toast.LENGTH_SHORT).show();
             if(total< 0 ) total *=-1;
             pieEntries.add(new PieEntry((float) total,categories.get(i).getName()));
         }
@@ -463,6 +557,131 @@ public class StatisticFragment extends Fragment {
         MPPieChart2.setUsePercentValues(true);
         MPPieChart2.setCenterText("This "+ calBy);
         MPPieChart2.setCenterTextColor(Color.BLUE);
+        Description description = new Description();
+        description.setText("");
+        MPPieChart2.setDescription(description);
+        MPPieChart2.animateXY(525,525);
         MPPieChart2.invalidate();
+        MPPieChart2.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                PieEntry pe = (PieEntry) e;
+                MPPieChart2.setCenterText(pe.getLabel() + ":\n"+ e.getY());
+                MPPieChart2.setCenterTextColor(CategoryColorArray[pieDataSet.getEntryIndex(e)]);
+            }
+            @Override
+            public void onNothingSelected() {
+                MPPieChart2.setCenterText("This "+ calBy);
+                MPPieChart2.setCenterTextColor(Color.BLUE);
+            }
+        });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(receiver,intentFilter);
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(receiver!=null)
+            getActivity().unregisterReceiver(receiver);
+    }
+    public ArrayList<Entry> getLineValues(int categoryIndex, String calBy, String type){
+        ArrayList<Entry> data = new ArrayList<>();
+        if(calBy.equals("Week")){
+            for(int i = 0;i < 7;i++){
+                double d = (double) arrCategoryWeek.get(i).get(categoryIndex).get(type);
+                if(d<0) d*=-1;
+                data.add(new Entry(i, (float) d));
+            }
+        }
+        if(calBy.equals("Month")){
+            for(int i = 0;i < arrMonth.size() ;i++){
+                double d = (double) arrCategoryMonth.get(i).get(categoryIndex).get(type);
+                if(d<0) d*=-1;
+                data.add(new Entry(i, (float) d));
+            }
+        }
+        if(calBy.equals("Year")){
+            for(int i = 0;i < arrMonths.size();i++){
+                double d = (double) arrCategoryYear.get(i).get(categoryIndex).get(type);
+                if(d<0) d*=-1;
+                data.add(new Entry(i, (float) d));
+            }
+        }
+        return data;
+    }
+    public void DrawLineChart(LineChart lineChart, String calBy, String type){
+        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+        for(Category c: categories){
+            LineDataSet lineDataSet = new LineDataSet(getLineValues(categories.indexOf(c),calBy,type),c.getName());
+            lineDataSet.setColor(CategoryColorArray[categories.indexOf(c)]);
+            lineDataSet.setLineWidth(1.1f);
+            lineDataSet.setDrawCircles(false);
+            dataSets.add(lineDataSet);
+        }
+        String[] timeLabel = new String[]{};
+        float visibleRangeMaximum = 7;
+        if(Objects.equals(calBy, "Month")){
+            visibleRangeMaximum = 15;
+            timeLabel = null;
+            timeLabel = new String[31];
+            for(int i=0;i<arrMonth.size();i++) timeLabel[i] = String.valueOf(i+1);
+        }
+        if(Objects.equals(calBy, "Year")) {
+            visibleRangeMaximum = 6;
+            timeLabel = null;
+            timeLabel = new String[12];
+            for (int i = 0; i < 12; i++) timeLabel[i] = getMonthFormat(i + 1);
+        }
+        if(Objects.equals(calBy, "Week")){
+            visibleRangeMaximum = 4;
+            timeLabel = null;
+            timeLabel = new String[] {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+        }
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(timeLabel));
+        xAxis.setCenterAxisLabels(false);
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        lineChart.setVisibleXRangeMaximum(visibleRangeMaximum);
+        LineData data = new LineData(dataSets);
+        lineChart.setData(data);
+        lineChart.getAxisRight().setEnabled(false);
+        lineChart.animateXY(500,500);
+        Description description = new Description();
+        description.setText(type);
+        lineChart.setHorizontalScrollBarEnabled(true);
+        lineChart.setDescription(description);
+        if(!calBy.equals("Month")) xAxis.setLabelRotationAngle(-35);
+        else xAxis.setLabelRotationAngle(0);
+        lineChart.invalidate();
+    }
+    public void dialogCategoryLineChart(String type, String calBy) {
+        final Dialog dialog = new Dialog(getContext());
+        //dialog.setTitle(getString(R.string.Edit_bill));
+
+        @NonNull DialogCategoryLinechartBinding linechartBinding = DialogCategoryLinechartBinding.inflate(getLayoutInflater());
+        View viewDialogLineChart = linechartBinding.getRoot();
+        dialog.setContentView(viewDialogLineChart);
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            // Lấy kích thước màn hình
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            window.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int dialogWidth = (int) (displayMetrics.widthPixels * 0.95);
+            int dialogHeight = (int) (displayMetrics.heightPixels * 0.6);
+            // Đặt kích thước cho Dialog
+            layoutParams.copyFrom(window.getAttributes());
+            layoutParams.width = dialogWidth;
+            layoutParams.height = dialogHeight;
+            window.setAttributes(layoutParams);
+        }
+        linechartBinding.tvLineChartTitle.setText(type+ " of "+calBy);
+        DrawLineChart(linechartBinding.MPLineChart,calBy,type);
+        dialog.show();
+        MPPieChart1.setSelected(false);
     }
 }

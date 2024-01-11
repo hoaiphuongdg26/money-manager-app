@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
 import com.example.proj_moneymanager.Object.Bill;
+import com.example.proj_moneymanager.activities.HomeFragment;
 import com.example.proj_moneymanager.activities.Statistic.StatisticFragment;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
@@ -19,13 +20,16 @@ public class readBillFromLocalStorage extends AsyncTask<Integer, Void, ArrayList
     private Context context;
     // Constructor nhận danh sách category từ bên ngoài
     public readBillFromLocalStorage(Context context, ArrayList<Bill> arrayListBill) {
-        this.context =context;
+        this.context = context;
         this.arrayListBill = arrayListBill;
     }
     @Override
     protected void onPostExecute(ArrayList<Bill> arrResult) {
         arrResult = arrayListBill;
         super.onPostExecute(arrResult);
+        Intent intent = new Intent();
+        intent.setAction("GET_BILL_COMPLETE");
+        context.sendBroadcast(intent);
     }
     @Override
     protected void onProgressUpdate(Void... values) {

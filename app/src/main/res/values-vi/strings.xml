@@ -44,7 +44,7 @@
     <string name="HEADER">TRANG CHỦ</string>
     <string name="HI_USER">XIN CHÀO</string>
     <string name="Income_Rate">Tỷ lệ thu</string>
-    <string name="Recent_transactions">Giao dịch gần đây</string>
+    <string name="Today_transactions">Giao dịch hôm nay</string>
     <string name="Historical_documentation">Lịch sử</string>
     <string name="Operation">Chức năng</string>
     <string name="Income_Expanse">Thu/Chi</string>
