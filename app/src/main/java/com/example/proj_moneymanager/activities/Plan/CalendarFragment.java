@@ -521,7 +521,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             params.dimAmount = 0.7f; // Giả sử bạn muốn mức độ dim là 70%
             window.setAttributes(params);
         }
-
+        CategoryID = billItem.getCategoryID();
         bindingDialogEdit.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
