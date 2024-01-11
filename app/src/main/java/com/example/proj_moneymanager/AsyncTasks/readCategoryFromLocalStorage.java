@@ -19,6 +19,16 @@ public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> 
         this.context =context;
         this.arrayListCategory = arrayListCategory;
     }
+    private TaskListener taskListener;
+
+    public interface TaskListener {
+        void onFinished();
+    }
+
+    public void setTaskListener(TaskListener listener) {
+        this.taskListener = listener;
+    }
+
     @Override
     protected String doInBackground(Void... voids) {
         if (arrayListCategory == null) {
@@ -65,5 +75,8 @@ public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> 
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
+        if (taskListener != null) {
+            taskListener.onFinished();
+        }
     }
 }

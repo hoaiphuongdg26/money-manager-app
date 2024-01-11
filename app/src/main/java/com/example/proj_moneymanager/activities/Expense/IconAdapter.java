@@ -12,6 +12,11 @@ import com.example.proj_moneymanager.R;
 
 public class IconAdapter extends BaseAdapter {
     private static Context context;
+    public IconAdapter(Context context) {
+        this.context = context;
+    }
+    private OnIconClickListener iconClickListener;
+    private OnIconSelectedListener iconSelectedListener;
 
     // Danh sách các màu 30dpx30dp
     private static int[] iconDrawables = {
@@ -43,6 +48,26 @@ public class IconAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+    public IconAdapter(EditCategoryAdapter editCategoryAdapter) {
+        context = editCategoryAdapter.getContext();
+        this.iconClickListener = editCategoryAdapter;
+    }
+    // Define a listener interface to notify the selected icon
+    public interface OnIconSelectedListener {
+        void onIconSelected(int iconDrawableId);
+    }
+    private void notifyIconSelectedListener(int iconDrawableId) {
+        if (iconSelectedListener != null) {
+            iconSelectedListener.onIconSelected(iconDrawableId);
+        }
+    }
+    public interface OnIconClickListener {
+        void onIconClick(String iconDescription);
+    }
+    public IconAdapter(NewCategoryFragment context, IconAdapter.OnIconClickListener iconClickListener) {
+        this.context = context.requireContext();
+        this.iconClickListener = iconClickListener;
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -102,24 +127,5 @@ public class IconAdapter extends BaseAdapter {
         }// Notify the listener with the selected icon
     }
 
-    // Define a listener interface to notify the selected icon
-    public interface OnIconSelectedListener {
-        void onIconSelected(int iconDrawableId);
-    }
 
-    private IconAdapter.OnIconSelectedListener iconSelectedListener;
-    private void notifyIconSelectedListener(int iconDrawableId) {
-        if (iconSelectedListener != null) {
-            iconSelectedListener.onIconSelected(iconDrawableId);
-        }
-    }
-    public interface OnIconClickListener {
-        void onIconClick(String iconDescription);
-    }
-
-    private IconAdapter.OnIconClickListener iconClickListener;
-    public IconAdapter(NewCategoryFragment context, IconAdapter.OnIconClickListener iconClickListener) {
-        this.context = context.requireContext();
-        this.iconClickListener = iconClickListener;
-    }
 }

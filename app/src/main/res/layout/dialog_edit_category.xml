@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".activities.Expense.NewCategoryFragment">
+    tools:context=".activities.Expense.NewCategoryFragment"
+    android:layout_margin="10dp"
+    >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -115,55 +117,44 @@
                     />
                 <LinearLayout
                     android:id="@+id/action"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:weightSum="3"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBaseline_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/gridview_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     >
-                <Button
-                    android:id="@+id/btn_saveCategory"
-                    android:layout_width="140dp"
-                    android:layout_height="40dp"
-                    style="@style/ButtonStyle"
-                    android:text="@string/Save"
-                    android:textSize="20sp"
-                    android:layout_marginBottom="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintVertical_bias="0.5"
-                    >
-                </Button>
+
                 <Button
                     android:id="@+id/btn_cancelCategory"
-                    android:layout_width="140dp"
-                    android:layout_height="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
                     style="@style/ButtonStyle"
                     android:text="@string/Cancel"
-                    android:textSize="20sp"
                     android:layout_marginBottom="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintVertical_bias="0.5"
+                    android:layout_marginHorizontal="10dp"
                     >
                 </Button>
                 <Button
                     android:id="@+id/btn_deleteCategory"
-                    android:layout_width="140dp"
-                    android:layout_height="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
                     style="@style/ButtonStyle"
                     android:text="@string/Delete"
-                    android:textSize="20sp"
                     android:layout_marginBottom="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintVertical_bias="0.5"
+                    android:layout_marginHorizontal="10dp"
+                    >
+                </Button>
+                    <Button
+                    android:id="@+id/btn_saveCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    style="@style/ButtonStyle"
+                    android:text="@string/Save"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginHorizontal="10dp"
                     >
                 </Button>
                 </LinearLayout>

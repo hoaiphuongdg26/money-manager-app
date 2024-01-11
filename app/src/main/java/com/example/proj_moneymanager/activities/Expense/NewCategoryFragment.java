@@ -109,12 +109,11 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
                                 JSONObject jsonObject = new JSONObject(response);
                                 String Response= jsonObject.getString("response");
                                 if (Response.equals("OK")){
-                                    Toast.makeText(getContext(), "Insert: " + "Name: " + name + ", Icon: " + icon + ", Color: " + color, Toast.LENGTH_LONG).show();
-                                    dbHelper.updateCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_OK, database);
-                                    Toast.makeText(getContext(), getString(R.string.Insert) + ": " + getString(R.string.Name)+": " + name + ", "+getString(R.string.Icon)+": " + icon + ", "+getString(R.string.Color)+": " + color, Toast.LENGTH_LONG).show();
-//                                    Toast.makeText(getContext(), "Import successful", Toast.LENGTH_LONG).show();
+//                                    Toast.makeText(getContext(), "Insert: " + "Name: " + name + ", Icon: " + icon + ", Color: " + color, Toast.LENGTH_LONG).show();
+                                    dbHelper.updateSyncCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_OK, database);
+                                    Toast.makeText(getContext(), "Import online successful", Toast.LENGTH_LONG).show();
                                 }else {
-                                    dbHelper.updateCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_FAILED, database);
+                                    dbHelper.updateSyncCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_FAILED, database);
                                     Toast.makeText(getContext(),getString(R.string.Import_failed), Toast.LENGTH_LONG).show();
                                 }
                             }catch (JSONException e){
@@ -127,8 +126,8 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    String errorMessage = "Error occurred during import Category";
-                    dbHelper.updateCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_FAILED, database);
+                    String errorMessage = "Error occurred during import online Category";
+                    dbHelper.updateSyncCategoryInLocalDatabase(CategoryID, DbContract.SYNC_STATUS_FAILED, database);
                     if (error != null && error.getMessage() != null) {
                         errorMessage = error.getMessage();
                     }
@@ -145,6 +144,7 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
                     params.put("name", name);
                     params.put("icon", icon);
                     params.put("color", color);
+                    params.put("method", "INSERT");
                     return params;
                 }
             };

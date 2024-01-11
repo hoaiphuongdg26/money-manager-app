@@ -318,11 +318,10 @@
                     />
                 <Button
                     android:id="@+id/btn_import"
-                    android:layout_width="140dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="35dp"
                     style="@style/ButtonStyle"
                     android:text="@string/Import"
-                    android:textSize="20sp"
                     android:layout_marginBottom="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

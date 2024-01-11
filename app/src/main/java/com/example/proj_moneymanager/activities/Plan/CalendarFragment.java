@@ -43,6 +43,7 @@ import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
+import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.databinding.DialogBillEditBinding;
 import com.example.proj_moneymanager.databinding.FragmentCalendarBinding;
 
@@ -219,50 +220,60 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
                 int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
 
-                while (cursor.moveToNext()) {
-                    // Check if the column indices are valid before accessing the values
-                    if (columnIndexNote != -1 && columnIndexMoney != -1) {
-                        Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-                        billID = cursor.getString(columnIndexBillID);
-                        UserID = cursor.getInt(columnIndexUserID);
-                        String categoryID = cursor.getString(columnIndexCategoryID);
-                        long money = cursor.getLong(columnIndexMoney);
-                        String note = cursor.getString(columnIndexNote);
-                        int sync = cursor.getInt(columnIndexSyncStatus);
-                        if(params[0]!=-1){
-                            if(DateTime.getYear() == params[0]){
-                                if(params[1]!=-1){
-                                    if(DateTime.getMonth() == params[1]){
-                                        if(params[2]!=-1){
-                                            if(DateTime.getDate()==params[2]){
-                                                //Tính theo ngày
+                try {
+                    while (cursor.moveToNext()) {
+                        // Check if the column indices are valid before accessing the values
+                        if (columnIndexNote != -1 && columnIndexMoney != -1) {
+                            Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+                            billID = cursor.getString(columnIndexBillID);
+                            UserID = cursor.getInt(columnIndexUserID);
+                            String categoryID = cursor.getString(columnIndexCategoryID);
+                            long money = cursor.getLong(columnIndexMoney);
+                            String note = cursor.getString(columnIndexNote);
+                            int sync = cursor.getInt(columnIndexSyncStatus);
+                            if (params[0] != -1) {
+                                if (DateTime.getYear() == params[0]) {
+                                    if (params[1] != -1) {
+                                        if (DateTime.getMonth() == params[1]) {
+                                            if (params[2] != -1) {
+                                                if (DateTime.getDate() == params[2]) {
+                                                    //Tính theo ngày
+                                                    // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
+                                                    Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
+                                                    // Thêm vào danh sách
+                                                    arrayListBill.add(bill);
+                                                }
+                                            } else {
                                                 // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
-                                                Bill bill = new Bill(billID, UserID,categoryID, note,  DateTime, money, sync);
-                                                // Thêm vào danh sách
+                                                Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
                                                 arrayListBill.add(bill);
                                             }
-                                        } else {
-                                            // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
-                                            Bill bill = new Bill(billID, UserID,categoryID, note,  DateTime, money, sync);
-                                            arrayListBill.add(bill);
                                         }
+                                    } else {
+                                        //Tính theo năm
+                                        // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
+                                        Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
+                                        arrayListBill.add(bill);
                                     }
-                                } else{
-                                    //Tính theo năm
-                                    // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
-                                    Bill bill = new Bill(billID, UserID,categoryID, note,  DateTime, money, sync);
-                                    arrayListBill.add(bill);
                                 }
+                            } else {
+                                //lấy tất cả
+                                // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
+                                Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
+                                // Thêm vào danh sách
+                                arrayListBill.add(bill);
                             }
                         } else {
-                            //lấy tất cả
-                            // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
-                            Bill bill = new Bill(billID, UserID,categoryID, note,  DateTime, money, sync);
-                            // Thêm vào danh sách
-                            arrayListBill.add(bill);
+                            // Handle the case where the column indices are not found
                         }
-                    } else {
-                        // Handle the case where the column indices are not found
+                    }
+                } finally {
+                    // Đảm bảo đóng Cursor và Database trong khối finally
+                    if (cursor != null && !cursor.isClosed()) {
+                        cursor.close();
+                    }
+                    if (database != null && database.isOpen()) {
+                        database.close();
                     }
                 }
             return arrayListBill;
@@ -554,23 +565,27 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                                         JSONObject jsonObject = new JSONObject(response);
                                         String serverResponse = jsonObject.getString("response");
                                         if (serverResponse.equals("OK")) {
-                                            Toast.makeText(getContext(), "UPDATE COMPLETELY", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getContext(), getString(R.string.Saved), Toast.LENGTH_LONG).show();
                                         }
                                         else{
                                             //neu server tra về "fail"
-                                            Toast.makeText(getContext(),serverResponse,Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getContext(),getString(R.string.SavedOffline) + serverResponse,Toast.LENGTH_LONG).show();
                                             Log.d("Update response error",serverResponse);
                                             //khong lam gì cả
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+                                    finally {
+                                        cursor.close();
+                                        dbHelper.close();
+                                    }
                                 }
                             }, new Response.ErrorListener() {
                                 @Override
                             public void onErrorResponse(VolleyError error) {
                                 // Handle error appropriately (e.g., log or notify the user)
-                                Toast.makeText(getContext(), "Fail to sync data", Toast.LENGTH_LONG);
+                                    Toast.makeText(getContext(),getString(R.string.SavedOffline) + error,Toast.LENGTH_LONG).show();
                             }
                         }) {
                             @Override
@@ -594,60 +609,67 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         bindingDialogEdit.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DbHelper dbHelper = new DbHelper(getContext());
-                SQLiteDatabase database = dbHelper.getWritableDatabase();
-                // Xác định điều kiện WHERE để xóa dữ liệu từ local db
-                String whereClause = DbContract.BillEntry.COLUMN_USER_ID + "=? AND " +
-                        DbContract.BillEntry.COLUMN_TIMECREATE + "=?";
-                String[] whereArgs = new String[]{
-                        String.valueOf(billItem.getUserID()),
-                        String.valueOf(billItem.getDatetime().getTime())
-                };
-                // Thực hiện xóa dữ liệu từ local db
-                database.delete(DbContract.BillEntry.TABLE_NAME, whereClause, whereArgs);
+                if (checkNetworkConnection()) {
+                    DbHelper dbHelper = new DbHelper(getContext());
+                    SQLiteDatabase database = dbHelper.getWritableDatabase();
 
 //                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
 //                readCategoryFromLocalStorage.execute();
 //                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
 //                readFromLocalStorageTask.execute(billItem.getDateTime().getYear(),billItem.getDateTime().getMonth(),billItem.getDateTime().getDate());
-                callReadFromStorageTaskByDay();
-                // Gửi yêu cầu xóa dữ liệu tương ứng trên server
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                try {
-                                    JSONObject jsonObject = new JSONObject(response);
-                                    String serverResponse = jsonObject.getString("response");
-                                    if (serverResponse.equals("OK")) {
-                                        Toast.makeText(getContext(), "Delete successful", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(getContext(), "Delete failed", Toast.LENGTH_LONG).show();
-                                        Log.d("Delete response error", serverResponse);
+                    callReadFromStorageTaskByDay();
+                    // Gửi yêu cầu xóa dữ liệu tương ứng trên server
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response);
+                                        String serverResponse = jsonObject.getString("response");
+                                        if (serverResponse.equals("OK")) {
+                                            // Xác định điều kiện WHERE để xóa dữ liệu từ local db
+                                            String whereClause = DbContract.BillEntry.COLUMN_USER_ID + "=? AND " +
+                                                    DbContract.BillEntry.COLUMN_TIMECREATE + "=?";
+                                            String[] whereArgs = new String[]{
+                                                    String.valueOf(billItem.getUserID()),
+                                                    String.valueOf(billItem.getDatetime().getTime())
+                                            };
+                                            // Thực hiện xóa dữ liệu từ local db
+                                            database.delete(DbContract.BillEntry.TABLE_NAME, whereClause, whereArgs);
+                                            Toast.makeText(getContext(), getString(R.string.Deleted), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(getContext(), getString(R.string.Failed) + serverResponse, Toast.LENGTH_LONG).show();
+                                            Log.d("Delete response error", serverResponse);
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    finally {
+                                        dbHelper.close();
+                                    }
                                 }
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getContext(), "Fail to delete data", Toast.LENGTH_LONG).show();
-                    }
-                }) {
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<>();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                        params.put("userID", String.valueOf(billItem.getUserID()));
-                        params.put("timecreate", dateFormat.format(billItem.getDatetime()));
-                        params.put("method", "DELETE");
-                        return params;
-                    }
-                };
-                // Thêm yêu cầu vào hàng đợi của Volley
-                MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
-                dialog.dismiss();
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getContext(), getString(R.string.Failed) + error, Toast.LENGTH_LONG).show();
+                        }
+                    }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String, String> params = new HashMap<>();
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                            params.put("userID", String.valueOf(billItem.getUserID()));
+                            params.put("timecreate", dateFormat.format(billItem.getDatetime()));
+                            params.put("method", "DELETE");
+                            return params;
+                        }
+                    };
+                    // Thêm yêu cầu vào hàng đợi của Volley
+                    MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+                    dialog.dismiss();
+                }
+                else
+                    Toast.makeText(getContext(), getString(R.string.NoNetwork),Toast.LENGTH_SHORT).show();
             }
         });
         dialog.show();
@@ -694,51 +716,54 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
         int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
 
-        while (cursor.moveToNext()){
-            //if (columnIndexMoney != -1) {
-            Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-            int userID = cursor.getInt(columnIndexUserID);
-            double money = cursor.getDouble(columnIndexMoney);
-            if(userID == userid)
-            {
-                if(calBy!="Week"){
-                    if(year == DateTime.getYear()){
-                        if(calBy!="Year"){
-                            if(month == DateTime.getMonth()){
-                                if(calBy!="Month"){
-                                    if(day == DateTime.getDate())
-                                        //Xét theo ngày
+        try {
+            while (cursor.moveToNext()) {
+                //if (columnIndexMoney != -1) {
+                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+                int userID = cursor.getInt(columnIndexUserID);
+                double money = cursor.getDouble(columnIndexMoney);
+                if (userID == userid) {
+                    if (calBy != "Week") {
+                        if (year == DateTime.getYear()) {
+                            if (calBy != "Year") {
+                                if (month == DateTime.getMonth()) {
+                                    if (calBy != "Month") {
+                                        if (day == DateTime.getDate())
+                                            //Xét theo ngày
+                                            if (money < 0) Expense += money;
+                                            else Income += money;
+                                    } else {
+                                        //Xét theo tháng
                                         if (money < 0) Expense += money;
                                         else Income += money;
+                                    }
                                 }
-                                else{
-                                    //Xét theo tháng
-                                    if (money < 0) Expense += money;
-                                    else Income += money;
-                                }
+                            } else {
+                                //Xét theo năm
+                                if (money < 0) Expense += money;
+                                else Income += money;
                             }
                         }
-                        else{
-                            //Xét theo năm
+                    } else {
+                        //Xét theo tuần
+                        if (isDateInWeek(DateTime.getDate(), DateTime.getMonth(), DateTime.getYear(), FirstDayOfWeek)) {
                             if (money < 0) Expense += money;
                             else Income += money;
                         }
                     }
                 }
-                else{
-                    //Xét theo tuần
-                    if(isDateInWeek(DateTime.getDate(),DateTime.getMonth(),DateTime.getYear(),FirstDayOfWeek)){
-                        if (money < 0) Expense += money;
-                        else Income += money;
-                    }
-                }
+                //}
             }
-            //}
+            Total = Income + Expense;
+            contentValues.put("Income", Income);
+            contentValues.put("Expense", Expense);
+            contentValues.put("Total", Total);
+        } finally {
+            // Đảm bảo đóng Cursor trong khối finally
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
-        Total = Income + Expense;
-        contentValues.put("Income", Income);
-        contentValues.put("Expense", Expense);
-        contentValues.put("Total", Total);
         return contentValues;
     }
     public static boolean isDateInWeek(int day, int month, int year, LocalDate weekFirst){
@@ -764,5 +789,8 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 else return false;
             }
         }
+    }
+    private boolean checkNetworkConnection() {
+        return NetworkMonitor.checkNetworkConnection(getContext());
     }
 }

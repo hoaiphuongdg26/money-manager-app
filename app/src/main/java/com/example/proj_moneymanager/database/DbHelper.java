@@ -278,7 +278,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return database.rawQuery(query, null);
     }
-    public void updateCategoryInLocalDatabase(String categoryId, int synstatus, SQLiteDatabase database) {
+    public void updateSyncCategoryInLocalDatabase(String categoryId, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(DbContract.CategoryEntry.COLUMN_ID, categoryId);
         values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, synstatus);
@@ -301,6 +301,23 @@ public class DbHelper extends SQLiteOpenHelper {
         boolean exists = cursor.getCount() > 0;
 
         // Đóng cursor sau khi kiểm tra xong
+        cursor.close();
+
+        return exists;
+    }
+    public boolean isCategoryNameExists(String categoryID, String name, long userID) {
+        SQLiteDatabase database = getReadableDatabase();
+        String query = "SELECT * FROM " + DbContract.CategoryEntry.TABLE_NAME +
+                " WHERE " + DbContract.CategoryEntry.COLUMN_NAME + " = ?" +
+                " AND " + DbContract.CategoryEntry.COLUMN_USER_ID + " = ?" +
+                " AND " + DbContract.CategoryEntry.COLUMN_ID + " <> ?";
+
+        String[] selectionArgs = {name, String.valueOf(userID), categoryID};
+
+        Cursor cursor = database.rawQuery(query, selectionArgs);
+
+        boolean exists = cursor.getCount() > 0;
+
         cursor.close();
 
         return exists;
@@ -383,15 +400,15 @@ public class DbHelper extends SQLiteOpenHelper {
         cursor.close();
         return category;
     }
-    public void updateCategoryById(String categoryId, String newName, String newIcon, String newColor, int newSyncStatus, SQLiteDatabase database) {
+    public void updateCategoryById(Category categoryItem, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
-        values.put(DbContract.CategoryEntry.COLUMN_NAME, newName);
-        values.put(DbContract.CategoryEntry.COLUMN_ICON, newIcon);
-        values.put(DbContract.CategoryEntry.COLUMN_COLOR, newColor);
-        values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, newSyncStatus);
+        values.put(DbContract.CategoryEntry.COLUMN_NAME, categoryItem.getName());
+        values.put(DbContract.CategoryEntry.COLUMN_ICON, categoryItem.getIcon());
+        values.put(DbContract.CategoryEntry.COLUMN_COLOR, categoryItem.getColor());
+        values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, categoryItem.getSyncStatus());
 
         String whereClause = DbContract.CategoryEntry.COLUMN_ID + " = ?";
-        String[] whereArgs = {categoryId};
+        String[] whereArgs = {categoryItem.getID()};
 
         try {
             database.update(DbContract.CategoryEntry.TABLE_NAME, values, whereClause, whereArgs);
@@ -399,6 +416,18 @@ public class DbHelper extends SQLiteOpenHelper {
             Log.e("DbHelper", "Error updating category: " + e.getMessage());
         }
     }
+    public void deleteCategoryById(String categoryId, SQLiteDatabase database) {
+        try {
+            // Delete the category from the local database
+            String selection = DbContract.CategoryEntry.COLUMN_ID + " = ?";
+            String[] selectionArgs = {categoryId};
+            database.delete(DbContract.CategoryEntry.TABLE_NAME, selection, selectionArgs);
 
+            // You can add additional logic if needed
+
+        } catch (SQLException e) {
+            Log.e("DbHelper", "Error deleting category: " + e.getMessage());
+        }
+    }
 
 }

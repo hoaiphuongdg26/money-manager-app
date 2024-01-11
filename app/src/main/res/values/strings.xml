@@ -114,5 +114,9 @@
     <string name="Password_confirm_not_match">The password confirmation\ndoes not match.</string>
     <string name="Please_enter_new_name">Please enter new name</string>
     <string name="Arrange">Arrange</string>
-
+    <string name="Deleted">Deleted</string>
+    <string name="Failed">Failed</string>
+    <string name="Saved">Saved</string>
+    <string name="SavedOffline">Saved in local</string>
+    <string name="NoNetwork">No network connection</string>
 </resources>

@@ -10,9 +10,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.databinding.DialogEditCategoryBinding;
 
 public class ColorAdapter extends BaseAdapter {
     private static Context context;
+    public ColorAdapter(Context context) {
+        this.context = context;
+    }
 
     // Danh sách các màu
     private static int[] colorDrawables = {
@@ -33,6 +37,31 @@ public class ColorAdapter extends BaseAdapter {
     public ColorAdapter(NewCategoryFragment context) {
         this.context = context.requireContext();
     }
+    // Define a listener interface to notify the selected color
+    public interface OnColorSelectedListener {
+        void onColorSelected(int colorDrawableId);
+    }
+
+    private OnColorSelectedListener colorSelectedListener;
+    private void notifyColorSelectedListener(int colorDrawableId) {
+        if (colorSelectedListener != null) {
+            colorSelectedListener.onColorSelected(colorDrawableId);
+        }
+    }
+    public interface OnColorClickListener {
+        void onColorClick(String colorDescription);
+    }
+
+    private OnColorClickListener colorClickListener;
+    public ColorAdapter(NewCategoryFragment context, OnColorClickListener colorClickListener) {
+        this.context = context.requireContext();
+        this.colorClickListener = colorClickListener;
+    }
+    public ColorAdapter(EditCategoryAdapter editCategoryAdapter) {
+        context = editCategoryAdapter.getContext();
+        this.colorClickListener = editCategoryAdapter;
+    }
+
     @Override
     public int getCount() {
         return colorDrawables.length;
@@ -102,25 +131,6 @@ public class ColorAdapter extends BaseAdapter {
         }
     }
 
-    // Define a listener interface to notify the selected color
-    public interface OnColorSelectedListener {
-        void onColorSelected(int colorDrawableId);
-    }
 
-    private OnColorSelectedListener colorSelectedListener;
-    private void notifyColorSelectedListener(int colorDrawableId) {
-        if (colorSelectedListener != null) {
-            colorSelectedListener.onColorSelected(colorDrawableId);
-        }
-    }
-    public interface OnColorClickListener {
-        void onColorClick(String colorDescription);
-    }
-
-    private OnColorClickListener colorClickListener;
-    public ColorAdapter(NewCategoryFragment context, OnColorClickListener colorClickListener) {
-        this.context = context.requireContext();
-        this.colorClickListener = colorClickListener;
-    }
 }
 

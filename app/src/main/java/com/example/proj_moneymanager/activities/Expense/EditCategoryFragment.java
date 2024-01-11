@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,11 +50,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class EditCategoryFragment extends Fragment implements ColorAdapter.OnColorClickListener, IconAdapter.OnIconClickListener {
+public class EditCategoryFragment extends Fragment implements
+        EditCategoryAdapter.OnEditCategoryClickListener,
+        ColorAdapter.OnColorClickListener,
+        IconAdapter.OnIconClickListener {
     FragmentEditCategoryBinding binding;
-    private CategoryAdapter categoryAdapter;
+    private static EditCategoryAdapter editCategoryAdapter;
     private BroadcastReceiver broadcastReceiver;
-    ArrayList<Category> arrayListCategory = new ArrayList<Category>();
+    static ArrayList<Category> arrayListCategory = new ArrayList<Category>();
     long  UserID;
     String CategoryID, CategoryName, Color, Icon;
     public EditCategoryFragment(){}
@@ -63,106 +68,20 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
         binding = FragmentEditCategoryBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
 
-        readCategoryFromLocalStorage readCategoryFromLocalStorageTask = new readCategoryFromLocalStorage(getContext(), arrayListCategory);
-        readCategoryFromLocalStorageTask.execute();
+        editCategoryAdapter = new EditCategoryAdapter(getContext(), this, arrayListCategory);
+        GridView gridView = binding.gridviewEditcategory;
+        gridView.setAdapter(editCategoryAdapter);
+
+        readCategories(getContext());
+
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                //loading the again
-                readCategoryFromLocalStorageTask.execute();
+                readCategories(getContext());
             }
         };
-        categoryAdapter = new CategoryAdapter(this, (CategoryAdapter.OnCategoryClickListener) this, arrayListCategory);
-        GridView gridView = binding.gridviewEditcategory;
-        gridView.setAdapter(categoryAdapter);
-        // Set item click listener for the GridView
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Category CategoryItem = arrayListCategory.get(position);
-                showEditDialog(CategoryItem, position);
-            }
-        });
         return view;
     }
-    public void showEditDialog(final Category categoryItem, int position) {
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setTitle(getString(R.string.EDIT_CATEGORY));
-
-        @NonNull DialogEditCategoryBinding binding = DialogEditCategoryBinding.inflate(getLayoutInflater());
-        View viewDialogEdit = binding.getRoot();
-
-        // Set thông tin của bill vào dialog để chỉnh sửa
-        CategoryID = categoryItem.getID();
-        CategoryName = categoryItem.getName();
-        Icon = categoryItem.getIcon();
-        Color = categoryItem.getColor();
-        binding.edittextNameCategory.setText(categoryItem.getName());
-        binding.gridviewIcon.setSelection(IconAdapter.getPositionByResourceName(categoryItem.getIcon()));
-        binding.gridviewColor.setSelection(ColorAdapter.getPositionByResourceName(categoryItem.getColor()));
-
-        dialog.setContentView(viewDialogEdit);
-
-        Window window = dialog.getWindow();
-        if (window != null) {
-            // Cấu hình Dialog để hiển thị full screen và mờ đằng sau
-            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-
-            WindowManager.LayoutParams params = window.getAttributes();
-            params.dimAmount = 0.7f; // Giả sử bạn muốn mức độ dim là 70%
-            window.setAttributes(params);
-        }
-
-        binding.btnCancelCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        binding.btnSaveCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                ContentValues values = new ContentValues();
-//                // Your code for updating the category
-//                String newName = binding.edittextNameCategory.getText().toString();
-//                String newIcon = iconAdapter.getResourceName(iconDrawables[newIconPosition]);
-//                int newColor = binding.gridviewColor.getSelectedItemPosition(); // Assuming you get the selected position for the color
-//
-//                values.put("name", newName);
-//                values.put("icon", newIcon);
-//                values.put("color", newColor);
-//                // Update the category in your local database
-//                updateCategoryInLocalDatabase(categoryItem.getID(), newName, newIcon, newColor);
-//
-//                // Dismiss the dialog
-//                dialog.dismiss();
-//
-//                // Notify the adapter that the data has changed
-//                categoryAdapter.notifyDataSetChanged();
-            }});
-        binding.btnDeleteCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                deleteCategory(categoryItem.getID());
-//
-//                // Dismiss the dialog
-//                dialog.dismiss();
-//
-//                // Notify the adapter that the data has changed
-//                categoryAdapter.notifyDataSetChanged();
-            };
-        });
-        dialog.show();
-    }
-    void updateCategoryInLocalDatabase(String categoryID, String name, String icon, String color, int syncstatus){
-        DbHelper dbHelper = new DbHelper(getContext());
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        dbHelper.updateCategoryById(categoryID, name, icon, color, syncstatus, database);
-        readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(),arrayListCategory);
-        readCategoryFromLocalStorage.execute();
-        dbHelper.close();
-    }
-
     @Override
     public void onColorClick(String colorDescription) {
         Color = colorDescription;
@@ -172,4 +91,44 @@ public class EditCategoryFragment extends Fragment implements ColorAdapter.OnCol
     public void onIconClick(String iconDescription) {
         Icon = iconDescription;
     }
+    @Override
+    public void onEditCategoryClick(String categoryId) {
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getActivity() != null) {
+            getActivity().registerReceiver(broadcastReceiver, new IntentFilter(DbContract.UI_UPDATE_BROADCAST));}
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(broadcastReceiver);
+        }
+    }
+    public static void readCategories(Context context) {
+        if (editCategoryAdapter == null) {
+            // Handle null adapter
+            return;
+        }
+
+        readCategoryFromLocalStorage readCategoryTask = new readCategoryFromLocalStorage(context, arrayListCategory);
+        readCategoryTask.setTaskListener(new readCategoryFromLocalStorage.TaskListener() {
+            @Override
+            public void onFinished() {
+                // Dữ liệu đã được cập nhật, thông báo adapter
+                if (editCategoryAdapter != null) {
+                    editCategoryAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        if (readCategoryTask.getStatus() == AsyncTask.Status.PENDING) {
+            // Execute the task only if it hasn't started yet
+            readCategoryTask.execute();
+        }
+    }
+
 }

@@ -25,6 +25,26 @@ public class Category {
         return Name;
     }
 
+    public long getUserID() {
+        return UserID;
+    }
+
+    public int getSyncStatus() {
+        return SyncStatus;
+    }
+
+    public void setColor(String color) {
+        Color = color;
+    }
+
+    public void setIcon(String icon) {
+        Icon = icon;
+    }
+
+    public void setSyncStatus(int syncStatus) {
+        SyncStatus = syncStatus;
+    }
+
     public void setName(String name) {
         Name = name;
     }

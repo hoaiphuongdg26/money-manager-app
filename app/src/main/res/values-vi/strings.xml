@@ -115,4 +115,9 @@
     <string name="Password_confirm_not_match">Mật khẩu xác nhận\nkhông trùng khớp.</string>
     <string name="Please_enter_new_name">Vui lòng nhập tên mới</string>
     <string name="Arrange">Sắp xếp</string>
+    <string name="Deleted">Đã xoá</string>
+    <string name="Failed">Lỗi</string>
+    <string name="Saved">Đã lưu</string>
+    <string name="SavedOffline">Đã lưu vào local</string>
+    <string name="NoNetwork">Không có kết nối mạng</string>
 </resources>

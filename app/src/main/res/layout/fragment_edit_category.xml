@@ -75,7 +75,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginVertical="10dp"
-            android:background="@drawable/border_selector"
             android:horizontalSpacing="10dp"
             android:verticalSpacing="10dp"
             />
