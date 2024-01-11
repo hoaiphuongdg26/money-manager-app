@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,10 +37,12 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.AsyncTasks.readCategoryFromLocalStorage;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.Bill;
 import com.example.proj_moneymanager.Object.Category;
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.activities.Expense.CategoryAdapter;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.database.MySingleton;
@@ -62,19 +65,21 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener, BillAdapter.OnBillItemClickListener {
+public class CalendarFragment extends Fragment implements CalendarAdapter.OnItemListener, BillAdapter.OnBillItemClickListener, CategoryAdapter.OnCategoryClickListener {
 
     private Button monthYearText;
     private RecyclerView calendarRecyclerView;
     private LocalDate selectedDate;
     ListView lv_historyOption;
+    String CategoryID;
     ArrayList<Bill> arrayListBill, eachday_arrayListBill;
-    ArrayList<Category> arryListCategory;
+    ArrayList<Category> arrayListCategory = new ArrayList<Category>();
     BillAdapter billAdapter;
     private DatePickerDialog datePickerDialog;
     ImageButton btnPreviousMonth;
     ImageButton btnNextMonth;
     FragmentCalendarBinding binding;
+    private CategoryAdapter categoryAdapter;
     TextView tv_income,tv_expense,tv_total;
     private BroadcastReceiver broadcastReceiver;
     long UserID;
@@ -174,6 +179,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     @Override
     public void onBillItemClick(Bill bill, int position) {
         dialogEditBill(bill, position);
+    }
+
+    @Override
+    public void onCategoryClick(String selectedCategoryId) {
+        CategoryID = selectedCategoryId;
     }
 
     class readFromLocalStorageTask extends AsyncTask<Integer, Void, ArrayList<Bill>> {
@@ -481,6 +491,18 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         // Set thông tin của bill vào dialog để chỉnh sửa
         bindingDialogEdit.edittextNote.setText(billItem.getNote());
         bindingDialogEdit.edittextExpense.setText(String.valueOf(billItem.getMoney()));
+        //Bỏ category vô đây
+        readCategoryFromLocalStorage readCategoryFromLocalStorageTask = new readCategoryFromLocalStorage(getContext(), arrayListCategory);
+        readCategoryFromLocalStorageTask.execute();
+//        broadcastReceiver = new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//                //loading the again
+//                readCategoryFromLocalStorageTask.execute();
+//            }
+//        };
+        categoryAdapter = new CategoryAdapter(this, this, arrayListCategory);
+        bindingDialogEdit.gridviewCategory.setAdapter(categoryAdapter);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(billItem.getDatetime());
@@ -514,7 +536,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 ContentValues values = new ContentValues();
                 values.put("note", bindingDialogEdit.edittextNote.getText().toString());
                 values.put("expense", String.valueOf(bindingDialogEdit.edittextExpense.getText().toString()));
-                //values.put("categoryID", String.valueOf());
+                values.put("categoryID", String.valueOf(CategoryID));
                 String whereClause = DbContract.BillEntry.COLUMN_USER_ID + "=? AND " +
                         DbContract.BillEntry.COLUMN_TIMECREATE + "=?";
                 String[] whereArgs = new String[]{

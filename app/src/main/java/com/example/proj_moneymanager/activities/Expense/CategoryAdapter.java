@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.proj_moneymanager.Object.Category;
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
 
 import java.util.ArrayList;
 
@@ -141,5 +142,10 @@ public class CategoryAdapter extends BaseAdapter {
         this.categoryClickListener = categoryClickListener;
         arrCategory = categoryOptions;
     }
-
+    public CategoryAdapter(CalendarFragment context, OnCategoryClickListener categoryClickListener, ArrayList<Category> categoryOptions) {
+        this.context = context.requireContext();
+        this.myContext = context.requireActivity();
+        this.categoryClickListener = categoryClickListener;
+        arrCategory = categoryOptions;
+    }
 }
