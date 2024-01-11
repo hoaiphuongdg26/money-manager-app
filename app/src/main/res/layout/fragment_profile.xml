@@ -71,7 +71,6 @@
                 android:layout_marginRight="15dp"
                 android:fontFamily="@font/sf_pro_text_regular"
                 android:text="@string/Logout"
-                android:textSize="20sp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/lv_optProfile"
                 style="@style/ButtonStyle"

@@ -33,7 +33,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS " + BillEntry.TABLE_NAME + " (" +
                     BillEntry.COLUMN_ID + " VARCHAR(36) PRIMARY KEY," +
                     BillEntry.COLUMN_USER_ID + " INTEGER," +
-                    BillEntry.COLUMN_CATEGORY_ID + " INTEGER," +
+                    BillEntry.COLUMN_CATEGORY_ID + " VARCHAR(36)," +
                     BillEntry.COLUMN_NOTE + " VARCHAR(150)," +
                     BillEntry.COLUMN_TIMECREATE + " DATETIME," +
                     BillEntry.COLUMN_EXPENSE + " DOUBLE," +
@@ -53,16 +53,12 @@ public class DbHelper extends SQLiteOpenHelper {
     public DbHelper(Context context) {
         super(context, DbContract.DATABASE_NAME, null, DATABASE_VERSION);
     }
-    public String generateUUID() {
-        UUID uuid = UUID.randomUUID();
-        return uuid.toString();
-    }
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
-//            db.execSQL(DROP_TABLE_BILL);
-//            db.execSQL(DROP_TABLE_USERINFORMATION);
-//            db.execSQL(DROP_TABLE_CATEGORY);
+            db.execSQL(DROP_TABLE_BILL);
+            db.execSQL(DROP_TABLE_USERINFORMATION);
+            db.execSQL(DROP_TABLE_CATEGORY);
             db.execSQL(CREATE_TABLE_USERINFORMATION);
             db.execSQL(CREATE_TABLE_BILL);
             db.execSQL(CREATE_TABLE_CATEGORY);
@@ -282,7 +278,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return database.rawQuery(query, null);
     }
-    public void updateCategoryInLocalDatabase(String categoryId, int synstatus, SQLiteDatabase database) {
+    public void updateSyncCategoryInLocalDatabase(String categoryId, int synstatus, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(DbContract.CategoryEntry.COLUMN_ID, categoryId);
         values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, synstatus);
@@ -305,6 +301,23 @@ public class DbHelper extends SQLiteOpenHelper {
         boolean exists = cursor.getCount() > 0;
 
         // Đóng cursor sau khi kiểm tra xong
+        cursor.close();
+
+        return exists;
+    }
+    public boolean isCategoryNameExists(String categoryID, String name, long userID) {
+        SQLiteDatabase database = getReadableDatabase();
+        String query = "SELECT * FROM " + DbContract.CategoryEntry.TABLE_NAME +
+                " WHERE " + DbContract.CategoryEntry.COLUMN_NAME + " = ?" +
+                " AND " + DbContract.CategoryEntry.COLUMN_USER_ID + " = ?" +
+                " AND " + DbContract.CategoryEntry.COLUMN_ID + " <> ?";
+
+        String[] selectionArgs = {name, String.valueOf(userID), categoryID};
+
+        Cursor cursor = database.rawQuery(query, selectionArgs);
+
+        boolean exists = cursor.getCount() > 0;
+
         cursor.close();
 
         return exists;
@@ -387,6 +400,34 @@ public class DbHelper extends SQLiteOpenHelper {
         cursor.close();
         return category;
     }
+    public void updateCategoryById(Category categoryItem, SQLiteDatabase database) {
+        ContentValues values = new ContentValues();
+        values.put(DbContract.CategoryEntry.COLUMN_NAME, categoryItem.getName());
+        values.put(DbContract.CategoryEntry.COLUMN_ICON, categoryItem.getIcon());
+        values.put(DbContract.CategoryEntry.COLUMN_COLOR, categoryItem.getColor());
+        values.put(DbContract.CategoryEntry.COLUMN_SYNC_STATUS, categoryItem.getSyncStatus());
 
+        String whereClause = DbContract.CategoryEntry.COLUMN_ID + " = ?";
+        String[] whereArgs = {categoryItem.getID()};
+
+        try {
+            database.update(DbContract.CategoryEntry.TABLE_NAME, values, whereClause, whereArgs);
+        } catch (SQLException e) {
+            Log.e("DbHelper", "Error updating category: " + e.getMessage());
+        }
+    }
+    public void deleteCategoryById(String categoryId, SQLiteDatabase database) {
+        try {
+            // Delete the category from the local database
+            String selection = DbContract.CategoryEntry.COLUMN_ID + " = ?";
+            String[] selectionArgs = {categoryId};
+            database.delete(DbContract.CategoryEntry.TABLE_NAME, selection, selectionArgs);
+
+            // You can add additional logic if needed
+
+        } catch (SQLException e) {
+            Log.e("DbHelper", "Error deleting category: " + e.getMessage());
+        }
+    }
 
 }

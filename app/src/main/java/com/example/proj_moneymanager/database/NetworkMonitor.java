@@ -133,7 +133,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                                             JSONObject jsonObject = new JSONObject(response);
                                             String serverResponse = jsonObject.getString("response");
                                             if (serverResponse.equals("OK")) {
-                                                dbHelper.updateCategoryInLocalDatabase(categoryID, DbContract.SYNC_STATUS_OK, database);
+                                                dbHelper.updateSyncCategoryInLocalDatabase(categoryID, DbContract.SYNC_STATUS_OK, database);
                                                 context.sendBroadcast(new Intent(DbContract.UI_UPDATE_BROADCAST));
                                             }
                                             else{

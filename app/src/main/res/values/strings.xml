@@ -34,7 +34,9 @@
     <string name="Expense">Expense</string>
     <string name="Total">Total</string>
     <string name="EDIT_CATEGORY">EDIT CATEGORY</string>
+    <string name="ListCategory">List Category</string>
     <string name="ADD_NEW_CATEGORY">ADD NEW CATEGORY</string>
+    <string name="NEW_CATEGORY">New Category</string>
     <string name="Name">Name</string>
     <string name="Icon">Icon</string>
     <string name="Color">Color</string>
@@ -111,4 +113,10 @@
     <string name="Fullname_change_successfully">Your name has been changed successfully</string>
     <string name="Password_confirm_not_match">The password confirmation\ndoes not match.</string>
     <string name="Please_enter_new_name">Please enter new name</string>
+    <string name="Arrange">Arrange</string>
+    <string name="Deleted">Deleted</string>
+    <string name="Failed">Failed</string>
+    <string name="Saved">Saved</string>
+    <string name="SavedOffline">Saved in local</string>
+    <string name="NoNetwork">No network connection</string>
 </resources>

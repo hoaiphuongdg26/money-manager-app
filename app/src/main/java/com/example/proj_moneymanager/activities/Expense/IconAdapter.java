@@ -11,10 +11,15 @@ import android.widget.ImageButton;
 import com.example.proj_moneymanager.R;
 
 public class IconAdapter extends BaseAdapter {
-    private Context context;
+    private static Context context;
+    public IconAdapter(Context context) {
+        this.context = context;
+    }
+    private OnIconClickListener iconClickListener;
+    private OnIconSelectedListener iconSelectedListener;
 
     // Danh sách các màu 30dpx30dp
-    private int[] iconDrawables = {
+    private static int[] iconDrawables = {
             R.drawable.ic_car,
             R.drawable.ic_card,
             R.drawable.ic_flight_takeoff,
@@ -29,7 +34,7 @@ public class IconAdapter extends BaseAdapter {
             // ... Thêm các icon khác
     };
     private int selectedPosition = -1;
-    public IconAdapter(EditCategoryFragment context) {
+    public IconAdapter(NewCategoryFragment context) {
         this.context = context.requireContext();
     }
     @Override
@@ -43,6 +48,37 @@ public class IconAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+    public IconAdapter(EditCategoryAdapter editCategoryAdapter) {
+        context = editCategoryAdapter.getContext();
+        this.iconClickListener = editCategoryAdapter;
+    }
+
+    public void setOnIconSelectedListenerDialog(OnIconSelectedListener onIconSelectedListener) {
+        this.iconSelectedListener = onIconSelectedListener;
+    }
+
+    // Define a listener interface to notify the selected icon
+    public interface OnIconSelectedListener {
+        void onIconSelected(String iconDescription);
+    }
+    private void notifyIconSelectedListener(int iconDrawableId) {
+        if (iconSelectedListener != null) {
+            String iconDescription = getResourceName(iconDrawableId);
+//                Toast.makeText(context, "Resource Name: " + iconDescription, Toast.LENGTH_LONG).show();
+            // Notify the listener with the selected icon description
+            if (iconClickListener != null) {
+                iconSelectedListener.onIconSelected(iconDescription);
+            }
+
+        }
+    }
+    public interface OnIconClickListener {
+        void onIconClick(String iconDescription);
+    }
+    public IconAdapter(NewCategoryFragment context, IconAdapter.OnIconClickListener iconClickListener) {
+        this.context = context.requireContext();
+        this.iconClickListener = iconClickListener;
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -74,7 +110,7 @@ public class IconAdapter extends BaseAdapter {
 
         return gridViewItem;
     }
-    String getResourceName(int iconDrawableId) {
+    static String getResourceName(int iconDrawableId) {
         try {
             return context.getResources().getResourceEntryName(iconDrawableId);
         } catch (Resources.NotFoundException e) {
@@ -83,6 +119,17 @@ public class IconAdapter extends BaseAdapter {
             return null;
         }
     }
+    public static int getPositionByResourceName(String resourceName) {
+        for (int i = 0; i < iconDrawables.length; i++) {
+            int iconDrawableId = iconDrawables[i];
+            String currentResourceName = getResourceName(iconDrawableId);
+            if (currentResourceName != null && currentResourceName.equals(resourceName)) {
+                return i; // Trả về vị trí của resource tìm thấy
+            }
+        }
+        return -1; // Nếu không tìm thấy resource, trả về -1
+    }
+
     public void setSelectedPosition(int position) {
         if (position >= 0 && position < iconDrawables.length) {
             selectedPosition = position;
@@ -91,24 +138,5 @@ public class IconAdapter extends BaseAdapter {
         }// Notify the listener with the selected icon
     }
 
-    // Define a listener interface to notify the selected icon
-    public interface OnIconSelectedListener {
-        void onIconSelected(int iconDrawableId);
-    }
 
-    private IconAdapter.OnIconSelectedListener iconSelectedListener;
-    private void notifyIconSelectedListener(int iconDrawableId) {
-        if (iconSelectedListener != null) {
-            iconSelectedListener.onIconSelected(iconDrawableId);
-        }
-    }
-    public interface OnIconClickListener {
-        void onIconClick(String iconDescription);
-    }
-
-    private IconAdapter.OnIconClickListener iconClickListener;
-    public IconAdapter(EditCategoryFragment context, IconAdapter.OnIconClickListener iconClickListener) {
-        this.context = context.requireContext();
-        this.iconClickListener = iconClickListener;
-    }
 }

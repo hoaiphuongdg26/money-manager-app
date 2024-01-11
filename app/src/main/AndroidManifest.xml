@@ -30,9 +30,6 @@
             android:name=".activities.SignUp"
             android:exported="true" />
         <activity
-            android:name=".activities.Profile.Profile"
-            android:exported="true" />
-        <activity
             android:name=".MainActivity"
             android:exported="true" />
         <activity
@@ -55,6 +52,9 @@
             android:exported="true" />
         <activity
             android:name=".activities.Expense.EditCategoryFragment"
+            android:exported="true"/>
+        <activity
+            android:name=".activities.Expense.NewCategoryFragment"
             android:exported="true"/>
         <receiver android:name=".database.NetworkMonitor"
             android:exported="true">
