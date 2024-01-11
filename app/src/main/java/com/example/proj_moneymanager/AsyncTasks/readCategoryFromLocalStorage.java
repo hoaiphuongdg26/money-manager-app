@@ -11,16 +11,17 @@ import com.example.proj_moneymanager.database.DbHelper;
 
 import java.util.ArrayList;
 
-public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> {
+public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, ArrayList<Category>> {
     private ArrayList<Category> arrayListCategory;
     private Context context;
     // Constructor nhận danh sách category từ bên ngoài
     public readCategoryFromLocalStorage(Context context, ArrayList<Category> arrayListCategory) {
-        this.context =context;
+        this.context = context;
         this.arrayListCategory = arrayListCategory;
     }
+
     @Override
-    protected String doInBackground(Void... voids) {
+    protected ArrayList<Category> doInBackground(Void... voids) {
         if (arrayListCategory == null) {
             arrayListCategory = new ArrayList<>();
         } else {
@@ -60,10 +61,11 @@ public class readCategoryFromLocalStorage extends AsyncTask<Void, Void, String> 
         }
         cursor.close();
         dbHelper.close();
-        return null;
+        return arrayListCategory;
     }
     @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+    protected void onPostExecute(ArrayList<Category> arrResult) {
+        arrResult = arrayListCategory;
+        super.onPostExecute(arrResult);
     }
 }

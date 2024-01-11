@@ -53,6 +53,9 @@
         <activity
             android:name=".activities.Expense.EditCategoryFragment"
             android:exported="true"/>
+        <activity
+            android:name=".activities.Expense.NewCategoryFragment"
+            android:exported="true"/>
         <receiver android:name=".database.NetworkMonitor"
             android:exported="true">
             <intent-filter>

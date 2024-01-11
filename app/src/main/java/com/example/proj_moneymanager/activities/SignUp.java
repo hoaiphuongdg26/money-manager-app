@@ -174,7 +174,8 @@ public class SignUp extends AppCompatActivity {
             }
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Lỗi", Toast.LENGTH_SHORT).show();
+                Log.e("Retrofit", "Error: " + t.getMessage());
+                Toast.makeText(getApplicationContext(), "Error:" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

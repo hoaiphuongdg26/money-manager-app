@@ -1,37 +1,76 @@
 package com.example.proj_moneymanager.activities.Expense;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.proj_moneymanager.Object.Category;
 import com.example.proj_moneymanager.R;
-import com.example.proj_moneymanager.activities.Plan.CalendarFragment;
+import com.example.proj_moneymanager.database.DbContract;
+import com.example.proj_moneymanager.database.DbHelper;
+import com.example.proj_moneymanager.database.MySingleton;
+import com.example.proj_moneymanager.database.NetworkMonitor;
+import com.example.proj_moneymanager.databinding.DialogEditCategoryBinding;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class CategoryAdapter extends BaseAdapter {
+public class EditCategoryAdapter extends BaseAdapter implements ColorAdapter.OnColorClickListener, IconAdapter.OnIconClickListener {
     private Context context;
     private Activity myContext;
     private ArrayList<Category> arrCategory;
+    private EditCategoryFragment editCategoryFragment;
     private long selectedPosition = -1;
-    private Category categorySelectedListener;
-    public CategoryAdapter(Activity context, ArrayList<Category> categoryOptions){
-        this.myContext = context;
-        arrCategory = categoryOptions;
-    }
-    public CategoryAdapter(ExpenseFragment context) {
-        this.context = context.requireContext();
+    private OnEditCategoryClickListener editCategoryClickListener;
+    private BroadcastReceiver broadcastReceiver;
+    Category categoryItem;
+
+    public EditCategoryAdapter(Context context, BroadcastReceiver broadcastReceiver, ArrayList<Category> arrayListCategory) {
+        this.context = context;
+        this.editCategoryClickListener = editCategoryFragment;
+        arrCategory = arrayListCategory;
     }
 
+    public Activity getContext() {
+        return myContext;
+    }
+
+    public EditCategoryAdapter(Context context, OnEditCategoryClickListener editCategoryClickListener, ArrayList<Category> categoryOptions) {
+        this.context = context;
+        this.myContext = (Activity) context;
+        this.editCategoryClickListener = editCategoryClickListener;
+        arrCategory = categoryOptions;
+    }
     @Override
     public int getCount() {
         return arrCategory != null ? arrCategory.size() : 0;
@@ -48,7 +87,17 @@ public class CategoryAdapter extends BaseAdapter {
         if (position >= 0 && position < arrCategory.size()) {
             return arrCategory.get(position).getID();
         }
-        return null;
+        return "";
+    }
+    @Override
+    public void onColorClick(String colorDescription) {
+
+        categoryItem.setColor(colorDescription);
+    }
+    @Override
+    public void onIconClick(String iconDescription) {
+
+        categoryItem.setIcon(iconDescription);
     }
     static class ViewHolder {
         TextView nameTextView;
@@ -61,7 +110,7 @@ public class CategoryAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(myContext).inflate(R.layout.gv_item_category, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gv_item_category, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.nameTextView = convertView.findViewById(R.id.textview_nameCategory);
             viewHolder.iconImageButton = convertView.findViewById(R.id.imagebutton_iconCategory);
@@ -108,9 +157,10 @@ public class CategoryAdapter extends BaseAdapter {
                 String selectedCategoryId = getSelectedId(position);
 
                 // Notify the listener (ExpenseFragment) about the selected category ID
-                if (categoryClickListener != null) {
-                    categoryClickListener.onCategoryClick(selectedCategoryId);
-                     Toast.makeText(context, selectedCategoryId, Toast.LENGTH_SHORT).show();
+                if (editCategoryClickListener != null) {
+                    editCategoryClickListener.onEditCategoryClick(arrCategory.get(position), position);
+                    // Use context to show the dialog
+                    //dialogEditCategory(selectedCategoryId);
                 }
             }
         };
@@ -133,26 +183,15 @@ public class CategoryAdapter extends BaseAdapter {
             notifyDataSetChanged();
         }// Refresh GridView to update selected item
     }
-    public interface OnCategoryClickListener {
-        void onCategoryClick(String categoryId);
+    public interface OnEditCategoryClickListener {
+        void onEditCategoryClick(Category categoryItem, int position);
     }
-    private OnCategoryClickListener categoryClickListener;
-    public CategoryAdapter(ExpenseFragment context, OnCategoryClickListener categoryClickListener, ArrayList<Category> categoryOptions) {
+    public EditCategoryAdapter(EditCategoryFragment context, OnEditCategoryClickListener editCategoryClickListener, ArrayList<Category> categoryOptions) {
         this.context = context.requireContext();
         this.myContext = context.requireActivity();
-        this.categoryClickListener = categoryClickListener;
+        this.editCategoryClickListener = editCategoryClickListener;
         arrCategory = categoryOptions;
     }
-    public CategoryAdapter(CalendarFragment context, OnCategoryClickListener categoryClickListener, ArrayList<Category> categoryOptions) {
-        this.context = context.requireContext();
-        this.myContext = context.requireActivity();
-        this.categoryClickListener = categoryClickListener;
-        arrCategory = categoryOptions;
-    }
-    public CategoryAdapter(EditCategoryFragment context, OnCategoryClickListener categoryClickListener, ArrayList<Category> categoryOptions) {
-        this.context = context.requireContext();
-        this.myContext = context.requireActivity();
-        this.categoryClickListener = categoryClickListener;
-        arrCategory = categoryOptions;
-    }
+
+
 }

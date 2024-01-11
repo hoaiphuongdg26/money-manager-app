@@ -20,8 +20,7 @@ public class MyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (shouldShowNotification(context) && !isAppRunningInForeground(context)) {
-            showNotification(context, "Notification", "\n" +
-                    "It has been more than 24 hours since you entered your personal income or expenses. Do not forget me!");
+            showNotification(context, "I Miss You", "\n" + "It has been more than 24 hours since you entered your personal income or expenses. Do not forget me!");
         }
 
     }

@@ -66,7 +66,7 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     ImageButton btnNextDay, btnPreviousDay;
     ArrayList<Bill> arrayListBill = new ArrayList<Bill>();
     ArrayList<Category> arrayListCategory = new ArrayList<Category>();
-    private CategoryAdapter categoryAdapter; // Add this line
+    private CategoryAdapter categoryAdapter;
     private BroadcastReceiver broadcastReceiver;
     private LocalDate selectedDate;
     public ExpenseFragment() {
@@ -80,15 +80,25 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         binding = FragmentExpenseBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
 
-        // Edit category
-        ImageButton imagebuttonEditCategory = binding.imagebuttonEditCategory;
-        imagebuttonEditCategory.setOnClickListener(new View.OnClickListener() {
+        // New category
+        ImageButton imagebuttonNewCategory = binding.imagebuttonNewCategory;
+        imagebuttonNewCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Gọi sự kiện khi click ImageButton
+                onNewCategoryButtonClick();
+            }
+        });
+
+        // Edit category
+        ImageButton imageButtonEditCategory = binding.imagebuttonEditCategory;
+        imageButtonEditCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 onEditCategoryButtonClick();
             }
         });
+
 
         readCategoryFromLocalStorage readCategoryFromLocalStorageTask = new readCategoryFromLocalStorage(getContext(), arrayListCategory);
         readCategoryFromLocalStorageTask.execute();
@@ -176,6 +186,21 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
         super.onPause();
         if (getActivity() != null) {
             getActivity().unregisterReceiver(broadcastReceiver);
+        }
+    }
+    public void onNewCategoryButtonClick (){
+        Bundle args = new Bundle();
+        args.putLong("UserID", UserID);
+
+        NewCategoryFragment newCategoryFragment = new NewCategoryFragment();
+        newCategoryFragment.setArguments(args);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame_layout, newCategoryFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
         }
     }
     public void onEditCategoryButtonClick (){
@@ -406,6 +431,6 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     @Override
     public void onCategoryClick(String selectedCategoryId) {
         CategoryID = selectedCategoryId;
-//        Toast.makeText(getContext(), "CategoryID: " +String.valueOf(selectedCategoryId), Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "CategoryID: " +String.valueOf(selectedCategoryId), Toast.LENGTH_LONG).show();
     }
 }

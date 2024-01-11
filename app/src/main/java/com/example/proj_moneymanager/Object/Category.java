@@ -8,6 +8,10 @@ public class Category {
     String Color;
     int SyncStatus;
 
+    public Category(long userID) {
+        UserID = userID;
+    }
+
     public Category(String categoryID, long userID, String name, String icon, String color, int syncStatus) {
         this.CategoryID = categoryID;
         this.UserID = userID;
@@ -23,6 +27,30 @@ public class Category {
 
     public String getName() {
         return Name;
+    }
+
+    public long getUserID() {
+        return UserID;
+    }
+
+    public void setUserID(long userID) {
+        UserID = userID;
+    }
+
+    public int getSyncStatus() {
+        return SyncStatus;
+    }
+
+    public void setColor(String color) {
+        Color = color;
+    }
+
+    public void setIcon(String icon) {
+        Icon = icon;
+    }
+
+    public void setSyncStatus(int syncStatus) {
+        SyncStatus = syncStatus;
     }
 
     public void setName(String name) {

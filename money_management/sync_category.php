@@ -18,32 +18,66 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = isset($_POST['name']) ? mysqli_real_escape_string($con, $_POST['name']) : '';
     $icon = isset($_POST['icon']) ? mysqli_real_escape_string($con, $_POST['icon']) : '';
     $color = isset($_POST['color']) ? mysqli_real_escape_string($con, $_POST['color']) : '';
+    $method = isset($_POST['method'])? $_POST['method'] : '';
 
-    // Insert data into the database
-    $sql = "INSERT INTO category (ID, UserID, Name, Icon, Color) 
-            VALUES ('$categoryID', '$userID', '$name', '$icon', '$color')";
+    if($method == "INSERT"){
+        // Insert data into the database
+        $sql = "INSERT INTO category (ID, UserID, Name, Icon, Color)
+                VALUES ('$categoryID', '$userID', '$name', '$icon', '$color')";
 
-    if (mysqli_query($con, $sql)) {
-        $status = 'OK';
-        $query = "SELECT * FROM category";
-        $result = mysqli_query($con, $query);
+        if (mysqli_query($con, $sql)) {
+            $status = 'OK';
+            $query = "SELECT * FROM category";
+            $result = mysqli_query($con, $query);
 
-        if ($result) {
-            $data = array();
-            while ($row = mysqli_fetch_assoc($result)) {
-                $data[] = $row;
+            if ($result) {
+                $data = array();
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $data[] = $row;
+                }
+                // Return JSON response with the retrieved data
+                echo json_encode(array("response" => "OK", "data" => $data));
+            }else {
+                $status = 'FAILED: ' . mysqli_error($con);
+                // Return JSON response
+                echo json_encode(array("response" => $status));
             }
-            // Return JSON response with the retrieved data
-            echo json_encode(array("response" => "OK", "data" => $data));
         }else {
             $status = 'FAILED: ' . mysqli_error($con);
             // Return JSON response
             echo json_encode(array("response" => $status));
         }
-    }else {
-        $status = 'FAILED: ' . mysqli_error($con);
-        // Return JSON response
-        echo json_encode(array("response" => $status));
+    }
+    else if ($method == "UPDATE"){
+        $sql = "UPDATE category
+                SET Name = '$name', Icon = '$icon', Color = '$color'
+                WHERE ID = '$categoryID' AND UserID = '$userID'";
+        // Execute the UPDATE query
+        if (mysqli_query($con, $sql)) {
+            $status = 'OK';
+            // Return JSON response
+            echo json_encode(array("response" => "OK"));
+        } else {
+            $status = 'FAILED: ' . mysqli_error($con);
+            // Return JSON response
+            echo json_encode(array("response" => $status));
+        }
+    }
+    else if ($method == "DELETE"){
+        // Delete data from the database
+        $sql = "DELETE FROM category
+                WHERE ID = '$categoryID' AND UserID = '$userID'";
+
+        // Execute the DELETE query
+        if (mysqli_query($con, $sql)) {
+            $status = 'OK';
+            // Return JSON response
+            echo json_encode(array("response" => "OK"));
+        } else {
+            $status = 'FAILED: ' . mysqli_error($con);
+            // Return JSON response
+            echo json_encode(array("response" => $status));
+        }
     }
 }
 // Close connection

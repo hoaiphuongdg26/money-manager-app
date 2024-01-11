@@ -35,7 +35,9 @@
     <string name="Expense">Tiền chi</string>
     <string name="Total">Tổng</string>
     <string name="EDIT_CATEGORY">Chỉnh sửa danh mục</string>
+    <string name="ListCategory">Danh sách danh mục</string>
     <string name="ADD_NEW_CATEGORY">Thêm danh mục mới</string>
+    <string name="NEW_CATEGORY">New Category</string>
     <string name="Name">Tên</string>
     <string name="Icon">Biểu tượng</string>
     <string name="Color">Màu sắc</string>
@@ -112,4 +114,10 @@
     <string name="Fullname_change_successfully">Đổi tên thành công</string>
     <string name="Password_confirm_not_match">Mật khẩu xác nhận\nkhông trùng khớp.</string>
     <string name="Please_enter_new_name">Vui lòng nhập tên mới</string>
+    <string name="Arrange">Sắp xếp</string>
+    <string name="Deleted">Đã xoá</string>
+    <string name="Failed">Lỗi</string>
+    <string name="Saved">Đã lưu</string>
+    <string name="SavedOffline">Đã lưu vào local</string>
+    <string name="NoNetwork">Không có kết nối mạng</string>
 </resources>
