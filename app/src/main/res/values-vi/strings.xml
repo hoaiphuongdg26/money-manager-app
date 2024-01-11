@@ -109,5 +109,10 @@
     <string name="Send">Gửi</string>
     <string name="No_network_connection">Không có kết nối mạng</string>
     <string name="No_offline_login_info">Không có thông tin đăng nhập offline khớp với cơ sở dữ liệu local</string>
+    <string name="Wrong_Password">Sai mật khẩu!</string>
+    <string name="Password_change_successfully">Đổi mật khẩu thành công</string>
+    <string name="Fullname_change_successfully">Đổi tên thành công</string>
+    <string name="Password_confirm_not_match">Mật khẩu xác nhận\nkhông trùng khớp.</string>
+    <string name="Please_enter_new_name">Vui lòng nhập tên mới</string>
     <string name="Arrange">Sắp xếp</string>
 </resources>
