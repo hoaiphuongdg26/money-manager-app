@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.proj_moneymanager.Object.Category;
 import com.example.proj_moneymanager.R;
@@ -109,7 +110,7 @@ public class CategoryAdapter extends BaseAdapter {
                 // Notify the listener (ExpenseFragment) about the selected category ID
                 if (categoryClickListener != null) {
                     categoryClickListener.onCategoryClick(selectedCategoryId);
-//                     Toast.makeText(context, (int) selectedCategoryId, Toast.LENGTH_LONG).show();
+                     Toast.makeText(context, selectedCategoryId, Toast.LENGTH_SHORT).show();
                 }
             }
         };

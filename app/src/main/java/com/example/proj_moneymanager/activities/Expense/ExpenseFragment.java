@@ -406,6 +406,6 @@ public class ExpenseFragment extends Fragment implements CategoryAdapter.OnCateg
     @Override
     public void onCategoryClick(String selectedCategoryId) {
         CategoryID = selectedCategoryId;
-//        Toast.makeText(getContext(), "CategoryID: " +String.valueOf(selectedCategoryId), Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "CategoryID: " +String.valueOf(selectedCategoryId), Toast.LENGTH_LONG).show();
     }
 }

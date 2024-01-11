@@ -522,6 +522,8 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             window.setAttributes(params);
         }
         CategoryID = billItem.getCategoryID();
+        Toast.makeText(getContext(),CategoryID,Toast.LENGTH_SHORT).show();
+
         bindingDialogEdit.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -558,7 +560,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
                 if(cursor.moveToFirst()) {
                         int userID = cursor.getInt(columnIndexUserID);
-                        int categoryID = cursor.getInt(columnIndexCategoryID);
+                        String categoryID = cursor.getString(columnIndexCategoryID);
                         String note = cursor.getString(columnIndexNote);
                         Date timeCreate = new Date();
                         if (columnIndexDatetime != -1) {
@@ -603,7 +605,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                                 params.put("timecreate", dateFormat.format(finalTimeCreate));
                                 params.put("expense", String.valueOf(expense));
-                                params.put("categoryID", String.valueOf(categoryID));
+                                params.put("categoryID", categoryID);
                                 params.put("userID", String.valueOf(userID));
                                 params.put("method","UPDATE");
                                 return params;
