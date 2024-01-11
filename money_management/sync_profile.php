@@ -16,16 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $userID = isset($_POST['userID']) ? mysqli_real_escape_string($con, $_POST['userID']) : '';
     $fullName = isset($_POST['fullName']) ? $_POST['fullName'] : '';
     $userName = isset($_POST['userName']) ? $_POST['userName'] : '';
-    $email = isset($_POST['email']) ? $_POST['email'] : '';
+    //$email = isset($_POST['email']) ? $_POST['email'] : '';
     $_password = isset($_POST['_password']) ? $_POST['_password'] : '';
-
+    $_password = md5($_password);
     //query update
     // Build the SQL UPDATE query
     $sql = "UPDATE user_information SET ";
     $sql .= "FullName = '$fullName', ";
     $sql .= "UserName = '$userName', ";
-    $sql .= "Password = '$_password', ";
-    $sql .= "Email = '$email' ";
+    $sql .= "Password = '$_password' ";
+    //$sql .= "Email = '$email' ";
     $sql .= "WHERE UserID = $userID"; 
 
     // Execute the UPDATE query
