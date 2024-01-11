@@ -107,17 +107,12 @@ public class EditCategoryFragment extends Fragment implements
         readCategoryFromLocalStorage readCategoryTask = new readCategoryFromLocalStorage(context, arrayListCategory);
         readCategoryTask.execute();
     }
-    public void dialogEditCategory(Category categoryItem, int position) {
+    public void dialogEditCategory(final Category categoryItem, int position) {
         final Dialog dialog = new Dialog(getContext());
 
         @NonNull DialogEditCategoryBinding binding = DialogEditCategoryBinding.inflate(LayoutInflater.from(getContext()));
         View viewDialogEdit = binding.getRoot();
 
-        // Set thông tin của bill vào dialog để chỉnh sửa
-        DbHelper dbHelper= new DbHelper(getContext());
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        categoryItem = dbHelper.getItemCategory(categoryItem.getID(),database);
-        dbHelper.close();
         binding.edittextNameCategory.setText(categoryItem.getName());
 
         GridView gridviewColor = binding.gridviewColor;
@@ -125,19 +120,14 @@ public class EditCategoryFragment extends Fragment implements
         gridviewColor.setAdapter(colorAdapter);
         binding.gridviewColor.setSelection(colorAdapter.getPositionByResourceName(categoryItem.getColor()));
         colorAdapter.setSelectedPosition(colorAdapter.getPositionByResourceName(categoryItem.getColor()));
+        colorAdapter.setSelectedColorResourceName(categoryItem.getColor());
 
         GridView gridviewIcon = binding.gridviewIcon;
         IconAdapter iconAdapter =new IconAdapter(getContext());
         gridviewIcon.setAdapter(iconAdapter);
         binding.gridviewIcon.setSelection(iconAdapter.getPositionByResourceName(categoryItem.getIcon()));
         iconAdapter.setSelectedPosition(iconAdapter.getPositionByResourceName(categoryItem.getIcon()));
-        Category finalCategoryItem2 = categoryItem;
-        iconAdapter.setOnIconSelectedListenerDialog(new IconAdapter.OnIconSelectedListener() {
-            @Override
-            public void onIconSelected(String iconDescription) {
-                finalCategoryItem2.setIcon(iconDescription);
-            }
-        });
+        iconAdapter.setSelectedIconResourceName(categoryItem.getIcon());
 
         dialog.setContentView(viewDialogEdit);
 
@@ -157,19 +147,20 @@ public class EditCategoryFragment extends Fragment implements
                 dialog.dismiss();
             }
         });
-        Category finalCategoryItem = categoryItem;
         binding.btnSaveCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finalCategoryItem.setName(binding.edittextNameCategory.getText().toString());
-                if (finalCategoryItem.getName() != null && finalCategoryItem.getColor() != null && finalCategoryItem.getIcon() != null) {
+                categoryItem.setIcon(iconAdapter.getSelectedIconResourceName());
+                categoryItem.setColor(colorAdapter.getSelectedColorResourceName());
+                categoryItem.setName(binding.edittextNameCategory.getText().toString());
+                if (categoryItem.getName() != null && categoryItem.getColor() != null && categoryItem.getIcon() != null) {
                     DbHelper dbHelper = new DbHelper(getContext());
-                    if (dbHelper.isCategoryNameExists(finalCategoryItem.getID(), finalCategoryItem.getName(), finalCategoryItem.getUserID())) {
+                    if (dbHelper.isCategoryNameExists(categoryItem.getID(), categoryItem.getName(), categoryItem.getUserID())) {
                         // Nếu name đã tồn tại, thông báo lỗi và không thực hiện import
                         Toast.makeText(getContext(), getContext().getString(R.string.Category_name_already_exists), Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        updateCategoryToServer(finalCategoryItem);
+                        updateCategoryToServer(categoryItem);
 
                         // Notify the adapter that the data has changed
 
@@ -189,11 +180,10 @@ public class EditCategoryFragment extends Fragment implements
                     Toast.makeText(getContext(), getContext().getString(R.string.Please_enter_all_fields), Toast.LENGTH_SHORT).show();
                 }
             }});
-        Category finalCategoryItem1 = categoryItem;
         binding.btnDeleteCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteCategoryToServer(finalCategoryItem1);
+                deleteCategoryToServer(categoryItem);
 
                 // Notify the adapter that the data has changed
 

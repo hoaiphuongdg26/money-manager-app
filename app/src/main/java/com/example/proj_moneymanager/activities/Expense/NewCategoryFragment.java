@@ -70,6 +70,7 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
             @Override
             public void onClick(View v) {
                 // Xử lý khi Button được click
+                iconAdapter.getSelectedIconResourceName();
                 ImportCategory();
             }
         });
