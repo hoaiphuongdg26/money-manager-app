@@ -49,15 +49,6 @@ public class IconAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
-    public IconAdapter(EditCategoryAdapter editCategoryAdapter) {
-        context = editCategoryAdapter.getContext();
-        this.iconClickListener = editCategoryAdapter;
-    }
-
-    public void setOnIconSelectedListenerDialog(OnIconSelectedListener onIconSelectedListener) {
-        this.iconSelectedListener = onIconSelectedListener;
-    }
-
     // Define a listener interface to notify the selected icon
     public interface OnIconSelectedListener {
         void onIconSelected(String iconDescription);
@@ -97,6 +88,8 @@ public class IconAdapter extends BaseAdapter {
                 setSelectedPosition(position);
                 int iconDrawableId = iconDrawables[position];
                 String iconDescription = getResourceName(iconDrawableId);
+                // Cập nhật tên resourcename của icon được chọn
+                selectedIconResourceName = iconDescription;
 //                Toast.makeText(context, "Resource Name: " + iconDescription, Toast.LENGTH_LONG).show();
                 // Notify the listener with the selected icon description
                 if (iconClickListener != null) {
@@ -138,5 +131,11 @@ public class IconAdapter extends BaseAdapter {
         }// Notify the listener with the selected icon
     }
 
-
+    private String selectedIconResourceName;
+    public String getSelectedIconResourceName() {
+        return selectedIconResourceName;
+    }
+    public void setSelectedIconResourceName(String selectedIconResourceName) {
+        this.selectedIconResourceName = selectedIconResourceName;
+    }
 }

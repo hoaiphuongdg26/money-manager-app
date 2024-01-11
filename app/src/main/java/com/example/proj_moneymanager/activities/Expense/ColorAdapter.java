@@ -57,11 +57,6 @@ public class ColorAdapter extends BaseAdapter {
         this.context = context.requireContext();
         this.colorClickListener = colorClickListener;
     }
-    public ColorAdapter(EditCategoryAdapter editCategoryAdapter) {
-        context = editCategoryAdapter.getContext();
-        this.colorClickListener = editCategoryAdapter;
-    }
-
     @Override
     public int getCount() {
         return colorDrawables.length;
@@ -90,11 +85,11 @@ public class ColorAdapter extends BaseAdapter {
                 // Xử lý sự kiện khi ImageButton được chọn
                 setSelectedPosition(position);
                 int colorDrawableId = colorDrawables[position];
-                String colorDescription = getResourceName(colorDrawableId);
+                selectedColorResourceName = getResourceName(colorDrawableId);
 //                Toast.makeText(context, "Resource Name: " + colorDescription, Toast.LENGTH_LONG).show();
                 // Notify the listener with the selected color description
                 if (colorClickListener != null) {
-                    colorClickListener.onColorClick(colorDescription);
+                    colorClickListener.onColorClick(selectedColorResourceName);
                 }
             }
         });
@@ -130,7 +125,12 @@ public class ColorAdapter extends BaseAdapter {
             notifyColorSelectedListener(colorDrawables[position]);// Notify the listener with the selected color
         }
     }
-
-
+    private String selectedColorResourceName;
+    public String getSelectedColorResourceName() {
+        return selectedColorResourceName;
+    }
+    public void setSelectedColorResourceName(String selectedColorResourceName){
+        this.selectedColorResourceName = selectedColorResourceName;
+    }
 }
 

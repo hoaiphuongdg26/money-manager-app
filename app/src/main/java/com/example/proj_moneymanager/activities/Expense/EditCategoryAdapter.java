@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditCategoryAdapter extends BaseAdapter implements ColorAdapter.OnColorClickListener, IconAdapter.OnIconClickListener {
+public class EditCategoryAdapter extends BaseAdapter {
     private Context context;
     private Activity myContext;
     private ArrayList<Category> arrCategory;
@@ -88,16 +88,6 @@ public class EditCategoryAdapter extends BaseAdapter implements ColorAdapter.OnC
             return arrCategory.get(position).getID();
         }
         return "";
-    }
-    @Override
-    public void onColorClick(String colorDescription) {
-
-        categoryItem.setColor(colorDescription);
-    }
-    @Override
-    public void onIconClick(String iconDescription) {
-
-        categoryItem.setIcon(iconDescription);
     }
     static class ViewHolder {
         TextView nameTextView;
