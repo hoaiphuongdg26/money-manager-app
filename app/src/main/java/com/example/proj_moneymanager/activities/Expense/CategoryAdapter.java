@@ -110,7 +110,7 @@ public class CategoryAdapter extends BaseAdapter {
                 // Notify the listener (ExpenseFragment) about the selected category ID
                 if (categoryClickListener != null) {
                     categoryClickListener.onCategoryClick(selectedCategoryId);
-                     Toast.makeText(context, selectedCategoryId, Toast.LENGTH_SHORT).show();
+                     //Toast.makeText(context, selectedCategoryId, Toast.LENGTH_SHORT).show();
                 }
             }
         };

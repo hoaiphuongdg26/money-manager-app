@@ -58,15 +58,14 @@
                     android:textSize="12sp"
                     app:layout_constraintTop_toBottomOf="@+id/textview_datetime"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
-                    app:layout_constraintBottom_toTopOf="@+id/textview_expense"
+                    app:layout_constraintBottom_toTopOf="@+id/textview_expense_income"
                     android:textColor="@color/black_blue"
                     >
                 </TextView>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textview_expense"
-                    android:text="@string/Expense"
+                    android:id="@+id/textview_expense_income"
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="12sp"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
@@ -83,25 +82,11 @@
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="12sp"
                     app:layout_constraintLeft_toLeftOf="@id/textview_datetime"
-                    app:layout_constraintTop_toBottomOf="@id/textview_expense"
+                    app:layout_constraintTop_toBottomOf="@id/textview_expense_income"
                     android:textColor="@color/black_blue"
                     app:layout_constraintBottom_toBottomOf="parent"
                     >
                 </TextView>
-
-                <ImageButton
-                    android:id="@+id/btnPreviousDay"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/icon_left_forward"
-                    android:scaleType="fitCenter"
-                    app:layout_constraintLeft_toRightOf="@id/textview_datetime"
-                    app:layout_constraintTop_toTopOf="@id/textview_datetime"
-                    app:layout_constraintBottom_toBottomOf="@id/textview_datetime"
-                    android:layout_marginLeft="15dp"
-                    android:contentDescription="Button left forward"
-                    >
-                </ImageButton>
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -110,36 +95,25 @@
                     android:fontFamily="@font/sf_pro_text_medium"
                     android:textSize="12sp"
                     android:textColor="@color/black_blue"
-                    app:layout_constraintLeft_toRightOf="@id/btnPreviousDay"
-                    app:layout_constraintRight_toLeftOf="@id/btnNextDay"
-                    app:layout_constraintTop_toTopOf="@id/btnPreviousDay"
-                    app:layout_constraintBottom_toBottomOf="@id/btnPreviousDay"
+                    app:layout_constraintLeft_toLeftOf="@id/edittext_note"
+                    app:layout_constraintRight_toRightOf="@id/edittext_note"
+                    app:layout_constraintTop_toTopOf="@id/textview_datetime"
+                    app:layout_constraintBottom_toBottomOf="@id/textview_datetime"
                     android:textAllCaps="false"
                     android:background="@drawable/bg_transparent"
                     >
                 </Button>
-                <ImageButton
-                    android:id="@+id/btnNextDay"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/icon_right_forward"
-                    android:scaleType="fitCenter"
-                    app:layout_constraintTop_toTopOf="@id/btnPreviousDay"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintBottom_toBottomOf="@id/btnPreviousDay"
-                    android:layout_marginRight="25dp"
-                    android:contentDescription="Button right forward"
-                    >
-                </ImageButton>
                 <EditText
                     android:id="@+id/edittext_note"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/edittext_income"
-                    app:layout_constraintLeft_toLeftOf="@id/btnPreviousDay"
+                    app:layout_constraintLeft_toRightOf="@id/textview_datetime"
                     app:layout_constraintTop_toTopOf="@+id/textview_note"
                     app:layout_constraintBottom_toBottomOf="@id/textview_note"
-                    app:layout_constraintRight_toRightOf="@id/btnNextDay"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="25dp"
                     android:textColor="@color/black_blue"
                     android:textSize="12sp"
                     >
@@ -152,9 +126,9 @@
                     android:textColor="@color/blue"
                     android:text="VNĐ"
                     android:textSize="12sp"
-                    app:layout_constraintRight_toRightOf="@+id/btnNextDay"
-                    app:layout_constraintTop_toTopOf="@id/textview_expense"
-                    app:layout_constraintBottom_toBottomOf="@id/textview_expense"
+                    app:layout_constraintRight_toRightOf="@+id/edittext_note"
+                    app:layout_constraintTop_toTopOf="@id/textview_expense_income"
+                    app:layout_constraintBottom_toBottomOf="@id/textview_expense_income"
                     >
                 </TextView>
 
@@ -163,9 +137,9 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/edittext_income"
-                    app:layout_constraintTop_toTopOf="@id/textview_expense"
-                    app:layout_constraintBottom_toBottomOf="@id/textview_expense"
-                    app:layout_constraintLeft_toLeftOf="@id/btnPreviousDay"
+                    app:layout_constraintTop_toTopOf="@id/textview_expense_income"
+                    app:layout_constraintBottom_toBottomOf="@id/textview_expense_income"
+                    app:layout_constraintLeft_toLeftOf="@id/edittext_note"
                     app:layout_constraintRight_toLeftOf="@id/textview_VND"
                     android:inputType="number"
                     android:layout_marginRight="5dp"
