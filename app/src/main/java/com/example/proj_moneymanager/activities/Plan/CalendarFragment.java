@@ -211,74 +211,76 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         protected ArrayList<Bill> doInBackground(Integer... params) {
             arrayListBill.clear(); // Xóa dữ liệu hiện tại để cập nhật từ đầu
 
-            DbHelper dbHelper = new DbHelper(requireContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
-            SQLiteDatabase database = dbHelper.getReadableDatabase();
-            Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
-            // Lấy data ngày
-                int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_ID);
-                int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
-                int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
-                int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
-                int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
-                int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
-                int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
+            if(isAdded()&&getContext()!=null){
+                DbHelper dbHelper = new DbHelper(getContext()); // Sửa lỗi: sử dụng requireContext() thay vì this
+                SQLiteDatabase database = dbHelper.getReadableDatabase();
+                Cursor cursor = dbHelper.readBillFromLocalDatabase(database);
+                // Lấy data ngày
+                    int columnIndexBillID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_ID);
+                    int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
+                    int columnIndexCategoryID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_CATEGORY_ID);
+                    int columnIndexNote = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_NOTE);
+                    int columnIndexDatetime = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_TIMECREATE);
+                    int columnIndexMoney = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_EXPENSE);
+                    int columnIndexSyncStatus = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_SYNC_STATUS);
 
-                try {
-                    while (cursor.moveToNext()) {
-                        // Check if the column indices are valid before accessing the values
-                        if (columnIndexNote != -1 && columnIndexMoney != -1) {
-                            Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
-                            billID = cursor.getString(columnIndexBillID);
-                            UserID = cursor.getInt(columnIndexUserID);
-                            String categoryID = cursor.getString(columnIndexCategoryID);
-                            long money = cursor.getLong(columnIndexMoney);
-                            String note = cursor.getString(columnIndexNote);
-                            int sync = cursor.getInt(columnIndexSyncStatus);
-                            if (params[0] != -1) {
-                                if (DateTime.getYear() == params[0]) {
-                                    if (params[1] != -1) {
-                                        if (DateTime.getMonth() == params[1]) {
-                                            if (params[2] != -1) {
-                                                if (DateTime.getDate() == params[2]) {
-                                                    //Tính theo ngày
+                    try {
+                        while (cursor.moveToNext()) {
+                            // Check if the column indices are valid before accessing the values
+                            if (columnIndexNote != -1 && columnIndexMoney != -1) {
+                                Date DateTime = new Date(cursor.getLong(columnIndexDatetime));
+                                billID = cursor.getString(columnIndexBillID);
+                                UserID = cursor.getInt(columnIndexUserID);
+                                String categoryID = cursor.getString(columnIndexCategoryID);
+                                long money = cursor.getLong(columnIndexMoney);
+                                String note = cursor.getString(columnIndexNote);
+                                int sync = cursor.getInt(columnIndexSyncStatus);
+                                if (params[0] != -1) {
+                                    if (DateTime.getYear() == params[0]) {
+                                        if (params[1] != -1) {
+                                            if (DateTime.getMonth() == params[1]) {
+                                                if (params[2] != -1) {
+                                                    if (DateTime.getDate() == params[2]) {
+                                                        //Tính theo ngày
+                                                        // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
+                                                        Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
+                                                        // Thêm vào danh sách
+                                                        arrayListBill.add(bill);
+                                                    }
+                                                } else {
                                                     // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
                                                     Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
-                                                    // Thêm vào danh sách
                                                     arrayListBill.add(bill);
                                                 }
-                                            } else {
-                                                // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
-                                                Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
-                                                arrayListBill.add(bill);
                                             }
+                                        } else {
+                                            //Tính theo năm
+                                            // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
+                                            Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
+                                            arrayListBill.add(bill);
                                         }
-                                    } else {
-                                        //Tính theo năm
-                                        // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
-                                        Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
-                                        arrayListBill.add(bill);
                                     }
+                                } else {
+                                    //lấy tất cả
+                                    // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
+                                    Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
+                                    // Thêm vào danh sách
+                                    arrayListBill.add(bill);
                                 }
                             } else {
-                                //lấy tất cả
-                                // Tạo đối tượng Bill từ dữ liệu cơ sở dữ liệu
-                                Bill bill = new Bill(billID, UserID, categoryID, note, DateTime, money, sync);
-                                // Thêm vào danh sách
-                                arrayListBill.add(bill);
+                                // Handle the case where the column indices are not found
                             }
-                        } else {
-                            // Handle the case where the column indices are not found
+                        }
+                    } finally {
+                        // Đảm bảo đóng Cursor và Database trong khối finally
+                        if (cursor != null && !cursor.isClosed()) {
+                            cursor.close();
+                        }
+                        if (database != null && database.isOpen()) {
+                            database.close();
                         }
                     }
-                } finally {
-                    // Đảm bảo đóng Cursor và Database trong khối finally
-                    if (cursor != null && !cursor.isClosed()) {
-                        cursor.close();
-                    }
-                    if (database != null && database.isOpen()) {
-                        database.close();
-                    }
-                }
+            }
             return arrayListBill;
         }
     }
@@ -287,7 +289,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM yyyy", Locale.US);
         try {
             Date mDateTime = dateFormat.parse(datetimeString);
-            ContentValues contentValues = MoneyCalculate(UserID,mDateTime.getDate(),mDateTime.getMonth(),mDateTime.getYear(),getString(R.string.Month),"All",getContext());
+            ContentValues contentValues = MoneyCalculate(UserID,mDateTime.getDate(),mDateTime.getMonth(),mDateTime.getYear(), getContext().getString(R.string.Month),"All",getContext());
             tv_income.setText(MainActivity.formatCurrency((double)contentValues.get("Income")));
             tv_expense.setText(MainActivity.formatCurrency((double)contentValues.get("Expense")));
             tv_total.setText(MainActivity.formatCurrency((double)contentValues.get("Total")));

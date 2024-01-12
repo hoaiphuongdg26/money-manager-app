@@ -441,32 +441,33 @@ public class ProfileFragment extends Fragment {
             //arr_profileOption = new ArrayList<Profile_Option>();
             //if(arrayListUser != null) {arrayListUser.clear();} // Xoá dữ liệu hiện tại để ập nhật lại từ đầu
             arrayListUser.clear();
+            if(isAdded()&&getContext()!=null){
+                DbHelper dbHelper = new DbHelper(getContext());
+                SQLiteDatabase database = dbHelper.getWritableDatabase();
+                userInformation = new UserInformation();
+                userInformation.setUserID(getArguments().getLong("UserID", 0));
+                Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
+                if(cursor.moveToFirst()){
+                    int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
+                    int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
+                    int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
+                    int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
 
-            DbHelper dbHelper = new DbHelper(getContext());
-            SQLiteDatabase database = dbHelper.getWritableDatabase();
-            userInformation = new UserInformation();
-            userInformation.setUserID(getArguments().getLong("UserID", 0));
-            Cursor cursor = dbHelper.getUserInformation(userInformation.getUserID(),database);
-            if(cursor.moveToFirst()){
-                int columnIndexUserFullname = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_FULL_NAME);
-                int columnIndexUserName = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_USERNAME);
-                int columnIndexUserPassword = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_PASSWORD);
-                int columnIndexEmail = cursor.getColumnIndex(DbContract.UserInformationEntry.COLUMN_EMAIL);
+                    String fullName = cursor.getString(columnIndexUserFullname);
+                    String userName = cursor.getString(columnIndexUserName);
+                    String password = cursor.getString(columnIndexUserPassword);
+                    String email = cursor.getString(columnIndexEmail);
 
-                String fullName = cursor.getString(columnIndexUserFullname);
-                String userName = cursor.getString(columnIndexUserName);
-                String password = cursor.getString(columnIndexUserPassword);
-                String email = cursor.getString(columnIndexEmail);
-
-                //arr_profileOption = new ArrayList<Profile_Option>();
-                // Thêm vào danh sách
-                arrayListUser.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
-                arrayListUser.add(new Profile_Option(getString(R.string.Password), password, R.drawable.icon_lock));
-//                arrayListUser.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
-//                arrayListUser.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
+                    //arr_profileOption = new ArrayList<Profile_Option>();
+                    // Thêm vào danh sách
+                    arrayListUser.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
+                    arrayListUser.add(new Profile_Option(getString(R.string.Password), password, R.drawable.icon_lock));
+    //                arrayListUser.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
+    //                arrayListUser.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
+                }
+                cursor.close();
+                dbHelper.close();
             }
-            cursor.close();
-            dbHelper.close();
             return arrayListUser;
         }
     }

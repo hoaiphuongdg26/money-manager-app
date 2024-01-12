@@ -415,19 +415,21 @@ public class StatisticFragment extends Fragment {
     }
     private ArrayList<BarEntry> barEntriesIncome(String calBy){
         ArrayList<BarEntry> barEntries = new ArrayList<>();
-        if(calBy.equals(getString(R.string.Year))){
-            for (ContentValues c : arrMonths) {
-                barEntries.add(new BarEntry(arrMonths.indexOf(c)+1,Float.parseFloat(String.valueOf(c.get("Income")))));
+        if(isAdded()&&getContext()!=null){
+            if(calBy.equals(getString(R.string.Year))){
+                for (ContentValues c : arrMonths) {
+                    barEntries.add(new BarEntry(arrMonths.indexOf(c)+1,Float.parseFloat(String.valueOf(c.get("Income")))));
+                }
             }
-        }
-        if(calBy.equals(getString(R.string.Month))){
-            for (ContentValues c : arrMonth) {
-                barEntries.add(new BarEntry(arrMonth.indexOf(c) + 1,Float.parseFloat(String.valueOf( c.get("Income")))));
+            if(calBy.equals(getString(R.string.Month))){
+                for (ContentValues c : arrMonth) {
+                    barEntries.add(new BarEntry(arrMonth.indexOf(c) + 1,Float.parseFloat(String.valueOf( c.get("Income")))));
+                }
             }
-        }
-        if(calBy.equals(getString(R.string.Week))){
-            for (ContentValues c : arrWeek) {
-                barEntries.add(new BarEntry(arrWeek.indexOf(c)+1,Float.parseFloat(String.valueOf( c.get("Income")))));
+            if(calBy.equals(getString(R.string.Week))){
+                for (ContentValues c : arrWeek) {
+                    barEntries.add(new BarEntry(arrWeek.indexOf(c)+1,Float.parseFloat(String.valueOf( c.get("Income")))));
+                }
             }
         }
         return barEntries;
@@ -452,108 +454,114 @@ public class StatisticFragment extends Fragment {
         return barEntries;
     }
     private void DrawBarChartIncomeExpense(String calBy){
-        BarDataSet income = new BarDataSet(barEntriesIncome(calBy),getString(R.string.Income));
-        BarDataSet expense = new BarDataSet(barEntriesExpense(calBy), getString(R.string.Expense));
-        if(getContext()!=null){
-            income.setColor(ContextCompat.getColor(getContext(), R.color.teal_700));
-            expense.setColor(ContextCompat.getColor(getContext(), R.color.orange));
-        }
-        BarData barData = new BarData(income,expense);
-//        MPbarChart = new BarChart(getContext());
-        MPbarChart.clear();
-        MPbarChart.setData(barData);
-        //Lấy data cho tung độ, hoành độ
-        String[] timeLabel = new String[]{};
-        float visibleRangeMaximum = 5;
-        if(Objects.equals(calBy, getString(R.string.Month))){
-            visibleRangeMaximum = 15;
-            timeLabel = null;
-            timeLabel = new String[31];
-            for(int i=0;i<arrMonth.size();i++) timeLabel[i] = String.valueOf(i+1);
-        }
-        if(Objects.equals(calBy, getString(R.string.Year))) {
-            visibleRangeMaximum = 6;
-            timeLabel = null;
-            timeLabel = new String[12];
-            for (int i = 0; i < 12; i++) timeLabel[i] = getMonthFormat(i + 1);
-        }
-        if(Objects.equals(calBy, getString(R.string.Week))){
-            visibleRangeMaximum = 4;
-            timeLabel = null;
-            timeLabel = new String[] {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
-        }
-        //Định dạng bar cho đẹp
-        //Định dạng hoành độ
-        XAxis xAxis = MPbarChart.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(timeLabel));
-        xAxis.setCenterAxisLabels(true);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1f);
-        xAxis.setGranularityEnabled(true);
-        if(!calBy.equals(getString(R.string.Month))) xAxis.setLabelRotationAngle(-35);
-        else xAxis.setLabelRotationAngle(0);
+        if(isAdded()&&getContext()!=null){
+            BarDataSet income = new BarDataSet(barEntriesIncome(calBy),getString(R.string.Income));
+            BarDataSet expense = new BarDataSet(barEntriesExpense(calBy), getString(R.string.Expense));
 
-        MPbarChart.setDragEnabled(true);
-        //MPbarChart.setVisibleXRangeMaximum(visibleRangeMaximum);
-        MPbarChart.setVisibleXRange(4,visibleRangeMaximum);
-        MPbarChart.setAutoScaleMinMaxEnabled(false);
-        float barSpace = 0.10f;
-        float groupSpace = 0.10f;
-        barData.setBarWidth(0.35f);
+                income.setColor(ContextCompat.getColor(getContext(), R.color.teal_700));
+                expense.setColor(ContextCompat.getColor(getContext(), R.color.orange));
 
-        //Barchart description
-        Description description = new Description();
-        description.setText("");
-        MPbarChart.setDescription(description);
-        //Đặt range của hoành độ
-        MPbarChart.getXAxis().setAxisMinimum(0);
-        MPbarChart.getXAxis().setAxisMaximum(0 + MPbarChart.getBarData().getGroupWidth(groupSpace,barSpace)*timeLabel.length);
-        //Range tung độ
-        MPbarChart.getAxisLeft().setAxisMinimum(0);
-        MPbarChart.groupBars(0,groupSpace,barSpace);
-        MPbarChart.setDoubleTapToZoomEnabled(false);
-        MPbarChart.animateXY(450,450);
-        MPbarChart.invalidate();
+            BarData barData = new BarData(income,expense);
+    //        MPbarChart = new BarChart(getContext());
+            MPbarChart.clear();
+            MPbarChart.setData(barData);
+            //Lấy data cho tung độ, hoành độ
+            String[] timeLabel = new String[]{};
+            float visibleRangeMaximum = 5;
+            if(Objects.equals(calBy, getString(R.string.Month))){
+                visibleRangeMaximum = 15;
+                timeLabel = null;
+                timeLabel = new String[31];
+                for(int i=0;i<arrMonth.size();i++) timeLabel[i] = String.valueOf(i+1);
+            }
+            if(Objects.equals(calBy, getString(R.string.Year))) {
+                visibleRangeMaximum = 6;
+                timeLabel = null;
+                timeLabel = new String[12];
+                for (int i = 0; i < 12; i++) timeLabel[i] = getMonthFormat(i + 1);
+            }
+            if(Objects.equals(calBy, getString(R.string.Week))){
+                visibleRangeMaximum = 4;
+                timeLabel = null;
+                timeLabel = new String[] {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+            }
+            //Định dạng bar cho đẹp
+            //Định dạng hoành độ
+            XAxis xAxis = MPbarChart.getXAxis();
+            xAxis.setValueFormatter(new IndexAxisValueFormatter(timeLabel));
+            xAxis.setCenterAxisLabels(true);
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setGranularity(1f);
+            xAxis.setGranularityEnabled(true);
+            if(!calBy.equals(getString(R.string.Month))) xAxis.setLabelRotationAngle(-35);
+            else xAxis.setLabelRotationAngle(0);
+
+            MPbarChart.setDragEnabled(true);
+            //MPbarChart.setVisibleXRangeMaximum(visibleRangeMaximum);
+            MPbarChart.setVisibleXRange(4,visibleRangeMaximum);
+            MPbarChart.setAutoScaleMinMaxEnabled(false);
+            float barSpace = 0.10f;
+            float groupSpace = 0.10f;
+            barData.setBarWidth(0.35f);
+
+            //Barchart description
+            Description description = new Description();
+            description.setText("");
+            MPbarChart.setDescription(description);
+            //Đặt range của hoành độ
+            MPbarChart.getXAxis().setAxisMinimum(0);
+            MPbarChart.getXAxis().setAxisMaximum(0 + MPbarChart.getBarData().getGroupWidth(groupSpace,barSpace)*timeLabel.length);
+            //Range tung độ
+            MPbarChart.getAxisLeft().setAxisMinimum(0);
+            MPbarChart.groupBars(0,groupSpace,barSpace);
+            MPbarChart.setDoubleTapToZoomEnabled(false);
+            MPbarChart.animateXY(450,450);
+            MPbarChart.invalidate();
+        }
     }
     private ArrayList<PieEntry> pieEntriesExpense(double Income,double Expense){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(new PieEntry((float) Income,getString(R.string.Income)));
-        pieEntries.add(new PieEntry((float) - Expense,getString(R.string.Expense)));
+        if(isAdded()&&getContext()!=null){
+            pieEntries.add(new PieEntry((float) Income,getString(R.string.Income)));
+            pieEntries.add(new PieEntry((float) - Expense,getString(R.string.Expense)));
+        }
         return pieEntries;
     }
     private void DrawPieChart1(String calBy,double Income, double Expense) {
-        PieDataSet pieDataSet = new PieDataSet(pieEntriesExpense(Income,Expense),"");
-        int[] color = new int[]{ContextCompat.getColor(getContext(), R.color.teal_700),ContextCompat.getColor(getContext(), R.color.orange)};
-        pieDataSet.setColors(color);
-        pieDataSet.setValueTextSize(12);
+        if(isAdded()&&getContext()!=null){
+            PieDataSet pieDataSet = new PieDataSet(pieEntriesExpense(Income,Expense),"");
+            int[] color = new int[]{ContextCompat.getColor(getContext(), R.color.teal_700),ContextCompat.getColor(getContext(), R.color.orange)};
+            pieDataSet.setColors(color);
+            pieDataSet.setValueTextSize(12);
 
-        PieData pieData = new PieData(pieDataSet);
-        MPPieChart1.setData(pieData);
-        MPPieChart1.setDrawEntryLabels(false);
-        MPPieChart1.setUsePercentValues(true);
-        MPPieChart1.setUsePercentValues(true);
-        MPPieChart1.setCenterText(getString(R.string.This)+" "+ calBy);
-        MPPieChart1.setCenterTextColor(Color.BLUE);
-        Description description = new Description();
-        description.setText("");
-        MPPieChart1.setDescription(description);
-        MPPieChart1.animateXY(600,700);
-        MPPieChart1.invalidate();
-        MPPieChart1.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                PieEntry pe = (PieEntry) e;
-                MPPieChart1.setCenterText(pe.getLabel() + ":\n"+ e.getY());
-                String type;
-                if(pe.getLabel().equals(getString(R.string.Income))) type = "Income";
-                else type="Expense";
-                dialogCategoryLineChart(type,calBy);
-            }
-            @Override
-            public void onNothingSelected() {
-                MPPieChart1.setCenterText(getString(R.string.This)+" "+ calBy);
-            }
-        });
+            PieData pieData = new PieData(pieDataSet);
+            MPPieChart1.setData(pieData);
+            MPPieChart1.setDrawEntryLabels(false);
+            MPPieChart1.setUsePercentValues(true);
+            MPPieChart1.setUsePercentValues(true);
+            MPPieChart1.setCenterText(getString(R.string.This)+" "+ calBy);
+            MPPieChart1.setCenterTextColor(Color.BLUE);
+            Description description = new Description();
+            description.setText("");
+            MPPieChart1.setDescription(description);
+            MPPieChart1.animateXY(600,700);
+            MPPieChart1.invalidate();
+            MPPieChart1.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                @Override
+                public void onValueSelected(Entry e, Highlight h) {
+                    PieEntry pe = (PieEntry) e;
+                    MPPieChart1.setCenterText(pe.getLabel() + ":\n"+ e.getY());
+                    String type;
+                    if(pe.getLabel().equals(getString(R.string.Income))) type = "Income";
+                    else type="Expense";
+                    dialogCategoryLineChart(type,calBy);
+                }
+                @Override
+                public void onNothingSelected() {
+                    MPPieChart1.setCenterText(getString(R.string.This)+" "+ calBy);
+                }
+            });
+        }
     }
     private ArrayList<PieEntry> pieEntryCategory(ArrayList<ContentValues> contentValues){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
@@ -565,35 +573,37 @@ public class StatisticFragment extends Fragment {
         return pieEntries;
     }
     private void DrawPieChart2(String calBy){
-        PieDataSet pieDataSet = new PieDataSet(pieEntryCategory(arrCategory),"");
-        pieDataSet.setColors(CategoryColorArray);
-        pieDataSet.setValueTextSize(10);
+        if(isAdded()&&getContext()!=null){
+            PieDataSet pieDataSet = new PieDataSet(pieEntryCategory(arrCategory),"");
+            pieDataSet.setColors(CategoryColorArray);
+            pieDataSet.setValueTextSize(10);
 
-        PieData pieData = new PieData(pieDataSet);
-        MPPieChart2.setData(pieData);
-        MPPieChart2.setDrawEntryLabels(false);
-        MPPieChart2.setUsePercentValues(true);
-        MPPieChart2.setUsePercentValues(true);
-        MPPieChart2.setCenterText(getString(R.string.This)+" "+ calBy);
-        MPPieChart2.setCenterTextColor(Color.BLUE);
-        Description description = new Description();
-        description.setText("");
-        MPPieChart2.setDescription(description);
-        MPPieChart2.animateXY(525,525);
-        MPPieChart2.invalidate();
-        MPPieChart2.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                PieEntry pe = (PieEntry) e;
-                MPPieChart2.setCenterText(pe.getLabel() + ":\n"+ e.getY());
-                MPPieChart2.setCenterTextColor(CategoryColorArray[pieDataSet.getEntryIndex(e)]);
-            }
-            @Override
-            public void onNothingSelected() {
-                MPPieChart2.setCenterText(getString(R.string.This)+" "+ calBy);
-                MPPieChart2.setCenterTextColor(Color.BLUE);
-            }
-        });
+            PieData pieData = new PieData(pieDataSet);
+            MPPieChart2.setData(pieData);
+            MPPieChart2.setDrawEntryLabels(false);
+            MPPieChart2.setUsePercentValues(true);
+            MPPieChart2.setUsePercentValues(true);
+            MPPieChart2.setCenterText(getString(R.string.This)+" "+ calBy);
+            MPPieChart2.setCenterTextColor(Color.BLUE);
+            Description description = new Description();
+            description.setText("");
+            MPPieChart2.setDescription(description);
+            MPPieChart2.animateXY(525,525);
+            MPPieChart2.invalidate();
+            MPPieChart2.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                @Override
+                public void onValueSelected(Entry e, Highlight h) {
+                    PieEntry pe = (PieEntry) e;
+                    MPPieChart2.setCenterText(pe.getLabel() + ":\n"+ e.getY());
+                    MPPieChart2.setCenterTextColor(CategoryColorArray[pieDataSet.getEntryIndex(e)]);
+                }
+                @Override
+                public void onNothingSelected() {
+                    MPPieChart2.setCenterText(getString(R.string.This)+" "+ calBy);
+                    MPPieChart2.setCenterTextColor(Color.BLUE);
+                }
+            });
+        }
     }
     @Override
     public void onResume() {
