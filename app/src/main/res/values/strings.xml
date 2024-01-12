@@ -42,7 +42,7 @@
     <string name="Import">Import</string>
     <string name="EXPENSE">EXPENSE</string>
     <string name="HEADER">HEADER</string>
-    <string name="HI_USER">HI USER</string>
+    <string name="HI_USER">WELCOME</string>
     <string name="Income_Rate">Income Rate</string>
     <string name="Today_transactions">Today transactions</string>
     <string name="Historical_documentation">Historical documentation</string>
