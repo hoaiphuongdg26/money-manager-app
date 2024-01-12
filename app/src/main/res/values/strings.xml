@@ -119,4 +119,15 @@
     <string name="SavedOffline">Saved in local</string>
     <string name="NoNetwork">No network connection</string>
     <string name="Error">Error: </string>
+    <string name="Skip">Skip</string>
+    <string name="Back">Back</string>
+    <string name="Next">Next</string>
+    <string name="heading_one">Heading One</string>
+    <string name="heading_two">Heading Two</string>
+    <string name="heading_three">Heading Three</string>
+    <string name="heading_fourth">Heading Fourth</string>
+    <string name="desc_one">Heading One</string>
+    <string name="desc_two">Heading Two</string>
+    <string name="desc_three">Heading Three</string>
+    <string name="desc_fourth">Heading Fourth</string>
 </resources>

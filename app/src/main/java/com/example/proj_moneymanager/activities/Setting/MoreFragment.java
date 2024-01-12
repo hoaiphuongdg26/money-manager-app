@@ -1,8 +1,11 @@
 package com.example.proj_moneymanager.activities.Setting;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,6 +27,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.activities.Instruction.Instruction;
 import com.example.proj_moneymanager.database.DbHelper;
 import com.example.proj_moneymanager.databinding.FragmentMoreBinding;
 
@@ -45,8 +49,8 @@ public class MoreFragment extends Fragment {
         lv_moreOption = binding.lvOptMore;
         arr_moreOption = new ArrayList<>();
 
-        arr_moreOption.add(new Setting_Option(getString(R.string.Instruction), R.drawable.ic_book));
-        arr_moreOption.add(new Setting_Option(getString(R.string.Feedback_Contact), R.drawable.ic_contact));
+        arr_moreOption.add(new Setting_Option(getString(R.string.Instruction), R.drawable.icon_book));
+        arr_moreOption.add(new Setting_Option(getString(R.string.Feedback_Contact), R.drawable.icon_contact));
 
         SettingAdapter settingAdapter = new SettingAdapter(
                 getActivity(),
@@ -65,6 +69,13 @@ public class MoreFragment extends Fragment {
                     // Mở dialog tương ứng với mục "Feedback/Contact"
                     new FeedbackTask(MoreFragment.this, "").execute();
                 } else if (selectedOption.getLabel().equals(getString(R.string.Instruction))) {
+                    SharedPreferences preferences = getContext().getSharedPreferences("MyPreferencesInstruction", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("hasViewedInstruction", false);
+                    editor.apply();
+
+                    Intent intent = new Intent(getActivity(), Instruction.class);
+                    startActivity(intent);
                     // Handle Instruction click
                 }
                 // Thêm các điều kiện khác nếu cần thiết

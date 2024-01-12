@@ -20,4 +20,6 @@
     <color name="sky_blue">#87CEFA</color>
     <color name="NavyBlue">#000080</color>
     <color name="MidnightBlue">#191970</color>
+    <color name="inactive">#C4C4C4</color>
+    <color name="active">#50C2C9</color>
 </resources>

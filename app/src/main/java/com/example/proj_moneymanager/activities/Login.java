@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.example.proj_moneymanager.MD5Hasher;
 import com.example.proj_moneymanager.MainActivity;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.activities.Instruction.Instruction;
 import com.example.proj_moneymanager.app.AppConfig;
 import com.example.proj_moneymanager.database.DbContract;
 import com.example.proj_moneymanager.database.DbHelper;
@@ -67,97 +69,109 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        appConfig = new AppConfig(this);
-        // Initialize
-        oneTapClient = Identity.getSignInClient(this);
-        signInRequest = BeginSignInRequest.builder()
-                .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
-                        .setSupported(true)
-                        .build())
-                .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                        .setSupported(true)
-                        // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.web_client_id))
-                        // Not only show accounts previously used to sign in.
-                        .setFilterByAuthorizedAccounts(false)
-                        .build())
-                // Automatically sign in when exactly one credential is retrieved.
-                .setAutoSelectEnabled(false)
-                .build();
+        // Kiểm tra trạng thái đã xem instruction hay chưa
+        SharedPreferences preferences = getSharedPreferences("MyPreferencesInstruction", MODE_PRIVATE);
+        boolean hasViewedInstruction = preferences.getBoolean("hasViewedInstruction", false);
 
-        isRememberLogin = appConfig.isRememberLoginChecked();
-        if(appConfig.isUserLogin()){
-            if (checkNetworkConnection()) {
-                if (appConfig.isLoginUsingGmail()) {
-                    //Google Login
-                    performGoogleLogin();
+        if (!hasViewedInstruction) {
+            // Nếu chưa xem instruction, mở nó và cập nhật trạng thái
+            Intent intent = new Intent(Login.this, Instruction.class);
+            startActivity(intent);
+
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("hasViewedInstruction", true);
+            editor.apply();
+
+            finish();
+        } else {
+            appConfig = new AppConfig(this);
+            // Initialize
+            oneTapClient = Identity.getSignInClient(this);
+            signInRequest = BeginSignInRequest.builder()
+                    .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
+                            .setSupported(true)
+                            .build())
+                    .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                            .setSupported(true)
+                            // Your server's client ID, not your Android client ID.
+                            .setServerClientId(getString(R.string.web_client_id))
+                            // Not only show accounts previously used to sign in.
+                            .setFilterByAuthorizedAccounts(false)
+                            .build())
+                    // Automatically sign in when exactly one credential is retrieved.
+                    .setAutoSelectEnabled(false)
+                    .build();
+
+            isRememberLogin = appConfig.isRememberLoginChecked();
+            if (appConfig.isUserLogin()) {
+                if (checkNetworkConnection()) {
+                    if (appConfig.isLoginUsingGmail()) {
+                        //Google Login
+                        performGoogleLogin();
+                    } else {
+                        UserName = appConfig.getUserName();
+                        Password = appConfig.getUserPassword();
+                        performLogin();
+                    }
                 } else {
                     UserName = appConfig.getUserName();
-                    Password = appConfig.getUserPassword();
-                    performLogin();
+                    Password = MD5Hasher.hashString(appConfig.getUserPassword());
+                    performLoginOffline();
                 }
-            }
-            else {
-                UserName = appConfig.getUserName();
-                Password = MD5Hasher.hashString(appConfig.getUserPassword());
-                performLoginOffline();
-            }
-        }
-        else{
-            setContentView(R.layout.login);
+            } else {
+                setContentView(R.layout.login);
 
-            editTextUserName = (EditText) findViewById(R.id.edittext_username);
-            editTextPassword = (EditText) findViewById(R.id.edittext_password);
+                editTextUserName = (EditText) findViewById(R.id.edittext_username);
+                editTextPassword = (EditText) findViewById(R.id.edittext_password);
 
-            textViewSignUp = (TextView)findViewById(R.id.textview_moveToSignup);
-            //Set check box remember login
-            checkBoxIsRememberLogin = (CheckBox)findViewById(R.id.checkbox_rememberLogin);
-            checkBoxIsRememberLogin.setChecked(appConfig.isRememberLoginChecked());
+                textViewSignUp = (TextView) findViewById(R.id.textview_moveToSignup);
+                //Set check box remember login
+                checkBoxIsRememberLogin = (CheckBox) findViewById(R.id.checkbox_rememberLogin);
+                checkBoxIsRememberLogin.setChecked(appConfig.isRememberLoginChecked());
 
-            btnLogin = (ImageButton) findViewById(R.id.button_login);
-            bt_googleSignIn = (ImageButton) findViewById(R.id.button_google);
-            //Google Button Click -> Login with Google
-            bt_googleSignIn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                btnLogin = (ImageButton) findViewById(R.id.button_login);
+                bt_googleSignIn = (ImageButton) findViewById(R.id.button_google);
+                //Google Button Click -> Login with Google
+                bt_googleSignIn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
                         //Start ProgressBar first (set visibility VISIBLE)
                         performGoogleLogin();
-                }
-            });
-            btnLogin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (checkNetworkConnection()){
-                        UserName = editTextUserName.getText().toString();
-                        Password = editTextPassword.getText().toString();
-                        if(!UserName.equals("")&&!Password.equals("")){
-                            //Start ProgressBar first (set visibility VISIBLE)
-                            performLogin();
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), getString(R.string.Please_enter_Login_information), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                btnLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (checkNetworkConnection()) {
+                            UserName = editTextUserName.getText().toString();
+                            Password = editTextPassword.getText().toString();
+                            if (!UserName.equals("") && !Password.equals("")) {
+                                //Start ProgressBar first (set visibility VISIBLE)
+                                performLogin();
+                            } else {
+                                Toast.makeText(getApplicationContext(), getString(R.string.Please_enter_Login_information), Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), getString(R.string.No_network_connection), Toast.LENGTH_SHORT).show();
                         }
                     }
-                    else {
-                        Toast.makeText(getApplicationContext(),getString(R.string.No_network_connection),Toast.LENGTH_SHORT).show();
+                });
+                checkBoxIsRememberLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isRememberLogin = checkBoxIsRememberLogin.isChecked();
+                        appConfig.saveIsRememberLoginClicked(isRememberLogin);
                     }
-                }
-            });
-            checkBoxIsRememberLogin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    isRememberLogin = checkBoxIsRememberLogin.isChecked();
-                    appConfig.saveIsRememberLoginClicked(isRememberLogin);
-                }
-            });
-            textViewSignUp.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                    startActivity(intent);
-                    finish();
-                }
-            });
+                });
+                textViewSignUp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+            }
         }
     }
     ActivityResultLauncher<IntentSenderRequest> activityResultLauncher =

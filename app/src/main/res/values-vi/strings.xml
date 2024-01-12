@@ -120,4 +120,15 @@
     <string name="SavedOffline">Đã lưu vào local</string>
     <string name="NoNetwork">Không có kết nối mạng</string>
     <string name="Error">Lỗi: </string>
+    <string name="Skip">Bỏ qua</string>
+    <string name="Back">Quay về</string>
+    <string name="Next">Tiếp theo</string>
+    <string name="heading_one">Heading One</string>
+    <string name="heading_two">Heading Two</string>
+    <string name="heading_three">Heading Three</string>
+    <string name="heading_fourth">Heading Fourth</string>
+    <string name="desc_one">Heading One</string>
+    <string name="desc_two">Heading Two</string>
+    <string name="desc_three">Heading Three</string>
+    <string name="desc_fourth">Heading Fourth</string>
 </resources>
