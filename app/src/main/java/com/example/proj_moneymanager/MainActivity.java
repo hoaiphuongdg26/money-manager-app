@@ -169,13 +169,14 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         if(networkMonitor == null) networkMonitor = new NetworkMonitor();
-        //registerNetworkBroadcastForNougat();
+        registerNetworkBroadcastForNougat();
         MyReceiver.saveLastAccessTime(this, System.currentTimeMillis());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if(networkMonitor!=null)
         unregisterReceiver(networkMonitor);
     }
     private void selectTab(int itemId) {

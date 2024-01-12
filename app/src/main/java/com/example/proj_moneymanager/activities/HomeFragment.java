@@ -79,7 +79,21 @@ public class HomeFragment extends Fragment {
                         tv_incomeRate.setText(MainActivity.formatCurrency(income));
                         tv_total.setText(MainActivity.formatCurrency(total));
                     }
-                    else tvNoTransactionFound.setVisibility(View.VISIBLE);
+                    else{
+                        tvNoTransactionFound.setVisibility(View.VISIBLE);
+                        progressBar.setProgress(0);
+                    }
+                }
+                else{
+                    //Toast.makeText(getContext(),"hihihih",Toast.LENGTH_SHORT).show();
+                    recentbills = new ArrayList<>();
+                    recentbills.clear();
+                    readBillFromLocalStorage readBillFromLocalStorage = new readBillFromLocalStorage(getContext(),recentbills);
+                    readBillFromLocalStorage.execute(date.getYear()-1900,date.getMonthValue()-1,date.getDayOfMonth());
+
+                    BillAdapter billAdapter = new BillAdapter(requireActivity(),recentbills);
+                    lvTransaction.setAdapter(billAdapter);
+                    billAdapter.notifyDataSetChanged();
                 }
             }
         };
@@ -87,6 +101,7 @@ public class HomeFragment extends Fragment {
         tvNoTransactionFound = homeBinding.tvNoTransactionFound;
         tvNoTransactionFound.setVisibility(View.INVISIBLE);
         recentbills = new ArrayList<>();
+        recentbills.clear();
         readBillFromLocalStorage readBillFromLocalStorage = new readBillFromLocalStorage(getContext(),recentbills);
         readBillFromLocalStorage.execute(date.getYear()-1900,date.getMonthValue()-1,date.getDayOfMonth());
 
@@ -219,4 +234,5 @@ public class HomeFragment extends Fragment {
         if(receiver!=null)
             getActivity().unregisterReceiver(receiver);
     }
+
 }

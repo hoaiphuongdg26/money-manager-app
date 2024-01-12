@@ -132,7 +132,6 @@
                         android:gravity="center"
                         android:textColor="@color/teal_700"
                         android:textSize="20sp"
-                        android:text="+300,000"
                         android:fontFamily="@font/sf_pro_text_medium"
                         />
 
@@ -144,7 +143,6 @@
                         android:gravity="center"
                         android:textColor="@color/orange"
                         android:textSize="20sp"
-                        android:text="-500,000"
                         android:fontFamily="@font/sf_pro_text_medium"
                         />
 
@@ -156,7 +154,6 @@
                         android:gravity="center"
                         android:textColor="@color/red"
                         android:textSize="20sp"
-                        android:text="-200,000"
                         android:fontFamily="@font/sf_pro_text_medium"
                         />
 

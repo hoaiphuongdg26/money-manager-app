@@ -130,5 +130,6 @@ public class GetServerData extends AsyncTask<Long, Void, String> {
         super.onPostExecute(s);
         Intent intent = new Intent();
         intent.setAction("GET_SERVER_DATA_COMPLETE");
+        context.sendBroadcast(intent);
     }
 }
