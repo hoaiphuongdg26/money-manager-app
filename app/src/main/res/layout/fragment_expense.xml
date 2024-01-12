@@ -106,7 +106,7 @@
                             android:textColor="@color/white"
                             android:fontFamily="@font/sf_pro_text_medium"
                             android:background="@drawable/custom_button_background_expense"
-                            android:drawableStart="@drawable/ic_subtract"
+                            android:drawableStart="@drawable/icon_subtract"
                             android:gravity = "start|center_vertical|center_horizontal"
                             android:padding="10dp"
                             />
@@ -123,7 +123,7 @@
                             android:textColor="@color/white"
                             android:fontFamily="@font/sf_pro_text_medium"
                             android:background="@drawable/custom_button_background_income"
-                            android:drawableStart="@drawable/ic_add"
+                            android:drawableStart="@drawable/icon_add"
                             android:gravity = "start|center_vertical|center_horizontal"
                             android:padding="10dp"
                             />

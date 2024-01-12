@@ -6,10 +6,10 @@ public class DbContract {
     public static final int SYNC_STATUS_OK = 0;
     public static final int SYNC_STATUS_FAILED = 1;
     public static final int SYNC_STATUS_PENDING = -1;
-    public static final String SERVER_URL_SYNCBILL = "http://172.16.3.224/MoneyManager/money_management/sync_bill.php/";
-    public static final String SERVER_URL_SYNCCATEGORY = "http://172.16.3.224/MoneyManager/money_management/sync_category.php/";
-    public static final String SERVER_URL_SYNCPROFILE = "http://172.16.3.224/MoneyManager//money_management/sync_profile.php/";
-    public static final String SERVER_URL_GETDATABASE = "http://172.16.3.224/MoneyManager/money_management/getDatabase.php/";
+    public static final String SERVER_URL_SYNCBILL = "http://10.0.136.140/MoneyManager/money_management/sync_bill.php/";
+    public static final String SERVER_URL_SYNCCATEGORY = "http://10.0.136.140/MoneyManager/money_management/sync_category.php/";
+    public static final String SERVER_URL_SYNCPROFILE = "http://10.0.136.140/MoneyManager//money_management/sync_profile.php/";
+    public static final String SERVER_URL_GETDATABASE = "http://10.0.136.140/MoneyManager/money_management/getDatabase.php/";
     public static final String UI_UPDATE_BROADCAST = "com.example.proj_moneynanager.uiupdatebroadcast";
     public static final String DATABASE_NAME = "moneyManagement";
 

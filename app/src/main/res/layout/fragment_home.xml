@@ -58,7 +58,7 @@
             android:weightSum="100"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="90"
+            android:layout_weight="60"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -80,39 +80,10 @@
                         android:textColor="@color/blue"
                         android:layout_marginLeft="10dp"
                         app:layout_constraintBottom_toTopOf="@id/textview_rate"
-                        app:layout_constraintTop_toTopOf="@+id/notification"
-                        app:layout_constraintBottom_toBottomOf="@+id/notification"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         />
-                    <EditText
-                        android:layout_width="0dp"
-                        android:layout_height="35dp"
-                        android:id="@+id/edittext_search"
-                        app:layout_constraintStart_toEndOf="@id/textview_welcome"
-                        app:layout_constraintTop_toTopOf="@id/notification"
-                        app:layout_constraintBottom_toBottomOf="@id/notification"
-                        android:background="@drawable/rounded_background2"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:drawableStart="@drawable/ic_search"
-                        android:hint=" Search..."
-                        android:paddingLeft="10dp"
-                        android:fontFamily="@font/sf_pro_text_regular"
-                        android:textSize="14dp"
-                        app:layout_constraintEnd_toStartOf="@id/notification"
-                        />
-                    <ImageButton
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:id="@+id/notification"
-                        android:scaleType="fitCenter"
-                        android:contentDescription="Menu"
-                        android:background="@drawable/ic_notify"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintBottom_toTopOf="@id/textview_rate"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginRight="10dp"
-                        />
+
                     <TextView
                         android:id="@+id/textview_rate"
                         android:text="@string/Income_Rate"
@@ -120,8 +91,7 @@
                         android:textSize="16dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@id/notification"
-                        app:layout_constraintLeft_toLeftOf="@id/textview_welcome"
+                        app:layout_constraintLeft_toLeftOf="parent"
                         android:layout_marginLeft="20dp"
                         android:textColor="@color/black"
                         app:layout_constraintBottom_toTopOf="@+id/progressBar"
@@ -132,9 +102,10 @@
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
+                        android:layout_marginHorizontal="20dp"
                         app:layout_constraintTop_toBottomOf="@id/textview_rate"
-                        app:layout_constraintLeft_toLeftOf="@id/textview_rate"
-                        app:layout_constraintRight_toRightOf="@id/notification"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintBottom_toTopOf="@id/textview_rateMid"
                         />
                     <TextView
@@ -187,105 +158,38 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="30"
-                android:weightSum="30"
+                android:layout_weight="70"
                 android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="11.5">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <TextView
+                        android:id="@+id/textview_infoTransactions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:fontFamily="@font/sf_pro_text_medium"
+                        android:text="@string/Today_transactions"
+                        android:textColor="@color/blue"
+                        android:textSize="16dp"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                    <TextView
+                        android:id="@+id/tv_NoTransactionFound"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+                        android:visibility="gone"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_gravity="center"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:text="You haven't made any transaction yet">
+                    </TextView>
+                    <ListView
+                        android:id="@+id/lv_Today_transactions"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <TextView
-                            android:id="@+id/textview_infoTransactions"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:fontFamily="@font/sf_pro_text_medium"
-                            android:text="@string/Today_transactions"
-                            android:textColor="@color/blue"
-                            android:textSize="16dp"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toTopOf="@id/periodically"/>
-
-                        <Spinner
-                            android:id="@+id/periodically"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_text_regular"
-                            app:layout_constraintLeft_toLeftOf="@id/textview_infoTransactions"
-                            app:layout_constraintTop_toBottomOf="@id/textview_infoTransactions"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="5.5"
-                    android:orientation="vertical">
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                        <TextView
-                            android:id="@+id/tv_NoTransactionFound"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="20dp"
-                            android:visibility="gone"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:text="You haven't made any transaction yet">
-                        </TextView>
-                        <ListView
-                            android:id="@+id/lv_Today_transactions"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                        </ListView>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="13">
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                        <ImageButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/historicalDetail"
-                            android:contentDescription="Historical documentation detail"
-                            android:background="@drawable/right_forward"
-                            app:layout_constraintRight_toRightOf="parent"
-                            android:layout_marginRight="10dp"
-                            app:layout_constraintTop_toTopOf="@id/textview_historical"
-                            app:layout_constraintBottom_toBottomOf="@id/textview_historical"
-                            />
-                        <TextView
-                            android:id="@+id/textview_historical"
-                            android:text="@string/Historical_documentation"
-                            android:fontFamily="@font/sf_pro_text_regular"
-                            android:textSize="13dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/light_blue"
-                            android:clickable="true"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/historicalDetail"
-                            android:layout_marginRight="5dp"
-                            />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                        android:layout_height="match_parent"
+                        />
                 </LinearLayout>
 
             </LinearLayout>
@@ -297,7 +201,8 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    >
                     <TextView
                         android:id="@+id/textview_operation"
                         android:layout_width="wrap_content"
@@ -318,7 +223,7 @@
                         android:background="@drawable/icon_expense"
                         app:layout_constraintTop_toBottomOf="@id/textview_operation"
                         app:layout_constraintLeft_toLeftOf="parent"
-                        android:layout_marginLeft="30dp"
+                        android:layout_marginLeft="40dp"
                         android:layout_marginTop="10dp"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -435,6 +340,5 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
     </LinearLayout>
 </FrameLayout>

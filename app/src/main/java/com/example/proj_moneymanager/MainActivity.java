@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements
         HomeFragment.OnStatisticButtonClickListener{
     ActivityMainBinding binding;
     NetworkMonitor networkMonitor;
-    DbHelper database = Login.database;
     long UserID;
 
 

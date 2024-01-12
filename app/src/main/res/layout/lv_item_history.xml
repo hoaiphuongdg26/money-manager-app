@@ -81,7 +81,7 @@
         android:id="@+id/imageview_dotOffline"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:background="@drawable/ic_dot"
+        android:background="@drawable/icon_dot"
         app:layout_constraintBottom_toTopOf="@+id/textview_priceForEachCategory"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginRight="15dp"

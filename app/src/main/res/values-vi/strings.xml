@@ -21,8 +21,8 @@
     <string name="Cancel">Huỷ bỏ</string>
     <string name="Delete">Xoá</string>
     <string name="Change_language">Thay đổi ngôn ngữ</string>
-    <string name="English_EN">Tiếng Anh</string>
-    <string name="Vietnamese_VIE">Tiếng Việt</string>
+    <string name="English_EN">   Tiếng Anh</string>
+    <string name="Vietnamese_VIE">   Tiếng Việt</string>
     <string name="CALENDAR">LỊCH</string>
     <string name="SUN">CN</string>
     <string name="MON">T2</string>
@@ -35,7 +35,6 @@
     <string name="Expense">Tiền chi</string>
     <string name="Total">Tổng</string>
     <string name="EDIT_CATEGORY">Chỉnh sửa danh mục</string>
-    <string name="ListCategory">Danh sách danh mục</string>
     <string name="ADD_NEW_CATEGORY">Thêm danh mục mới</string>
     <string name="NEW_CATEGORY">New Category</string>
     <string name="Name">Tên</string>
@@ -114,10 +113,22 @@
     <string name="Fullname_change_successfully">Đổi tên thành công</string>
     <string name="Password_confirm_not_match">Mật khẩu xác nhận\nkhông trùng khớp.</string>
     <string name="Please_enter_new_name">Vui lòng nhập tên mới</string>
-    <string name="Arrange">Sắp xếp</string>
+    <string name="List_of_Categories">Danh sách các danh mục</string>
     <string name="Deleted">Đã xoá</string>
     <string name="Failed">Lỗi</string>
     <string name="Saved">Đã lưu</string>
     <string name="SavedOffline">Đã lưu vào local</string>
     <string name="NoNetwork">Không có kết nối mạng</string>
+    <string name="Error">Lỗi: </string>
+    <string name="Skip">Bỏ qua</string>
+    <string name="Back">Quay về</string>
+    <string name="Next">Tiếp theo</string>
+    <string name="heading_one">Heading One</string>
+    <string name="heading_two">Heading Two</string>
+    <string name="heading_three">Heading Three</string>
+    <string name="heading_fourth">Heading Fourth</string>
+    <string name="desc_one">Heading One</string>
+    <string name="desc_two">Heading Two</string>
+    <string name="desc_three">Heading Three</string>
+    <string name="desc_fourth">Heading Fourth</string>
 </resources>

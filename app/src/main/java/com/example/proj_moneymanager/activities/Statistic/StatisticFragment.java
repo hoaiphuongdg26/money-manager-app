@@ -84,6 +84,7 @@ public class StatisticFragment extends Fragment {
     int[] CategoryColorArray;
     BroadcastReceiver receiver;
     IntentFilter intentFilter = new IntentFilter();
+    calculate cal;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -146,26 +147,26 @@ public class StatisticFragment extends Fragment {
                 ContextCompat.getColor(getContext(), R.color.white),
 
         };
-        calculate cal = new calculate(getContext());
+        cal = new calculate(requireContext());
         cal.execute(false,false);
         Btn_cal_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calculate cal = new calculate(getContext());
+                cal = new calculate(requireContext());
                 cal.execute(false,true);
             }
         });
         Btn_cal_month.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calculate cal = new calculate(getContext());
+                cal = new calculate(requireContext());
                 cal.execute(false,false);
             }
         });
         Btn_cal_year.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calculate cal = new calculate(getContext());
+                cal = new calculate(requireContext());
                 cal.execute(true,false);
             }
         });
@@ -179,13 +180,13 @@ public class StatisticFragment extends Fragment {
                 arrMonth = new ArrayList<>();
                 for(int i = 0; i < localDate.lengthOfMonth(); i++){
                     if(i <= localDate.lengthOfMonth()){
-                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,i + 1,month,year,"Day","All",getContext());
+                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,i + 1,month,year,"Day","All",requireContext());
                         arrMonth.add(contentValues);
                     }
                 }
                 arrCategory = new ArrayList<>();
                 for(Category c:categories){
-                    ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,month,year,calBy,c.getID(),getContext());
+                    ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,month,year,calBy,c.getID(),requireContext());
                     ContentValues CategoryContentvalue = new ContentValues();
                     CategoryContentvalue.put(c.getName(),(double)contentValues.get("Total"));
                     arrCategory.add(CategoryContentvalue);
@@ -194,7 +195,7 @@ public class StatisticFragment extends Fragment {
                 for(int i = 0; i < localDate.lengthOfMonth(); i++){
                     ArrayList<ContentValues> dayIndex = new ArrayList<>();
                     for(Category c:categories){
-                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,i + 1,month,year,"Day",c.getID(),getContext());
+                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,i + 1,month,year,"Day",c.getID(),requireContext());
                         dayIndex.add(contentValues);
                     }
                     arrCategoryMonth.add(dayIndex);
@@ -205,13 +206,13 @@ public class StatisticFragment extends Fragment {
                 arrWeek = new ArrayList<>();
                 for(int i = 0; i <7; i++){
                     ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,firstWeekDay.plusDays(i).getDayOfMonth(),
-                            firstWeekDay.plusDays(i).getMonthValue()-1,firstWeekDay.plusDays(i).getYear()-1,"Day","All",getContext());
+                            firstWeekDay.plusDays(i).getMonthValue()-1,firstWeekDay.plusDays(i).getYear()-1,"Day","All",requireContext());
                     arrWeek.add(contentValues);
                 }
                 arrCategory = new ArrayList<>();
                 for(Category c:categories){
                     ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,firstWeekDay.getDayOfMonth(),
-                            firstWeekDay.getMonthValue()-1,firstWeekDay.getYear()-1,calBy,c.getID(),getContext());
+                            firstWeekDay.getMonthValue()-1,firstWeekDay.getYear()-1,calBy,c.getID(),requireContext());
                     ContentValues CategoryContentvalue = new ContentValues();
                     CategoryContentvalue.put(c.getName(),(double)contentValues.get("Total"));
                     arrCategory.add(CategoryContentvalue);
@@ -221,7 +222,7 @@ public class StatisticFragment extends Fragment {
                     ArrayList<ContentValues> dayIndex = new ArrayList<>();
                     for(Category c:categories){
                         ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,firstWeekDay.plusDays(i).getDayOfMonth(),
-                                firstWeekDay.plusDays(i).getMonthValue()-1,firstWeekDay.plusDays(i).getYear()-1,"Day",c.getID(),getContext());
+                                firstWeekDay.plusDays(i).getMonthValue()-1,firstWeekDay.plusDays(i).getYear()-1,"Day",c.getID(),requireContext());
                         dayIndex.add(contentValues);
                     }
                     arrCategoryWeek.add(dayIndex);
@@ -231,12 +232,12 @@ public class StatisticFragment extends Fragment {
                 //Tháng trong năm
                 arrMonths = new ArrayList<>();
                 for(int i = 0; i < 12; i++) {
-                    ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,i,year,"Month","All",getContext());
+                    ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,i,year,"Month","All",requireContext());
                     arrMonths.add(contentValues);
                 }
                 arrCategory = new ArrayList<>();
                 for(Category c:categories){
-                    ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,1,year,calBy,c.getID(),getContext());
+                    ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,1,year,calBy,c.getID(),requireContext());
                     ContentValues CategoryContentvalue = new ContentValues();
                     CategoryContentvalue.put(c.getName(),(double)contentValues.get("Total"));
                     arrCategory.add(CategoryContentvalue);
@@ -245,7 +246,7 @@ public class StatisticFragment extends Fragment {
                 for(int i = 0; i < 12; i++) {
                     ArrayList<ContentValues> monthIndex = new ArrayList<>();
                     for(Category c:categories){
-                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,i,year,"Month",c.getID(),getContext());
+                        ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,1,i,year,"Month",c.getID(),requireContext());
                         monthIndex.add(contentValues);
                     }
                     arrCategoryYear.add(monthIndex);
@@ -258,7 +259,7 @@ public class StatisticFragment extends Fragment {
             int first = arrBill_All.get(0).getDatetime().getYear();
             int last = arrBill_All.get(arrBill_All.size()-1).getDatetime().getYear();
             for(int i = first;i <= last;i++){
-                ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,day,month,i,"Year","All",getContext());
+                ContentValues contentValues = CalendarFragment.MoneyCalculate(UserID,day,month,i,"Year","All",requireContext());
                 arrYears.add(contentValues);
             }
         }
@@ -343,63 +344,70 @@ public class StatisticFragment extends Fragment {
         public calculate(Context context){
             this.context = context;
         }
+
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Intent intent = new Intent();
-            intent.setAction("CALCULATE_COMPLETE");
-            intent.putExtra("CalBy",calBy);
-            context.sendBroadcast(intent);
+            if (isAdded() && !isDetached()) {
+                Intent intent = new Intent();
+                intent.setAction("CALCULATE_COMPLETE");
+                intent.putExtra("CalBy", calBy);
+                context.sendBroadcast(intent);
+            }
         }
         @Override
         protected String doInBackground(Boolean... booleans) {
-            boolean byYear = booleans[0],byWeek = booleans[1];
-            String datetimeString = monthYearText.getText().toString();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
-            try {
-                Date DateTime = dateFormat.parse(datetimeString);
-                int month = DateTime.getMonth(), day = DateTime.getDate();
-                if(!byYear) {
-                    if(byWeek)
-                        calBy = "Week";
-                    else calBy = "Month";
+            if (isAdded() && !isDetached()) {
+                boolean byYear = booleans[0], byWeek = booleans[1];
+                String datetimeString = monthYearText.getText().toString();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
+                try {
+                    Date DateTime = dateFormat.parse(datetimeString);
+                    int month = DateTime.getMonth(), day = DateTime.getDate();
+                    if (!byYear) {
+                        if (byWeek)
+                            calBy = "Week";
+                        else calBy = "Month";
+                    } else {
+                        calBy = "Year";
+                    }
+                    Day = LocalDate.of(DateTime.getYear() + 1, Month.of(month + 1), day);
+                    int firstDayOfWeek;
+                    switch (Day.getDayOfWeek()) {
+                        case MONDAY:
+                            firstDayOfWeek = 1;
+                            break;
+                        case TUESDAY:
+                            firstDayOfWeek = 2;
+                            break;
+                        case WEDNESDAY:
+                            firstDayOfWeek = 3;
+                            break;
+                        case THURSDAY:
+                            firstDayOfWeek = 4;
+                            break;
+                        case FRIDAY:
+                            firstDayOfWeek = 5;
+                            break;
+                        case SATURDAY:
+                            firstDayOfWeek = 6;
+                            break;
+                        default:
+                            firstDayOfWeek = 0;
+                            break;
+                    }
+                    firstWeekDay = Day.minusDays(firstDayOfWeek);
+                    contentValues = CalendarFragment.MoneyCalculate(UserID, day,
+                            month, DateTime.getYear(), calBy, "All", requireContext());
+                    getDataset(day, month, DateTime.getYear(), calBy);
+                    binding.textviewIncome.setText(MainActivity.formatCurrency((double) contentValues.get("Income")));
+                    binding.textviewExpense.setText(MainActivity.formatCurrency((double) contentValues.get("Expense")));
+                    binding.textviewTotal.setText(MainActivity.formatCurrency((double) contentValues.get("Total")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, context.getString(R.string.Error) + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-                else {
-                    calBy = "Year";
-                }
-                Day = LocalDate.of(DateTime.getYear() + 1, Month.of(month +1),day);
-                int firstDayOfWeek;
-                switch(Day.getDayOfWeek()){
-                    case MONDAY:
-                        firstDayOfWeek = 1;
-                        break;
-                    case TUESDAY:
-                        firstDayOfWeek = 2;
-                        break;
-                    case WEDNESDAY:
-                        firstDayOfWeek = 3;
-                        break;
-                    case THURSDAY:
-                        firstDayOfWeek = 4;
-                        break;
-                    case FRIDAY:
-                        firstDayOfWeek = 5;
-                        break;
-                    case SATURDAY:
-                        firstDayOfWeek = 6;
-                        break;
-                    default:
-                        firstDayOfWeek = 0;
-                        break;
-                }
-                firstWeekDay = Day.minusDays(firstDayOfWeek);
-                contentValues = CalendarFragment.MoneyCalculate(UserID, day,
-                        month, DateTime.getYear(), calBy, "All",getContext());
-                getDataset(day, month,DateTime.getYear(),calBy);
-                binding.textviewIncome.setText(MainActivity.formatCurrency((double)contentValues.get("Income")));
-                binding.textviewExpense.setText(MainActivity.formatCurrency((double)contentValues.get("Expense")));
-                binding.textviewTotal.setText(MainActivity.formatCurrency((double)contentValues.get("Total")));
-            }catch (ParseException e){}
+            }
             return null;
         }
     }
@@ -686,5 +694,12 @@ public class StatisticFragment extends Fragment {
         DrawLineChart(linechartBinding.MPLineChart,calBy,type);
         dialog.show();
         MPPieChart1.setSelected(false);
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (cal != null && !cal.isCancelled()) {
+            cal.cancel(true);
+        }
     }
 }

@@ -15,8 +15,6 @@ public class IconAdapter extends BaseAdapter {
     public IconAdapter(Context context) {
         this.context = context;
     }
-    private OnIconClickListener iconClickListener;
-    private OnIconSelectedListener iconSelectedListener;
 
     // Danh sách các màu 30dpx30dp
     private static int[] iconDrawables = {
@@ -31,12 +29,20 @@ public class IconAdapter extends BaseAdapter {
             R.drawable.ic_water,
             R.drawable.ic_wifi,
             R.drawable.ic_game,
+            R.drawable.ic_favorite,
+            R.drawable.ic_phone,
+            R.drawable.ic_money1,
+            R.drawable.ic_money2,
+            R.drawable.ic_bank,
+            R.drawable.ic_medicine,
+            R.drawable.ic_makeup,
+            R.drawable.ic_ball,
+            R.drawable.ic_camera,
+
+
             // ... Thêm các icon khác
     };
     private int selectedPosition = -1;
-    public IconAdapter(NewCategoryFragment context) {
-        this.context = context.requireContext();
-    }
     @Override
     public int getCount() {
         return iconDrawables.length;
@@ -48,37 +54,6 @@ public class IconAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
-    }
-    public IconAdapter(EditCategoryAdapter editCategoryAdapter) {
-        context = editCategoryAdapter.getContext();
-        this.iconClickListener = editCategoryAdapter;
-    }
-
-    public void setOnIconSelectedListenerDialog(OnIconSelectedListener onIconSelectedListener) {
-        this.iconSelectedListener = onIconSelectedListener;
-    }
-
-    // Define a listener interface to notify the selected icon
-    public interface OnIconSelectedListener {
-        void onIconSelected(String iconDescription);
-    }
-    private void notifyIconSelectedListener(int iconDrawableId) {
-        if (iconSelectedListener != null) {
-            String iconDescription = getResourceName(iconDrawableId);
-//                Toast.makeText(context, "Resource Name: " + iconDescription, Toast.LENGTH_LONG).show();
-            // Notify the listener with the selected icon description
-            if (iconClickListener != null) {
-                iconSelectedListener.onIconSelected(iconDescription);
-            }
-
-        }
-    }
-    public interface OnIconClickListener {
-        void onIconClick(String iconDescription);
-    }
-    public IconAdapter(NewCategoryFragment context, IconAdapter.OnIconClickListener iconClickListener) {
-        this.context = context.requireContext();
-        this.iconClickListener = iconClickListener;
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -96,12 +71,9 @@ public class IconAdapter extends BaseAdapter {
                 // Xử lý sự kiện khi ImageButton được chọn
                 setSelectedPosition(position);
                 int iconDrawableId = iconDrawables[position];
-                String iconDescription = getResourceName(iconDrawableId);
+                // Cập nhật tên resourcename của icon được chọn
+                selectedIconResourceName = getResourceName(iconDrawableId);
 //                Toast.makeText(context, "Resource Name: " + iconDescription, Toast.LENGTH_LONG).show();
-                // Notify the listener with the selected icon description
-                if (iconClickListener != null) {
-                    iconClickListener.onIconClick(iconDescription);
-                }
             }
         });
 
@@ -134,9 +106,13 @@ public class IconAdapter extends BaseAdapter {
         if (position >= 0 && position < iconDrawables.length) {
             selectedPosition = position;
             notifyDataSetChanged(); // Refresh GridView to update selected item
-            notifyIconSelectedListener(iconDrawables[position]);
         }// Notify the listener with the selected icon
     }
-
-
+    private String selectedIconResourceName;
+    public String getSelectedIconResourceName() {
+        return selectedIconResourceName;
+    }
+    public void setSelectedIconResourceName(String selectedIconResourceName) {
+        this.selectedIconResourceName = selectedIconResourceName;
+    }
 }

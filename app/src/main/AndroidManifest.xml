@@ -19,7 +19,7 @@
         android:windowNoTitle="true"
         tools:targetApi="31" >
         <activity
-            android:name=".activities.Login"
+            android:name=".activities.Instruction.Instruction"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -55,6 +55,9 @@
             android:exported="true"/>
         <activity
             android:name=".activities.Expense.NewCategoryFragment"
+            android:exported="true"/>
+        <activity
+            android:name=".activities.Login"
             android:exported="true"/>
         <receiver android:name=".database.NetworkMonitor"
             android:exported="true">

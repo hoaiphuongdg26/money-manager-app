@@ -462,8 +462,8 @@ public class ProfileFragment extends Fragment {
                 // Thêm vào danh sách
                 arrayListUser.add(new Profile_Option(getString(R.string.Name), fullName, R.drawable.icon_person_profile));
                 arrayListUser.add(new Profile_Option(getString(R.string.Password), password, R.drawable.icon_lock));
-                arrayListUser.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
-                arrayListUser.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
+//                arrayListUser.add(new Profile_Option(getString(R.string.Email), email, R.drawable.icon_email_profile));
+//                arrayListUser.add(new Profile_Option(getString(R.string.Notification), "", R.drawable.icon_notification_fill));
             }
             cursor.close();
             dbHelper.close();
