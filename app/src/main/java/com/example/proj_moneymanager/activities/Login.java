@@ -256,7 +256,7 @@ public class Login extends AppCompatActivity {
                                 DbHelper dbHelper = new DbHelper(getApplicationContext());
                                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                                 dbHelper.onCreate(database);
-                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), uFullName,uUserName, Password,uEmail, uPhoneNumber,1, database);
+                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), uFullName,uUserName, uPassword,uEmail, uPhoneNumber,1, database);
                                 //Đưa dữ liệu mà remote không có lên POST
 
                                 //asynctask kéo dữ liệu từ remote về GET

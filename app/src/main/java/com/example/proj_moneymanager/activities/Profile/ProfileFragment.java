@@ -29,6 +29,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.MD5Hasher;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Login;
@@ -50,6 +51,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ProfileFragment extends Fragment {
@@ -299,7 +301,8 @@ public class ProfileFragment extends Fragment {
             public void onFocusChange(View v, boolean hasFocus) {
                 String currentPasswrd = arr_profileOption.get(1).getLabelInfo();
                 if(!hasFocus) {
-                if(!bindingChangePassword.edittextEnterOldPassword.getText().toString().equals(currentPasswrd)) {
+                    String oldPasswordMD5 = MD5Hasher.hashString(bindingChangePassword.edittextEnterOldPassword.getText().toString());
+                if(!(Objects.equals(oldPasswordMD5, currentPasswrd))) {
                     bindingChangePassword.textviewLabelErrorOldPasswd.setText(getString(R.string.Wrong_Password));
                     isCurrentPwdCorrect = false;
                     bindingChangePassword.buttonSave.setEnabled(false);
@@ -378,7 +381,8 @@ public class ProfileFragment extends Fragment {
                                             String serverResponse = jsonObject.getString("response");
                                             if (serverResponse.equals("OK")) {
                                                 Toast.makeText(getContext(), getString(R.string.Password_change_successfully), Toast.LENGTH_LONG).show();
-                                                appConfig.saveUserPassword(bindingChangePassword.edittextConfirmPassword.getText().toString());
+                                                String confirmPasswordMD5 = MD5Hasher.hashString(bindingChangePassword.edittextConfirmPassword.getText().toString());
+                                                appConfig.saveUserPassword(confirmPasswordMD5);
                                             } else {
                                                 //neu server tra về "fail"
                                                 Toast.makeText(getContext(), serverResponse, Toast.LENGTH_LONG).show();
