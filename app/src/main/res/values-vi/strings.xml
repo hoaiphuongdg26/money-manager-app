@@ -119,4 +119,5 @@
     <string name="Saved">Đã lưu</string>
     <string name="SavedOffline">Đã lưu vào local</string>
     <string name="NoNetwork">Không có kết nối mạng</string>
+    <string name="Error">Lỗi: </string>
 </resources>

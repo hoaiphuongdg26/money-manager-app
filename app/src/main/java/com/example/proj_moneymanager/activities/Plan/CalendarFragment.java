@@ -172,6 +172,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
 //                readCategoryFromLocalStorage.execute();
                 callReadFromStorageTaskByMonth();
+
             }
         };
         return view;
@@ -291,7 +292,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     }
     private void callReadFromStorageTaskByMonth(){
         String datetimeString = binding.textviewEachDay.getText().toString();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM yyyy", Locale.US);
         try {
             Date mDateTime = dateFormat.parse(datetimeString);
             ContentValues contentValues = MoneyCalculate(UserID,mDateTime.getDate(),mDateTime.getMonth(),mDateTime.getYear(),"Month","All",getContext());
@@ -355,7 +356,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(requireContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
-        binding.textviewEachDay.setText(1 + " " + monthYearFromDate(selectedDate));
+        binding.textviewEachDay.setText(monthYearFromDate(selectedDate));
     }
     private ArrayList<String> daysInMonthArray(LocalDate date)
     {
@@ -562,6 +563,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 //                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
 //                readFromLocalStorageTask.execute(billItem.getDateTime().getYear(),billItem.getDateTime().getMonth(),billItem.getDateTime().getDate());
                 callReadFromStorageTaskByDay();
+                callReadFromStorageTaskByMonth();
                 //fetch data mới lên remote db
                 Cursor cursor = dbHelper.getBill(billItem.getUserID(), billItem.getDatetime(), database);
                 int columnIndexUserID = cursor.getColumnIndex(DbContract.BillEntry.COLUMN_USER_ID);
@@ -702,6 +704,10 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
     //public static -> các activity khác có thẻ dùng lại. vd biểu đồ
     public static ContentValues MoneyCalculate(long userid, int day, int month, int year, String calBy, String cat, Context context){
         ContentValues contentValues = new ContentValues();
+        if (context == null) {
+            // Handle the case where the context is null
+            return contentValues;
+        }
         //Toast.makeText(context.getApplicationContext(), year + " " + Month.of(month+1)+ " "+day,Toast.LENGTH_SHORT).show();
         LocalDate FirstDayOfWeek = LocalDate.of(year + 1, Month.of(month+1),day);
         int firstDayOfWeek;

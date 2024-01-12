@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColorClickListener, IconAdapter.OnIconClickListener {
+public class NewCategoryFragment extends Fragment{
     FragmentNewCategoryBinding binding;
     ArrayList<Category> arrayListCategory = new ArrayList<Category>();
     TextView nameCategory;
@@ -46,7 +46,7 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
     IconAdapter iconAdapter;
     long  UserID;
     String CategoryID;
-    String color, icon;
+    String name, color, icon;
     public NewCategoryFragment(){}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,11 +58,11 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
         nameCategory = binding.edittextNameCategory;
 
         GridView gridviewColor = binding.gridviewColor;
-        colorAdapter = new ColorAdapter(this, this);
+        colorAdapter = new ColorAdapter(getContext());
         gridviewColor.setAdapter(colorAdapter);
 
         GridView gridviewIcon = binding.gridviewIcon;
-        iconAdapter =new IconAdapter(this, this);
+        iconAdapter =new IconAdapter(getContext());
         gridviewIcon.setAdapter(iconAdapter);
 
         Import = (Button) binding.btnImport;
@@ -70,7 +70,9 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
             @Override
             public void onClick(View v) {
                 // Xử lý khi Button được click
-                iconAdapter.getSelectedIconResourceName();
+                icon = iconAdapter.getSelectedIconResourceName();
+                color = colorAdapter.getSelectedColorResourceName();
+                name = nameCategory.getText().toString();
                 ImportCategory();
             }
         });
@@ -78,7 +80,6 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
     }
     private void ImportCategory(){
         // Lấy data
-        String name = nameCategory.getText().toString();
         if (name != null && icon != null && color != null) {
             DbHelper dbHelper = new DbHelper(getContext());
             if (dbHelper.isCategoryNameExists(name, UserID)) {
@@ -168,16 +169,5 @@ public class NewCategoryFragment extends Fragment implements ColorAdapter.OnColo
         readCategoryFromLocalStorage.execute();
         dbHelper.close();
         return categoryID;
-    }
-    @Override
-    public void onColorClick(String colorDescription) {
-        color = colorDescription;
-//        Toast.makeText(getContext(),"Selected color: " + color, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onIconClick(String iconDescription) {
-        icon = iconDescription;
-//        Toast.makeText(getContext(),"Selected icon: " + icon, Toast.LENGTH_LONG).show();
     }
 }

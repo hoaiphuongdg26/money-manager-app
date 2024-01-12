@@ -30,33 +30,15 @@ public class ColorAdapter extends BaseAdapter {
             R.drawable.colorbutton_7,
             R.drawable.colorbutton_8,
             R.drawable.colorbutton_9,
-            R.drawable.colorbutton_10
+            R.drawable.colorbutton_10,
+            R.drawable.colorbutton_11,
+            R.drawable.colorbutton_12,
+            R.drawable.colorbutton_13,
+            R.drawable.colorbutton_14,
+            R.drawable.colorbutton_15
             // ... Thêm các màu khác
     };
     private int selectedPosition = -1;
-    public ColorAdapter(NewCategoryFragment context) {
-        this.context = context.requireContext();
-    }
-    // Define a listener interface to notify the selected color
-    public interface OnColorSelectedListener {
-        void onColorSelected(int colorDrawableId);
-    }
-
-    private OnColorSelectedListener colorSelectedListener;
-    private void notifyColorSelectedListener(int colorDrawableId) {
-        if (colorSelectedListener != null) {
-            colorSelectedListener.onColorSelected(colorDrawableId);
-        }
-    }
-    public interface OnColorClickListener {
-        void onColorClick(String colorDescription);
-    }
-
-    private OnColorClickListener colorClickListener;
-    public ColorAdapter(NewCategoryFragment context, OnColorClickListener colorClickListener) {
-        this.context = context.requireContext();
-        this.colorClickListener = colorClickListener;
-    }
     @Override
     public int getCount() {
         return colorDrawables.length;
@@ -87,10 +69,6 @@ public class ColorAdapter extends BaseAdapter {
                 int colorDrawableId = colorDrawables[position];
                 selectedColorResourceName = getResourceName(colorDrawableId);
 //                Toast.makeText(context, "Resource Name: " + colorDescription, Toast.LENGTH_LONG).show();
-                // Notify the listener with the selected color description
-                if (colorClickListener != null) {
-                    colorClickListener.onColorClick(selectedColorResourceName);
-                }
             }
         });
 
@@ -122,7 +100,6 @@ public class ColorAdapter extends BaseAdapter {
         if (position >= 0 && position < colorDrawables.length) {
             selectedPosition = position;
             notifyDataSetChanged(); // Refresh GridView to update selected item
-            notifyColorSelectedListener(colorDrawables[position]);// Notify the listener with the selected color
         }
     }
     private String selectedColorResourceName;
