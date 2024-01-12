@@ -11,7 +11,7 @@ if (isset($_POST["UserName"]) && isset($_POST["Password"])) {
         if (mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_assoc($result);
             $dbPassword = $row['Password'];
-            if (md5($Password) == $dbPassword) {
+            if ($Password == $dbPassword) {
                 $status = "ok";
                 $result_code = 1;
                 $userData = array(

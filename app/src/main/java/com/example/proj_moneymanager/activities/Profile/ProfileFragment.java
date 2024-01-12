@@ -339,18 +339,20 @@ public class ProfileFragment extends Fragment {
                 if (bindingChangePassword.edittextConfirmPassword.getText().toString().equals(bindingChangePassword.edittextEnterNewPassword.getText().toString())) {
                     //Xử lý đổi mật khẩu
                     //fetch data mới lên remote db
+                    String confirmPasswordMD5 = MD5Hasher.hashString(bindingChangePassword.edittextConfirmPassword.getText().toString());
                     DbHelper dbHelper = new DbHelper(getContext());
                     SQLiteDatabase database = dbHelper.getWritableDatabase();
                     userInformation = new UserInformation();
                     userInformation.setUserID(getArguments().getLong("UserID", 0));
                     ContentValues values = new ContentValues();
-                    values.put("Password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                    values.put("Password", String.valueOf(confirmPasswordMD5));
                     String whereClause = DbContract.UserInformationEntry._ID + "=?";
                     String[] whereArgs = new String[]{
                             String.valueOf(userInformation.getUserID())
                     };
                     // Thực hiện cập nhật dữ liệu vào local db
                     database.update(DbContract.UserInformationEntry.TABLE_NAME, values, whereClause, whereArgs);
+                    appConfig.saveUserPassword(confirmPasswordMD5);
                     //Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
                     readUserDataFromLocalStorageTask readUserDataFromLocalStorageTask = new readUserDataFromLocalStorageTask(context, arr_profileOption);
                     readUserDataFromLocalStorageTask.execute();
@@ -369,8 +371,8 @@ public class ProfileFragment extends Fragment {
 
                         String fullName = cursor.getString(columnIndexUserFullname);
                         String userName = cursor.getString(columnIndexUserName);
-                        String password = cursor.getString(columnIndexUserPassword);
-                        String email = cursor.getString(columnIndexEmail);
+//                        String password = cursor.getString(columnIndexUserPassword);
+//                        String email = cursor.getString(columnIndexEmail);
 
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCPROFILE,
                                 new Response.Listener<String>() {
@@ -381,8 +383,6 @@ public class ProfileFragment extends Fragment {
                                             String serverResponse = jsonObject.getString("response");
                                             if (serverResponse.equals("OK")) {
                                                 Toast.makeText(getContext(), getString(R.string.Password_change_successfully), Toast.LENGTH_LONG).show();
-                                                String confirmPasswordMD5 = MD5Hasher.hashString(bindingChangePassword.edittextConfirmPassword.getText().toString());
-                                                appConfig.saveUserPassword(confirmPasswordMD5);
                                             } else {
                                                 //neu server tra về "fail"
                                                 Toast.makeText(getContext(), serverResponse, Toast.LENGTH_LONG).show();
@@ -403,7 +403,7 @@ public class ProfileFragment extends Fragment {
                             @Override
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
-                                params.put("_password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                                params.put("_password", confirmPasswordMD5);
                                 params.put("userID", String.valueOf(userInformation.getUserID()));
                                 params.put("fullName", fullName);
                                 params.put("userName", userName);
