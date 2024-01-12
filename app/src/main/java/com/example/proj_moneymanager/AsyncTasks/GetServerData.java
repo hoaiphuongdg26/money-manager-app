@@ -107,6 +107,8 @@ public class GetServerData extends AsyncTask<Long, Void, String> {
                             }
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
+                        } finally {
+                            dbHelper.close();
                         }
                     }
                 },  new Response.ErrorListener() {

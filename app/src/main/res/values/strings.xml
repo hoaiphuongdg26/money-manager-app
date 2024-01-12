@@ -20,8 +20,8 @@
     <string name="Cancel">Cancel</string>
     <string name="Delete">Delete</string>
     <string name="Change_language">Change language</string>
-    <string name="English_EN">English - EN</string>
-    <string name="Vietnamese_VIE">Vietnamese - VIE</string>
+    <string name="English_EN">   English - EN</string>
+    <string name="Vietnamese_VIE">   Vietnamese - VIE</string>
     <string name="CALENDAR">CALENDAR</string>
     <string name="SUN">SUN</string>
     <string name="MON">MON</string>

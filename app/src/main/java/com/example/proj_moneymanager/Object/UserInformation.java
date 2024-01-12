@@ -68,7 +68,8 @@ public class UserInformation implements Serializable {
             fullName = cursor.getString(columnIndexUserFullname);
             cursor.close();
         }
-
+        dbHelper.close();
+        cursor.close();
         return fullName;
     }
 
@@ -100,7 +101,8 @@ public class UserInformation implements Serializable {
             userName = cursor.getString(columnIndexUserFullname);
             cursor.close();
         }
-
+        dbHelper.close();
+        cursor.close();
         return userName;
     }
 

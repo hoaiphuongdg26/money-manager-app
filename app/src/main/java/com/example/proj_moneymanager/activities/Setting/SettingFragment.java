@@ -51,8 +51,6 @@ public class SettingFragment extends Fragment {
         arr_settingOption = new ArrayList<Setting_Option>();
 
         arr_settingOption.add(new Setting_Option(getString(R.string.Language), R.drawable.icon_language));
-        arr_settingOption.add(new Setting_Option(getString(R.string.Theme), R.drawable.icon_phone));
-        arr_settingOption.add(new Setting_Option(getString(R.string.Text_Formatting), R.drawable.icon_text));
 
         SettingAdapter SettingAdapter = new SettingAdapter(
                 getActivity(),
