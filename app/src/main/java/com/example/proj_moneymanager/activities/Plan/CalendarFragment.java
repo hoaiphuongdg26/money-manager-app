@@ -143,32 +143,24 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Lấy ra mục được chọn từ Adapter
-                //Bill selectedBill = billAdapter.getArrHistoryOption().get(position);
                 Bill selectedOption = (Bill) billAdapter.getItem(position);
-                Toast.makeText(getContext(),"selected",Toast.LENGTH_SHORT).show();
-                //dialogEditBill(selectedBill, position);
             }
         });
         //Xử lý chọn tháng nhanh
         initDatePicker(view);
-//        monthYearText = view.findViewById(R.id.btn_datetime_detail);
         monthYearText = binding.btnDatetimeDetail;
         monthYearText.setText(getTodaysDate());
         tv_income = binding.textviewIncome;
         tv_expense = binding.textviewExpense;
         tv_total = binding.textviewTotal;
-
         //readFromLocalStorage();
-        callReadFromStorageTaskByMonth();
-
+        //callReadFromStorageTaskByMonth();
 //        readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(),arryListCategory);
 //        readCategoryFromLocalStorage.execute();
-
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //loading the again
-
 //                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
 //                readCategoryFromLocalStorage.execute();
                 callReadFromStorageTaskByMonth();
@@ -302,7 +294,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
             readFromLocalStorageTask.execute(mDateTime.getYear(),mDateTime.getMonth(),-1);
         } catch (ParseException e) {
-            Toast.makeText(getContext(),"Error parsing Datetime",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getContext(),"Error parsing Datetime",Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
@@ -318,7 +310,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
             readFromLocalStorageTask.execute(mDateTime.getYear(),mDateTime.getMonth(),mDateTime.getDate());
         } catch (ParseException e) {
-            Toast.makeText(getContext(),"Error parsing Datetime",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getContext(),"Error parsing Datetime",Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
@@ -499,7 +491,12 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
 
         @NonNull DialogBillEditBinding bindingDialogEdit = DialogBillEditBinding.inflate(getLayoutInflater());
         View viewDialogEdit = bindingDialogEdit.getRoot();
-
+        if(billItem.getMoney() > 0) {
+            bindingDialogEdit.textviewExpenseIncome.setText(getString(R.string.Income));
+        }
+        else {
+            bindingDialogEdit.textviewExpenseIncome.setText(getString(R.string.Expense));
+        }
         // Set thông tin của bill vào dialog để chỉnh sửa
         bindingDialogEdit.edittextNote.setText(billItem.getNote());
         bindingDialogEdit.edittextExpense.setText(String.valueOf(billItem.getMoney()));
@@ -534,7 +531,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             window.setAttributes(params);
         }
         CategoryID = billItem.getCategoryID();
-        Toast.makeText(getContext(),CategoryID,Toast.LENGTH_SHORT).show();
 
         bindingDialogEdit.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -639,11 +635,7 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                     DbHelper dbHelper = new DbHelper(getContext());
                     SQLiteDatabase database = dbHelper.getWritableDatabase();
 
-//                readCategoryFromLocalStorage readCategoryFromLocalStorage = new readCategoryFromLocalStorage(getContext(), arryListCategory);
-//                readCategoryFromLocalStorage.execute();
-//                readFromLocalStorageTask readFromLocalStorageTask = new readFromLocalStorageTask(CalendarFragment.this);
-//                readFromLocalStorageTask.execute(billItem.getDateTime().getYear(),billItem.getDateTime().getMonth(),billItem.getDateTime().getDate());
-                    callReadFromStorageTaskByDay();
+
                     // Gửi yêu cầu xóa dữ liệu tương ứng trên server
                     StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCBILL,
                             new Response.Listener<String>() {
@@ -663,6 +655,8 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                                             // Thực hiện xóa dữ liệu từ local db
                                             database.delete(DbContract.BillEntry.TABLE_NAME, whereClause, whereArgs);
                                             Toast.makeText(getContext(), getString(R.string.Deleted), Toast.LENGTH_LONG).show();
+                                            callReadFromStorageTaskByDay();
+                                            callReadFromStorageTaskByMonth();
                                         } else {
                                             Toast.makeText(getContext(), getString(R.string.Failed) + serverResponse, Toast.LENGTH_LONG).show();
                                             Log.d("Delete response error", serverResponse);
@@ -708,7 +702,6 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
             // Handle the case where the context is null
             return contentValues;
         }
-        //Toast.makeText(context.getApplicationContext(), year + " " + Month.of(month+1)+ " "+day,Toast.LENGTH_SHORT).show();
         LocalDate FirstDayOfWeek = LocalDate.of(year + 1, Month.of(month+1),day);
         int firstDayOfWeek;
         switch(FirstDayOfWeek.getDayOfWeek()){
@@ -755,11 +748,11 @@ public class CalendarFragment extends Fragment implements CalendarAdapter.OnItem
                 String categoryId = cursor.getString(columnIndexCategoryId);
                 if(userID == userid)
                 {
-                    if(calBy!="Week"){
+                    if(calBy!= context.getString(R.string.Week)){
                         if(year == DateTime.getYear()){
-                            if(calBy!="Year"){
+                            if(calBy!=context.getString(R.string.Year)){
                                 if(month == DateTime.getMonth()){
-                                    if(calBy!="Month"){
+                                    if(calBy!=context.getString(R.string.Month)){
                                         if(day == DateTime.getDate())
                                             //Xét theo ngày
                                             if (cat.equals("All")||categoryId.equals(cat)) {

@@ -175,7 +175,7 @@
                         android:id="@+id/tv_NoTransactionFound"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20dp"
+                        android:textSize="16dp"
                         android:visibility="gone"
                         android:layout_marginHorizontal="20dp"
                         android:layout_gravity="center"
@@ -183,7 +183,7 @@
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:text="You haven't made any transaction yet">
+                        android:text="@string/You_have_not_made_any_transaction_yet">
                     </TextView>
                     <ListView
                         android:id="@+id/lv_Today_transactions"

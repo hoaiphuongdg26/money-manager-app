@@ -130,4 +130,15 @@
     <string name="desc_two">Heading Two</string>
     <string name="desc_three">Heading Three</string>
     <string name="desc_fourth">Heading Fourth</string>
+    <string name="You_have_not_made_any_transaction_yet">You have not made any transaction yet</string>
+    <string name="Week">Week</string>
+    <string name="Month">Month</string>
+    <string name="Year">Year</string>
+    <string name="No_bill_data_for_this">No bill data for this</string>
+    <string name="Loading_data">Loading data</string>
+    <string name="of">Of</string>
+    <string name="by_category">By Category</string>
+    <string name="This">This</string>
+    <string name="Income_rate">Income</string>
+    <string name="Expense_rate">Expense</string>
 </resources>

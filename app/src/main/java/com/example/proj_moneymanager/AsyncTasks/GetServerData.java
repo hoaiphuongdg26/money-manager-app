@@ -125,6 +125,6 @@ public class GetServerData extends AsyncTask<Long, Void, String> {
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
-        Toast.makeText(context.getApplicationContext(),"Get data completely",Toast.LENGTH_LONG).show();
+        //Toast.makeText(context.getApplicationContext(),"Get data completely",Toast.LENGTH_LONG).show();
     }
 }
