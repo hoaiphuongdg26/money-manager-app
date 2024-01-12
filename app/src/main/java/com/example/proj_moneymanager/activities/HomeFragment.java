@@ -57,27 +57,30 @@ public class HomeFragment extends Fragment {
         }
         LocalDate date = LocalDate.now();
         intentFilter.addAction("GET_BILL_COMPLETE");
+        intentFilter.addAction("GET_SERVER_DATA_COMPLETE");
         getActivity().registerReceiver(receiver,intentFilter);
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                //Toast.makeText(getContext(),"Progress",Toast.LENGTH_SHORT).show();
-                if(recentbills.size()>0) {
-                    tvNoTransactionFound.setVisibility(View.INVISIBLE);
-                    double income = 0, total = 0;
-                    for(Bill b:recentbills){
-                        if(b.getMoney()>0) income+=b.getMoney();
-                        if(b.getMoney()<0) total-=b.getMoney();
-                        else total+=b.getMoney();
+                if(intent.getAction().equals("GET_BILL_COMPLETE")){
+                    //Toast.makeText(getContext(),"Progress",Toast.LENGTH_SHORT).show();
+                    if(recentbills.size()>0) {
+                        tvNoTransactionFound.setVisibility(View.INVISIBLE);
+                        double income = 0, total = 0;
+                        for(Bill b:recentbills){
+                            if(b.getMoney()>0) income+=b.getMoney();
+                            if(b.getMoney()<0) total-=b.getMoney();
+                            else total+=b.getMoney();
+                        }
+                        double incomeRate = 100*income/total;
+                        int progressPercent = (int) incomeRate;
+                        progressBar.setProgress(progressPercent);
+                        tv_min.setText("0");
+                        tv_incomeRate.setText(MainActivity.formatCurrency(income));
+                        tv_total.setText(MainActivity.formatCurrency(total));
                     }
-                    double incomeRate = 100*income/total;
-                    int progressPercent = (int) incomeRate;
-                    progressBar.setProgress(progressPercent);
-                    tv_min.setText("0");
-                    tv_incomeRate.setText(MainActivity.formatCurrency(income));
-                    tv_total.setText(MainActivity.formatCurrency(total));
+                    else tvNoTransactionFound.setVisibility(View.VISIBLE);
                 }
-                else tvNoTransactionFound.setVisibility(View.VISIBLE);
             }
         };
         lvTransaction = homeBinding.lvTodayTransactions;

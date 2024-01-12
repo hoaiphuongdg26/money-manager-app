@@ -2,6 +2,7 @@ package com.example.proj_moneymanager.AsyncTasks;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -124,5 +125,7 @@ public class GetServerData extends AsyncTask<Long, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         Toast.makeText(context.getApplicationContext(),"Get data completely",Toast.LENGTH_LONG).show();
+        Intent intent = new Intent();
+        intent.setAction("GET_SERVER_DATA_COMPLETE");
     }
 }

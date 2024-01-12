@@ -97,6 +97,9 @@ public class StatisticFragment extends Fragment {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String calBy = intent.getExtras().getString("CalBy");
+                if(calBy==null||calBy.isEmpty()){
+                    return;
+                }
                 if((double)contentValues.get("Income")!=0 || (double)contentValues.get("Expense")!=0){
                     DrawBarChartIncomeExpense(calBy);
                     DrawPieChart1(calBy,(double)contentValues.get("Income"),(double)contentValues.get("Expense"));
