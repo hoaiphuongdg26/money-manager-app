@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -79,7 +80,8 @@ public class GetServerData extends AsyncTask<Long, Void, String> {
                                         }
                                         assert DateTime != null;
                                         values.put("TimeCreate", DateTime.getTime());
-                                        values.put("Expense", Double.parseDouble(billItem.getString("Expense")));
+                                        BigDecimal expense = new BigDecimal(billItem.getString("Expense"));
+                                        values.put("Expense", expense.doubleValue());
                                         // Insert data into local SQLite database
                                         database.insert(DbContract.BillEntry.TABLE_NAME, null, values);
                                     }

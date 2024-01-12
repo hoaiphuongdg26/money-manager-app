@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements
     public static String formatIntegerPart(long integerPart) {
         if(integerPart == 0) return "0";
         String result = "";
-        int temp = (int) integerPart;
+        long temp = (long) integerPart;
         while(temp > 0){
             String part = "";
             if(temp/1000 > 0)  part = String.format("%03d",temp % 1000);

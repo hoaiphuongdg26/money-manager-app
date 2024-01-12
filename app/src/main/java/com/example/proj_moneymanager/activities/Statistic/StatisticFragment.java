@@ -101,6 +101,9 @@ public class StatisticFragment extends Fragment {
                 if(calBy==null||calBy.isEmpty()){
                     return;
                 }
+                binding.textviewIncome.setText(MainActivity.formatCurrency((double) contentValues.get("Income")));
+                binding.textviewExpense.setText(MainActivity.formatCurrency((double) contentValues.get("Expense")));
+                binding.textviewTotal.setText(MainActivity.formatCurrency((double) contentValues.get("Total")));
                 if((double)contentValues.get("Income")!=0 || (double)contentValues.get("Expense")!=0){
                     DrawBarChartIncomeExpense(calBy);
                     DrawPieChart1(calBy,(double)contentValues.get("Income"),(double)contentValues.get("Expense"));
@@ -348,7 +351,7 @@ public class StatisticFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (isAdded() && !isDetached()) {
+            if (isAdded() && !isDetached()&&context!=null) {
                 Intent intent = new Intent();
                 intent.setAction("CALCULATE_COMPLETE");
                 intent.putExtra("CalBy", calBy);
@@ -398,11 +401,8 @@ public class StatisticFragment extends Fragment {
                     }
                     firstWeekDay = Day.minusDays(firstDayOfWeek);
                     contentValues = CalendarFragment.MoneyCalculate(UserID, day,
-                            month, DateTime.getYear(), calBy, "All", requireContext());
+                            month, DateTime.getYear(), calBy, "All", context);
                     getDataset(day, month, DateTime.getYear(), calBy);
-                    binding.textviewIncome.setText(MainActivity.formatCurrency((double) contentValues.get("Income")));
-                    binding.textviewExpense.setText(MainActivity.formatCurrency((double) contentValues.get("Expense")));
-                    binding.textviewTotal.setText(MainActivity.formatCurrency((double) contentValues.get("Total")));
                 } catch (ParseException e) {
                     e.printStackTrace();
                     Toast.makeText(context, context.getString(R.string.Error) + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -452,8 +452,10 @@ public class StatisticFragment extends Fragment {
     private void DrawBarChartIncomeExpense(String calBy){
         BarDataSet income = new BarDataSet(barEntriesIncome(calBy),"Income");
         BarDataSet expense = new BarDataSet(barEntriesExpense(calBy), "Expense");
-        income.setColor(ContextCompat.getColor(getContext(), R.color.teal_700));
-        expense.setColor(ContextCompat.getColor(getContext(), R.color.orange));
+        if(getContext()!=null){
+            income.setColor(ContextCompat.getColor(getContext(), R.color.teal_700));
+            expense.setColor(ContextCompat.getColor(getContext(), R.color.orange));
+        }
         BarData barData = new BarData(income,expense);
 //        MPbarChart = new BarChart(getContext());
         MPbarChart.clear();
