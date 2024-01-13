@@ -14,7 +14,7 @@ if($con){
         echo json_encode(array('status'=>$status,'result_code'=>$result_code));
     }
     else{
-        $Password = md5($Password);
+        //$Password = md5($Password);
         $sql = "insert into user_information(FullName,UserName,Password) values('$FullName','$UserName','$Password')";
         if(mysqli_query($con,$sql)){
             $status = "ok";

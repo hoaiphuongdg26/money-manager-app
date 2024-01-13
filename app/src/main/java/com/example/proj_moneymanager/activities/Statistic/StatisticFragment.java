@@ -40,10 +40,12 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -153,7 +155,7 @@ public class StatisticFragment extends Fragment {
 
         };
         cal = new calculate(requireContext());
-        cal.execute(false,false);
+        cal.execute(false,true);
         Btn_cal_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -589,12 +591,15 @@ public class StatisticFragment extends Fragment {
             description.setText("");
             MPPieChart2.setDescription(description);
             MPPieChart2.animateXY(525,525);
+            Legend legend = MPPieChart2.getLegend();
+            legend.setMaxSizePercent(0.95f);
+            legend.setWordWrapEnabled(true);
             MPPieChart2.invalidate();
             MPPieChart2.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                 @Override
                 public void onValueSelected(Entry e, Highlight h) {
                     PieEntry pe = (PieEntry) e;
-                    MPPieChart2.setCenterText(pe.getLabel() + ":\n"+ e.getY());
+                    MPPieChart2.setCenterText(pe.getLabel() + ":\n"+ MainActivity.formatCurrency(e.getY()));
                     MPPieChart2.setCenterTextColor(CategoryColorArray[pieDataSet.getEntryIndex(e)]);
                 }
                 @Override
@@ -685,6 +690,8 @@ public class StatisticFragment extends Fragment {
         lineChart.setDescription(description);
         if(!calBy.equals(getString(R.string.Month))) xAxis.setLabelRotationAngle(-35);
         else xAxis.setLabelRotationAngle(0);
+        Legend legend = lineChart.getLegend();
+        legend.setWordWrapEnabled(true);
         lineChart.invalidate();
     }
     public void dialogCategoryLineChart(String type, String calBy) {

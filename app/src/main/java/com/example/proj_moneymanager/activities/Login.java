@@ -115,7 +115,7 @@ public class Login extends AppCompatActivity {
                     }
                 } else {
                     UserName = appConfig.getUserName();
-                    Password = MD5Hasher.hashString(appConfig.getUserPassword());
+                    Password = appConfig.getUserPassword();
                     performLoginOffline();
                 }
             } else {
@@ -144,8 +144,8 @@ public class Login extends AppCompatActivity {
                     public void onClick(View v) {
                         if (checkNetworkConnection()) {
                             UserName = editTextUserName.getText().toString();
-                            Password = editTextPassword.getText().toString();
-                            if (!UserName.equals("") && !Password.equals("")) {
+                            Password = MD5Hasher.hashString(editTextPassword.getText().toString());
+                            if (!UserName.equals("") && !editTextPassword.getText().toString().equals("")) {
                                 //Start ProgressBar first (set visibility VISIBLE)
                                 performLogin();
                             } else {
@@ -186,7 +186,7 @@ public class Login extends AppCompatActivity {
                     if(idToken!=null){
                         UserName = credential.getId();
                         //khong cho lay password gmail
-                        Password = idToken;//credential.getPassword();
+                        Password = MD5Hasher.hashString(credential.getId());//credential.getPassword();
                         performLogin();
 //                        String email = credential.getId();
 //                        Toast.makeText(getApplicationContext(),"Welcome, "+ email,Toast.LENGTH_SHORT).show();
@@ -248,7 +248,7 @@ public class Login extends AppCompatActivity {
                                     appConfig.saveLoginUsingGmail(false);
                                     appConfig.updateUserLoginStatus(true);
                                     appConfig.saveUserName(UserName);
-                                    appConfig.saveUserPassword(Password);
+                                    appConfig.saveUserPassword(uPassword);
                                     appConfig.saveIsRememberLoginClicked(true);
                                 }
 //                                userInformation = new UserInformation(userID, FullName,UserName, Password,Email, PhoneNumber);
@@ -256,7 +256,7 @@ public class Login extends AppCompatActivity {
                                 DbHelper dbHelper = new DbHelper(getApplicationContext());
                                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                                 dbHelper.onCreate(database);
-                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), uFullName,uUserName, Password,uEmail, uPhoneNumber,1, database);
+                                dbHelper.insertUserToLocalDatabase(String.valueOf(UserID), uFullName,uUserName, uPassword,uEmail, uPhoneNumber,1, database);
                                 //Đưa dữ liệu mà remote không có lên POST
 
                                 //asynctask kéo dữ liệu từ remote về GET

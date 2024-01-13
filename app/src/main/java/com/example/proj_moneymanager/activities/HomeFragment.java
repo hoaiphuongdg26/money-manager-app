@@ -34,7 +34,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements readBillFromLocalStorage.AsyncTaskListener  {
     private FragmentHomeBinding homeBinding;
     long UserID;
     ListView lvTransaction;
@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().equals("GET_BILL_COMPLETE")){
                     //Toast.makeText(getContext(),"Progress",Toast.LENGTH_SHORT).show();
-                    if(recentbills.size()>0) {
+                    if(recentbills !=null && recentbills.size()>0) {
                         tvNoTransactionFound.setVisibility(View.INVISIBLE);
                         double income = 0, total = 0;
                         for(Bill b:recentbills){
@@ -236,5 +236,30 @@ public class HomeFragment extends Fragment {
         if(receiver!=null)
             getActivity().unregisterReceiver(receiver);
     }
+    @Override
+    public void onTaskComplete() {
+        if (recentbills != null && recentbills.size() > 0) {
+            tvNoTransactionFound.setVisibility(View.INVISIBLE);
+            double income = 0, total = 0;
+            for (Bill b : recentbills) {
+                if (b.getMoney() > 0) income += b.getMoney();
+                if (b.getMoney() < 0) total -= b.getMoney();
+                else total += b.getMoney();
+            }
+            double incomeRate = 100 * income / total;
+            int progressPercent = (int) incomeRate;
+            progressBar.setProgress(progressPercent);
+            tv_min.setText("0");
+            tv_incomeRate.setText(MainActivity.formatCurrency(income));
+            tv_total.setText(MainActivity.formatCurrency(total));
+        } else {
+            tvNoTransactionFound.setVisibility(View.VISIBLE);
+            progressBar.setProgress(0);
+        }
 
+        // Hiển thị ListView sau khi dữ liệu đã được tải xong
+        BillAdapter billAdapter = new BillAdapter(requireActivity(), recentbills);
+        lvTransaction.setAdapter(billAdapter);
+        billAdapter.notifyDataSetChanged();
+    }
 }

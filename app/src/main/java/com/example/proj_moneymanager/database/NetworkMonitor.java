@@ -110,7 +110,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                 //dbHelper.close();
 
                 //TABLE CATEGORY
-                Cursor categoryCursor = dbHelper.readBillFromLocalDatabase(database);
+                Cursor categoryCursor = dbHelper.readCategoryFromLocalDatabase(database);
                 int columnIndexID_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_ID);
                 int columnIndexUserID_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_USER_ID);
                 int columnIndexName_CATEGORY = categoryCursor.getColumnIndex(DbContract.CategoryEntry.COLUMN_NAME);

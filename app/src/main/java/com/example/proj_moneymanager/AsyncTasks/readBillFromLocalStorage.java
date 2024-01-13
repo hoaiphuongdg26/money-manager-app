@@ -17,6 +17,7 @@ import java.util.Date;
 
 public class readBillFromLocalStorage extends AsyncTask<Integer, Void, ArrayList<Bill>> {
     private ArrayList<Bill> arrayListBill;
+    private AsyncTaskListener listener;
     private Context context;
     // Constructor nhận danh sách category từ bên ngoài
     public readBillFromLocalStorage(Context context, ArrayList<Bill> arrayListBill) {
@@ -30,6 +31,9 @@ public class readBillFromLocalStorage extends AsyncTask<Integer, Void, ArrayList
         Intent intent = new Intent();
         intent.setAction("GET_BILL_COMPLETE");
         context.sendBroadcast(intent);
+        if (listener != null) {
+            listener.onTaskComplete();
+        }
     }
     @Override
     protected void onProgressUpdate(Void... values) {
@@ -100,6 +104,10 @@ public class readBillFromLocalStorage extends AsyncTask<Integer, Void, ArrayList
         cursor.close();
         dbHelper.close();
         return arrayListBill;
+    }
+
+    public interface AsyncTaskListener {
+        void onTaskComplete();
     }
 }
 

@@ -20,7 +20,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.proj_moneymanager.MD5Hasher;
 import com.example.proj_moneymanager.R;
+import com.example.proj_moneymanager.database.NetworkMonitor;
 import com.example.proj_moneymanager.models.ApiResponse;
 import com.example.proj_moneymanager.retrofit.ApiClient;
 import com.example.proj_moneymanager.retrofit.ApiInterface;
@@ -88,7 +90,15 @@ public class SignUp extends AppCompatActivity {
                 yourName = editTextYourName.getText().toString();
                 userName = editTextUserName.getText().toString();
                 password = editTextPassword.getText().toString();
-                performSignUp();
+                if(yourName.isEmpty()||userName.isEmpty()||password.isEmpty())
+                    Toast.makeText(getApplicationContext(), getString(R.string.Please_enter_all_fields), Toast.LENGTH_SHORT).show();
+                else{
+                    if(checkNetworkConnection()){
+                        password = MD5Hasher.hashString(password);
+                        performSignUp();
+                    }
+                    else Toast.makeText(SignUp.this, getString(R.string.No_network_connection), Toast.LENGTH_SHORT).show();
+                }
                 //SET PROCESS BAR
             }
         });
@@ -113,7 +123,7 @@ public class SignUp extends AppCompatActivity {
                                     if(idToken!=null){
                                         yourName = credential.getDisplayName();
                                         userName = credential.getId();
-                                        password = idToken;
+                                        password = MD5Hasher.hashString(credential.getId());
                                         performSignUp();
 //                                        Toast.makeText(getApplicationContext(),"Welcome, "+ email,Toast.LENGTH_SHORT).show();
 //
@@ -178,5 +188,8 @@ public class SignUp extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Error:" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private boolean checkNetworkConnection() {
+        return NetworkMonitor.checkNetworkConnection(getApplicationContext());
     }
 }

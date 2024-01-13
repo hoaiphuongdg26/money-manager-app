@@ -29,6 +29,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.proj_moneymanager.MD5Hasher;
 import com.example.proj_moneymanager.Object.UserInformation;
 import com.example.proj_moneymanager.R;
 import com.example.proj_moneymanager.activities.Login;
@@ -50,6 +51,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ProfileFragment extends Fragment {
@@ -300,7 +302,8 @@ public class ProfileFragment extends Fragment {
             public void onFocusChange(View v, boolean hasFocus) {
                 String currentPasswrd = arr_profileOption.get(1).getLabelInfo();
                 if(!hasFocus) {
-                if(!bindingChangePassword.edittextEnterOldPassword.getText().toString().equals(currentPasswrd)) {
+                    String oldPasswordMD5 = MD5Hasher.hashString(bindingChangePassword.edittextEnterOldPassword.getText().toString());
+                if(!(Objects.equals(oldPasswordMD5, currentPasswrd))) {
                     bindingChangePassword.textviewLabelErrorOldPasswd.setText(getString(R.string.Wrong_Password));
                     isCurrentPwdCorrect = false;
                     bindingChangePassword.buttonSave.setEnabled(false);
@@ -337,18 +340,20 @@ public class ProfileFragment extends Fragment {
                 if (bindingChangePassword.edittextConfirmPassword.getText().toString().equals(bindingChangePassword.edittextEnterNewPassword.getText().toString())) {
                     //Xử lý đổi mật khẩu
                     //fetch data mới lên remote db
+                    String confirmPasswordMD5 = MD5Hasher.hashString(bindingChangePassword.edittextConfirmPassword.getText().toString());
                     DbHelper dbHelper = new DbHelper(getContext());
                     SQLiteDatabase database = dbHelper.getWritableDatabase();
                     userInformation = new UserInformation();
                     userInformation.setUserID(getArguments().getLong("UserID", 0));
                     ContentValues values = new ContentValues();
-                    values.put("Password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                    values.put("Password", String.valueOf(confirmPasswordMD5));
                     String whereClause = DbContract.UserInformationEntry._ID + "=?";
                     String[] whereArgs = new String[]{
                             String.valueOf(userInformation.getUserID())
                     };
                     // Thực hiện cập nhật dữ liệu vào local db
                     database.update(DbContract.UserInformationEntry.TABLE_NAME, values, whereClause, whereArgs);
+                    appConfig.saveUserPassword(confirmPasswordMD5);
                     //Sau khi cập nhật dữ liệu, đọc lại dữ liệu từ cơ sở dữ liệu và cập nhật lại ListView
                     readUserDataFromLocalStorageTask readUserDataFromLocalStorageTask = new readUserDataFromLocalStorageTask(context, arr_profileOption);
                     readUserDataFromLocalStorageTask.execute();
@@ -367,8 +372,8 @@ public class ProfileFragment extends Fragment {
 
                         String fullName = cursor.getString(columnIndexUserFullname);
                         String userName = cursor.getString(columnIndexUserName);
-                        String password = cursor.getString(columnIndexUserPassword);
-                        String email = cursor.getString(columnIndexEmail);
+//                        String password = cursor.getString(columnIndexUserPassword);
+//                        String email = cursor.getString(columnIndexEmail);
 
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.SERVER_URL_SYNCPROFILE,
                                 new Response.Listener<String>() {
@@ -379,7 +384,6 @@ public class ProfileFragment extends Fragment {
                                             String serverResponse = jsonObject.getString("response");
                                             if (serverResponse.equals("OK")) {
                                                 Toast.makeText(getContext(), getString(R.string.Password_change_successfully), Toast.LENGTH_LONG).show();
-                                                appConfig.saveUserPassword(bindingChangePassword.edittextConfirmPassword.getText().toString());
                                             } else {
                                                 //neu server tra về "fail"
                                                 Toast.makeText(getContext(), serverResponse, Toast.LENGTH_LONG).show();
@@ -400,7 +404,7 @@ public class ProfileFragment extends Fragment {
                             @Override
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
-                                params.put("_password", String.valueOf(bindingChangePassword.edittextConfirmPassword.getText().toString()));
+                                params.put("_password", confirmPasswordMD5);
                                 params.put("userID", String.valueOf(userInformation.getUserID()));
                                 params.put("fullName", fullName);
                                 params.put("userName", userName);
