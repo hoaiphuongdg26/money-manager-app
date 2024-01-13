@@ -120,7 +120,8 @@ public class ProfileFragment extends Fragment {
                 }
                 else if(position == 1) {
                     Profile_Option selectedOption = (Profile_Option) profileAdapter.getItem(position);
-                    dialogChangePassword(selectedOption, position);
+                    if(!appConfig.isLoginUsingGmail())
+                        dialogChangePassword(selectedOption, position);
                 }
                 else if(position == 2) {
 

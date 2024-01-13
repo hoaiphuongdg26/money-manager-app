@@ -51,8 +51,8 @@ public class ProfileAdapter  extends BaseAdapter {
 
         TextView txt_labelInfo = (TextView) convertView.findViewById(R.id.textview_Name_Profile);
         if(position==1){
-            String hiddenPasswd = "";
-            for(int i = 0;i<arrProfileOption.get(position).getLabelInfo().length();i++) hiddenPasswd= hiddenPasswd+"*";
+            String hiddenPasswd = " ";
+            //for(int i = 0;i<arrProfileOption.get(position).getLabelInfo().length();i++) hiddenPasswd= hiddenPasswd+"*";
             txt_labelInfo.setText(hiddenPasswd);
         }
         else txt_labelInfo.setText(arrProfileOption.get(position).getLabelInfo());

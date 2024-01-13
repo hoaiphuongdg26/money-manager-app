@@ -91,9 +91,11 @@ public class HomeFragment extends Fragment {
                     readBillFromLocalStorage readBillFromLocalStorage = new readBillFromLocalStorage(getContext(),recentbills);
                     readBillFromLocalStorage.execute(date.getYear()-1900,date.getMonthValue()-1,date.getDayOfMonth());
 
-                    BillAdapter billAdapter = new BillAdapter(requireActivity(),recentbills);
-                    lvTransaction.setAdapter(billAdapter);
-                    billAdapter.notifyDataSetChanged();
+                    if(requireActivity()!=null) {
+                        BillAdapter billAdapter = new BillAdapter(requireActivity(), recentbills);
+                        lvTransaction.setAdapter(billAdapter);
+                        billAdapter.notifyDataSetChanged();
+                    }
                 }
             }
         };
